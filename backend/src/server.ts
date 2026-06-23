@@ -247,6 +247,10 @@ app.get('/health', (_req: Request, res: Response) => {
   res.json({ ok: true, message: 'PRV AI backend is running.' });
 });
 
+app.get('/wake-up', (_req: Request, res: Response) => {
+  res.json({ status: 'awake' });
+});
+
 app.post('/api/chat/stream', async (req: Request, res: Response) => {
   const { content, model, mode, history, attachments } = req.body as {
     content?: string;
