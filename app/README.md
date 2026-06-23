@@ -38,13 +38,10 @@ npm install
 cp .env.example .env
 ```
 
-4. Update `.env` with your credentials:
+4. Update `.env` with the backend API URL only:
 
 ```env
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
-VITE_GEMINI_API_KEY=your-gemini-api-key
-VITE_TAVILY_API_KEY=your-tavily-api-key
+VITE_API_BASE_URL=http://localhost:5000
 ```
 
 5. Start development:
@@ -59,10 +56,9 @@ npm run dev
 
 The frontend expects these values in `.env`:
 
-- `VITE_SUPABASE_URL` — Supabase project URL
-- `VITE_SUPABASE_ANON_KEY` — Supabase anon public key
-- `VITE_GEMINI_API_KEY` — Gemini API key for chatbot responses
-- `VITE_TAVILY_API_KEY` — Tavily API key for search integration
+- `VITE_API_BASE_URL` — Backend API URL, for example `http://localhost:5000`
+
+The backend hosts all sensitive integrations for Supabase auth, Gemini, and Tavily. No API keys should be stored in the frontend.
 
 > Do not commit `.env` or any private keys to source control. This repository already ignores `.env` and other local secrets.
 

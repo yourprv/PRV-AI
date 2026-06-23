@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { supabase } from '@/lib/supabase';
+import { getAuthSession, setStoredAuthSession } from '@/lib/api';
 
 export default function AuthCallback() {
   const navigate = useNavigate();
@@ -10,9 +10,38 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleRedirect = async () => {
       try {
-        const { data } = await supabase.auth.getSession();
+        const searchParams = new URLSearchParams(window.location.search);
+        const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+        const params = new URLSearchParams();
 
-        if (data.session?.user) {
+        for (const [key, value] of searchParams.entries()) {
+          params.set(key, value);
+        }
+        for (const [key, value] of hashParams.entries()) {
+          params.set(key, value);
+        }
+
+        const accessToken = params.get('access_token')?.trim();
+        const refreshToken = params.get('refresh_token')?.trim();
+        const expiresIn = params.get('expires_in')?.trim();
+
+        if (accessToken) {
+          const session = {
+            accessToken,
+            refreshToken: refreshToken || undefined,
+            expiresAt: expiresIn ? Date.now() + Number(expiresIn) * 1000 - 10000 : undefined,
+          };
+          setStoredAuthSession(session);
+        }
+
+        if (window.location.href.includes('access_token') || window.location.href.includes('refresh_token')) {
+          const cleanUrl = window.location.origin + window.location.pathname;
+          window.history.replaceState({}, '', cleanUrl);
+        }
+
+        const session = await getAuthSession();
+
+        if (session.user) {
           navigate('/');
           return;
         }

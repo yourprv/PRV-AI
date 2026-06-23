@@ -30,7 +30,6 @@ interface ChatAreaProps {
 
 export function ChatArea({
   user,
-  authAttemptCount,
   onOpenAuthModal,
   messages,
   isLoading,

@@ -11,7 +11,7 @@ import { fetchTavilySearch } from '@/lib/tavily';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import type { Chat, Message, ModelId, ModeType, User } from '@/types/chat';
+import type { Chat, Message, ModelId, ModeType } from '@/types/chat';
 
 // Generate unique IDs
 function generateId(): string {
@@ -441,7 +441,7 @@ export default function Home() {
 
       setIsLoading(false);
     },
-    [activeChatId, currentModel, mode, setChats, webSearchEnabled]
+    [activeChatId, currentModel, mode, setChats, webSearchEnabled, unauthenticatedSendAttempts, user]
   );
 
   // Handle regenerate
