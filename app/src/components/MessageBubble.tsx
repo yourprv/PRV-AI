@@ -49,9 +49,9 @@ export function MessageBubble({ message, onRegenerate, isLatest, isLoading }: Me
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
     >
-      <div className={`flex gap-3 max-w-[92%] md:max-w-[80ch] min-w-0 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+      <div className={`flex gap-2 sm:gap-3 max-w-[100%] sm:max-w-[92%] md:max-w-[80ch] min-w-0 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
         {/* Avatar */}
-<div className="w-7 h-7 rounded-full shrink-0 overflow-hidden">
+<div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full shrink-0 overflow-hidden">
             {isUser ? (
               <User size={14} className="text-white" />
             ) : (
@@ -62,7 +62,7 @@ export function MessageBubble({ message, onRegenerate, isLatest, isLoading }: Me
         {/* Message content */}
         <div className="flex flex-col gap-1 min-w-0">
           <div
-            className={`px-4 py-3 rounded-2xl break-words text-[15px] leading-relaxed ${
+            className={`px-3 sm:px-4 py-2 sm:py-3 rounded-2xl break-words text-sm sm:text-[15px] leading-relaxed ${
               isUser
                 ? 'bg-[#4F46E5] dark:bg-[#6366F1] text-white rounded-tr-sm'
                 : 'bg-[#F9F9FB] dark:bg-[#2D3748] text-[#374151] dark:text-[#D1D5DB] border border-[#E5E7EB] dark:border-[#374151] rounded-tl-sm'
@@ -74,16 +74,16 @@ export function MessageBubble({ message, onRegenerate, isLatest, isLoading }: Me
                   {message.content || 'Uploaded attachment'}
                 </div>
                 {message.attachments && message.attachments.length > 0 && (
-                  <div className="grid gap-2 sm:grid-cols-2">
+                  <div className="grid gap-2 grid-cols-1 sm:grid-cols-2">
                     {message.attachments.map((attachment, idx) => (
                       <div
                         key={idx}
-                        className="rounded-2xl border border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-[#111827] p-3 text-[13px] text-[#374151] dark:text-[#D1D5DB]"
+                        className="rounded-lg sm:rounded-2xl border border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-[#111827] p-2 sm:p-3 text-[12px] sm:text-[13px] text-[#374151] dark:text-[#D1D5DB]"
                       >
-                        <div className="font-medium text-[#111827] dark:text-[#F3F4F6] truncate">
+                        <div className="font-medium text-[#111827] dark:text-[#F3F4F6] truncate text-xs sm:text-sm">
                           {attachment.name}
                         </div>
-                        <div className="text-[12px] text-[#6B7280] dark:text-[#9CA3AF]">
+                        <div className="text-[11px] sm:text-[12px] text-[#6B7280] dark:text-[#9CA3AF]">
                           {attachment.mimeType || 'Attachment'}
                         </div>
                       </div>

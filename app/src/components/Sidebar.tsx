@@ -107,7 +107,7 @@ export function Sidebar({
   // Collapsed sidebar
   if (!isExpanded) {
     return (
-      <aside className="h-screen w-16 bg-white dark:bg-[#1F2937] border-r border-[#E5E7EB] dark:border-[#374151] flex flex-col items-center py-3 shrink-0 transition-all duration-300 z-30">
+      <aside className="hidden sm:flex h-screen w-16 bg-white dark:bg-[#1F2937] border-r border-[#E5E7EB] dark:border-[#374151] flex-col items-center py-3 shrink-0 transition-all duration-300 z-30">
         {/* Toggle button */}
         <button
           onClick={onToggle}
@@ -157,7 +157,7 @@ export function Sidebar({
 
   // Expanded sidebar
   return (
-    <aside className="h-screen w-[260px] bg-white dark:bg-[#1F2937] border-r border-[#E5E7EB] dark:border-[#374151] flex flex-col shrink-0 transition-all duration-300 z-30">
+    <aside className="h-screen w-[260px] sm:w-[280px] bg-white dark:bg-[#1F2937] border-r border-[#E5E7EB] dark:border-[#374151] flex flex-col shrink-0 transition-all duration-300 z-30">
       {/* Top section */}
       <div className="px-3 pt-3 pb-2">
         <div className="flex items-center gap-2 mb-3">
@@ -175,7 +175,7 @@ export function Sidebar({
           <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0">
             <img src="/AI.png" alt="PRV AI" className="w-full h-full object-cover" />
           </div>
-          <span className="text-[14px] font-semibold text-[#111827] dark:text-[#F3F4F6]">PRV AI</span>
+          <span className="text-[14px] font-semibold text-[#111827] dark:text-[#F3F4F6] hidden sm:inline">PRV AI</span>
         </div>
 
         {/* Model selector - MOVED OUT OF SIDEBAR */}

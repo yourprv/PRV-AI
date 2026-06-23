@@ -66,8 +66,8 @@ export function ChatArea({
   return (
     <div className="flex-1 flex flex-col h-screen relative">
       {/* Top bar */}
-      <header className="h-12 flex items-center justify-between px-4 border-b border-[#E5E7EB] dark:border-[#374151] bg-white/80 dark:bg-[#1F2937]/80 backdrop-blur-sm shrink-0 z-20">
-        <div className="flex items-center flex-1">
+      <header className="h-12 sm:h-14 flex items-center justify-between px-3 sm:px-4 border-b border-[#E5E7EB] dark:border-[#374151] bg-white/80 dark:bg-[#1F2937]/80 backdrop-blur-sm shrink-0 z-20 gap-2">
+        <div className="flex items-center flex-1 min-w-0">
           <ModelSelector
             selected={currentModel}
             onSelect={onModelChange}
@@ -75,17 +75,17 @@ export function ChatArea({
             onDisabledClick={onModelSelectorClick}
           />
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
           <button
             onClick={onSettingsClick}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] hover:bg-[#F5F5F7] dark:hover:bg-[#374151] transition-colors duration-200"
+            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-lg text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] hover:bg-[#F5F5F7] dark:hover:bg-[#374151] transition-colors duration-200"
             aria-label="Settings"
           >
             <Settings size={18} />
           </button>
           <button
             onClick={toggleTheme}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] hover:bg-[#F5F5F7] dark:hover:bg-[#374151] transition-colors duration-200"
+            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-lg text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] hover:bg-[#F5F5F7] dark:hover:bg-[#374151] transition-colors duration-200"
             aria-label="Toggle theme"
           >
             {isDark ? <Sun size={18} /> : <Moon size={18} />}
@@ -95,15 +95,15 @@ export function ChatArea({
 
       {/* Main content */}
       {!user ? (
-        <div className="bg-[#FEF3C7] dark:bg-[#92400E]/20 text-[#92400E] dark:text-[#FEF3C7] px-4 py-3">
-          <div className="mx-auto flex max-w-5xl flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <p className="text-sm font-medium">
+        <div className="bg-[#FEF3C7] dark:bg-[#92400E]/20 text-[#92400E] dark:text-[#FEF3C7] px-3 sm:px-4 py-2 sm:py-3">
+          <div className="mx-auto flex max-w-5xl flex-col gap-2 sm:gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs sm:text-sm font-medium">
               Please login/signup to continue using our AI Chatbot.
             </p>
             <button
               type="button"
               onClick={onOpenAuthModal}
-              className="inline-flex items-center justify-center rounded-full bg-[#92400E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#7C2D12] transition-colors duration-200"
+              className="inline-flex items-center justify-center rounded-full bg-[#92400E] px-4 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-[#7C2D12] transition-colors duration-200 shrink-0"
             >
               Log in / Sign up
             </button>
@@ -112,22 +112,22 @@ export function ChatArea({
       ) : null}
       {isEmpty ? (
         // Empty state
-        <div className="flex-1 flex flex-col items-center justify-center px-4 bg-white dark:bg-[#111827]">
-          <div className="w-full max-w-5xl mx-auto flex flex-col items-center gap-6">
+        <div className="flex-1 flex flex-col items-center justify-center px-3 sm:px-4 bg-white dark:bg-[#111827]">
+          <div className="w-full max-w-5xl mx-auto flex flex-col items-center gap-4 sm:gap-6">
             {user ? (
-              <h1 className="text-[28px] font-semibold text-[#111827] dark:text-[#F3F4F6] tracking-tight">
+              <h1 className="text-xl sm:text-[28px] font-semibold text-[#111827] dark:text-[#F3F4F6] tracking-tight text-center">
                 Ready when you are.
               </h1>
             ) : (
-              <div className="w-full rounded-[32px] border border-[#E5E7EB] dark:border-[#374151] bg-[#E0F2FE] dark:bg-[#0F172A] px-6 py-5 text-center">
-                <p className="text-[18px] font-semibold text-[#0F172A] dark:text-[#EFF6FF]">Please login to continue using PRV AI.</p>
-                <p className="mt-2 text-[14px] text-[#475569] dark:text-[#A5B4FC]">
+              <div className="w-full rounded-2xl sm:rounded-[32px] border border-[#E5E7EB] dark:border-[#374151] bg-[#E0F2FE] dark:bg-[#0F172A] px-4 sm:px-6 py-4 sm:py-5 text-center">
+                <p className="text-base sm:text-[18px] font-semibold text-[#0F172A] dark:text-[#EFF6FF]">Please login to continue using PRV AI.</p>
+                <p className="mt-2 text-xs sm:text-[14px] text-[#475569] dark:text-[#A5B4FC]">
                   To keep your experience secure, please sign in before using the chatbot.
                 </p>
                 <button
                   type="button"
                   onClick={onOpenAuthModal}
-                  className="mt-4 inline-flex items-center justify-center rounded-full bg-[#4F46E5] px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#4338CA] transition-colors duration-200"
+                  className="mt-4 inline-flex items-center justify-center rounded-full bg-[#4F46E5] px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-white shadow-sm hover:bg-[#4338CA] transition-colors duration-200"
                 >
                   Log in / Sign up
                 </button>
@@ -152,9 +152,9 @@ export function ChatArea({
           {/* Messages area */}
           <div
             ref={scrollContainerRef}
-            className="flex-1 overflow-y-auto px-4 py-6 space-y-6 bg-white dark:bg-[#111827]"
+            className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6 bg-white dark:bg-[#111827]"
           >
-            <div className="w-full max-w-5xl mx-auto space-y-6">
+            <div className="w-full max-w-5xl mx-auto space-y-4 sm:space-y-6">
               {messages.map((message, index) => (
                 <MessageBubble
                   key={message.id}
@@ -174,7 +174,7 @@ export function ChatArea({
           </div>
 
           {/* Input at bottom */}
-          <div className="shrink-0 px-4 py-3 bg-white/80 dark:bg-[#1F2937]/80 backdrop-blur-sm border-t border-[#E5E7EB] dark:border-[#374151]">
+          <div className="shrink-0 px-3 sm:px-4 py-2 sm:py-3 bg-white/80 dark:bg-[#1F2937]/80 backdrop-blur-sm border-t border-[#E5E7EB] dark:border-[#374151]">
             <ChatInput
               onSend={onSend}
               isLoading={isLoading}

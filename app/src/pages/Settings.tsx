@@ -19,36 +19,37 @@ export function Settings({ onBack }: SettingsProps) {
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-white dark:bg-[#111827]">
+    <div className="flex flex-col md:flex-row h-screen w-screen overflow-hidden bg-white dark:bg-[#111827]">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 h-12 flex items-center px-4 border-b border-[#E5E7EB] dark:border-[#374151] bg-white/80 dark:bg-[#1F2937]/80 backdrop-blur-sm z-30">
+      <header className="fixed top-0 left-0 right-0 h-12 sm:h-14 flex items-center px-3 sm:px-4 border-b border-[#E5E7EB] dark:border-[#374151] bg-white/80 dark:bg-[#1F2937]/80 backdrop-blur-sm z-30">
         <button
           onClick={onBack}
           className="flex items-center gap-2 text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] transition-colors duration-200"
         >
           <ChevronLeft size={20} />
-          <span className="text-[14px] font-medium">Back</span>
+          <span className="text-xs sm:text-[14px] font-medium">Back</span>
         </button>
       </header>
 
       {/* Main content */}
-      <div className="flex-1 flex pt-12 overflow-hidden">
-        {/* Left sidebar */}
-        <div className="w-56 border-r border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#1F2937] flex flex-col shrink-0">
-          <nav className="flex-1 px-3 py-4 space-y-1">
+      <div className="flex-1 flex flex-col md:flex-row pt-12 overflow-hidden">
+        {/* Left sidebar - Tab buttons for mobile, vertical nav for desktop */}
+        <div className="md:w-56 border-b md:border-b-0 md:border-r border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#1F2937] flex md:flex-col shrink-0 overflow-x-auto md:overflow-x-visible">
+          <nav className="flex md:flex-col flex-1 md:flex-none px-2 md:px-3 py-2 md:py-4 space-y-0 md:space-y-1 md:gap-0">
             <button
               onClick={() => setActiveTab('about')}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium transition-colors duration-200 ${
+              className={`flex-1 md:flex-none whitespace-nowrap md:whitespace-normal flex items-center justify-center md:justify-start gap-0 md:gap-3 px-2 md:px-3 py-2 md:py-2.5 rounded-lg text-xs md:text-[14px] font-medium transition-colors duration-200 ${
                 activeTab === 'about'
                   ? 'bg-[#F5F5F7] dark:bg-[#374151] text-[#111827] dark:text-[#F3F4F6]'
                   : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] hover:bg-[#F9F9FB] dark:hover:bg-[#2D3748]'
               }`}
             >
-              About Me
+              <span className="hidden sm:inline">About Me</span>
+              <span className="sm:hidden">About</span>
             </button>
             <button
               onClick={() => setActiveTab('models')}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium transition-colors duration-200 ${
+              className={`flex-1 md:flex-none whitespace-nowrap md:whitespace-normal flex items-center justify-center md:justify-start gap-0 md:gap-3 px-2 md:px-3 py-2 md:py-2.5 rounded-lg text-xs md:text-[14px] font-medium transition-colors duration-200 ${
                 activeTab === 'models'
                   ? 'bg-[#F5F5F7] dark:bg-[#374151] text-[#111827] dark:text-[#F3F4F6]'
                   : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] hover:bg-[#F9F9FB] dark:hover:bg-[#2D3748]'
@@ -58,13 +59,14 @@ export function Settings({ onBack }: SettingsProps) {
             </button>
             <button
               onClick={() => setActiveTab('data')}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium transition-colors duration-200 ${
+              className={`flex-1 md:flex-none whitespace-nowrap md:whitespace-normal flex items-center justify-center md:justify-start gap-0 md:gap-3 px-2 md:px-3 py-2 md:py-2.5 rounded-lg text-xs md:text-[14px] font-medium transition-colors duration-200 ${
                 activeTab === 'data'
                   ? 'bg-[#F5F5F7] dark:bg-[#374151] text-[#111827] dark:text-[#F3F4F6]'
                   : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] hover:bg-[#F9F9FB] dark:hover:bg-[#2D3748]'
               }`}
             >
-              Data and Privacy
+              <span className="hidden sm:inline">Data and Privacy</span>
+              <span className="sm:hidden">Data</span>
             </button>
           </nav>
         </div>
@@ -73,27 +75,27 @@ export function Settings({ onBack }: SettingsProps) {
         <div className="flex-1 overflow-y-auto">
           {activeTab === 'about' ? (
             // About Me View
-            <div className="max-w-2xl mx-auto px-8 py-8">
-              <h1 className="text-[28px] font-semibold text-[#111827] dark:text-[#F3F4F6] mb-8">
+            <div className="max-w-2xl mx-auto px-4 sm:px-6 md:px-8 py-6 md:py-8">
+              <h1 className="text-lg sm:text-xl md:text-[28px] font-semibold text-[#111827] dark:text-[#F3F4F6] mb-6 md:mb-8">
                 About Me
               </h1>
 
               {user ? (
-                <div className="space-y-8">
+                <div className="space-y-6 md:space-y-8">
                   {/* Profile Picture */}
                   <div className="flex flex-col items-center gap-4">
-                    <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#4F46E5] to-[#7C3AED] flex items-center justify-center text-white text-[32px] font-semibold shadow-lg">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-[#4F46E5] to-[#7C3AED] flex items-center justify-center text-white text-2xl sm:text-[32px] font-semibold shadow-lg">
                       {user.name ? user.name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
                     </div>
                   </div>
 
                   {/* User Info */}
-                  <div className="space-y-6">
+                  <div className="space-y-4 md:space-y-6">
                     <div>
-                      <label className="block text-[12px] font-medium text-[#6B7280] dark:text-[#9CA3AF] uppercase tracking-wide mb-2">
+                      <label className="block text-xs sm:text-[12px] font-medium text-[#6B7280] dark:text-[#9CA3AF] uppercase tracking-wide mb-2">
                         Name
                       </label>
-                      <p className="text-[16px] font-semibold text-[#111827] dark:text-[#F3F4F6]">
+                      <p className="text-sm sm:text-[16px] font-semibold text-[#111827] dark:text-[#F3F4F6]">
                         {user.name || 'Not set'}
                       </p>
                     </div>

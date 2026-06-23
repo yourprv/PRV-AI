@@ -597,19 +597,43 @@ export default function Home() {
   }, [sidebarExpanded]);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-white">
-      {/* Sidebar */}
-      <Sidebar
-        isExpanded={sidebarExpanded}
-        onToggle={toggleSidebar}
-        chats={chats}
-        activeChatId={activeChatId}
-        onSelectChat={handleSelectChat}
-        onNewChat={handleNewChat}
-        onSearchOpen={() => setSearchOpen(true)}
-        onRenameChat={handleRenameChat}
-        onDeleteChat={handleDeleteChat}
-      />
+    <div className="flex h-screen w-screen overflow-hidden bg-white dark:bg-[#0F172A]">
+      {/* Sidebar - Hidden on mobile, visible on desktop */}
+      <div className="hidden lg:block">
+        <Sidebar
+          isExpanded={sidebarExpanded}
+          onToggle={toggleSidebar}
+          chats={chats}
+          activeChatId={activeChatId}
+          onSelectChat={handleSelectChat}
+          onNewChat={handleNewChat}
+          onSearchOpen={() => setSearchOpen(true)}
+          onRenameChat={handleRenameChat}
+          onDeleteChat={handleDeleteChat}
+        />
+      </div>
+
+      {/* Mobile Sidebar Drawer Overlay */}
+      {sidebarExpanded && (
+        <div className="fixed inset-0 lg:hidden z-40 bg-black/50" onClick={toggleSidebar} />
+      )}
+
+      {/* Mobile Sidebar */}
+      {sidebarExpanded && (
+        <div className="fixed left-0 top-0 h-screen lg:hidden z-50">
+          <Sidebar
+            isExpanded={true}
+            onToggle={toggleSidebar}
+            chats={chats}
+            activeChatId={activeChatId}
+            onSelectChat={handleSelectChat}
+            onNewChat={handleNewChat}
+            onSearchOpen={() => setSearchOpen(true)}
+            onRenameChat={handleRenameChat}
+            onDeleteChat={handleDeleteChat}
+          />
+        </div>
+      )}
 
       {/* Main chat area */}
       <main className="flex-1 flex flex-col min-w-0">

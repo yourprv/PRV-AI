@@ -70,7 +70,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
@@ -78,29 +78,29 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
       />
 
       {/* Modal */}
-      <div className="relative z-10 w-full max-w-sm mx-auto bg-white dark:bg-[#1F2937] rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.3)] p-8 animate-fade-in">
+      <div className="relative z-10 w-full max-w-sm mx-auto bg-white dark:bg-[#1F2937] rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.3)] p-6 sm:p-8 animate-fade-in max-h-[90vh] overflow-y-auto">
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-lg text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] hover:bg-[#F5F5F7] dark:hover:bg-[#374151] transition-colors duration-200"
+          className="absolute top-3 sm:top-4 right-3 sm:right-4 w-8 h-8 flex items-center justify-center rounded-lg text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] hover:bg-[#F5F5F7] dark:hover:bg-[#374151] transition-colors duration-200"
           aria-label="Close modal"
         >
           <X size={18} />
         </button>
 
         {/* Header */}
-        <div className="mb-6">
-          <h2 className="text-[20px] font-semibold text-[#111827] dark:text-[#F3F4F6] mb-1">
+        <div className="mb-4 sm:mb-6">
+          <h2 className="text-base sm:text-[20px] font-semibold text-[#111827] dark:text-[#F3F4F6] mb-1">
             Please log in to continue
           </h2>
-          <p className="text-[14px] text-[#6B7280] dark:text-[#D1D5DB]">
+          <p className="text-xs sm:text-[14px] text-[#6B7280] dark:text-[#D1D5DB]">
             Sign in to access PRV AI chat and your personalized settings.
           </p>
         </div>
 
         {statusMessage ? (
           <div
-            className={`mb-4 rounded-xl px-4 py-3 text-[14px] ${
+            className={`mb-4 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-[14px] ${
               statusType === 'success'
                 ? 'bg-[#ECFDF5] text-[#166534]'
                 : 'bg-[#FEF2F2] text-[#991B1B]'
@@ -115,7 +115,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
           type="button"
           onClick={handleGoogleSignIn}
           disabled={isLoading}
-          className="w-full flex items-center justify-center gap-2.5 px-4 py-3 bg-white dark:bg-[#2D3748] border border-[#E5E7EB] dark:border-[#374151] rounded-xl hover:bg-[#F9F9FB] dark:hover:bg-[#374151] hover:border-[#D1D5DB] dark:hover:border-[#4B5563] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-[14px] text-[#374151] dark:text-[#D1D5DB] font-medium mb-3"
+          className="w-full flex items-center justify-center gap-2 sm:gap-2.5 px-3 sm:px-4 py-2.5 sm:py-3 bg-white dark:bg-[#2D3748] border border-[#E5E7EB] dark:border-[#374151] rounded-xl hover:bg-[#F9F9FB] dark:hover:bg-[#374151] hover:border-[#D1D5DB] dark:hover:border-[#4B5563] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-xs sm:text-[14px] text-[#374151] dark:text-[#D1D5DB] font-medium mb-3"
         >
           <svg width="18" height="18" viewBox="0 0 24 24">
             <path
@@ -135,7 +135,8 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
             />
           </svg>
-          {isLoading ? 'Signing in...' : 'Continue with Google'}
+          <span className="hidden sm:inline">{isLoading ? 'Signing in...' : 'Continue with Google'}</span>
+          <span className="sm:hidden">{isLoading ? 'Signing...' : 'Google'}</span>
         </button>
 
         {/* Divider */}
@@ -143,7 +144,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-[#E5E7EB] dark:border-[#374151]" />
           </div>
-          <div className="relative flex justify-center text-[12px]">
+          <div className="relative flex justify-center text-xs sm:text-[12px]">
             <span className="bg-white dark:bg-[#1F2937] px-2 text-[#9CA3AF] dark:text-[#6B7280]">or</span>
           </div>
         </div>
@@ -157,13 +158,13 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
-              className="w-full px-4 py-3 bg-[#F9F9FB] dark:bg-[#2D3748] border border-[#E5E7EB] dark:border-[#374151] rounded-xl text-[14px] text-[#374151] dark:text-[#D1D5DB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:outline-none focus:border-[#4F46E5] dark:focus:border-[#6366F1] focus:shadow-[0_0_0_3px_rgba(79,70,229,0.15)] dark:focus:shadow-[0_0_0_3px_rgba(99,102,241,0.15)] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-[#F9F9FB] dark:bg-[#2D3748] border border-[#E5E7EB] dark:border-[#374151] rounded-xl text-xs sm:text-[14px] text-[#374151] dark:text-[#D1D5DB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:outline-none focus:border-[#4F46E5] dark:focus:border-[#6366F1] focus:shadow-[0_0_0_3px_rgba(79,70,229,0.15)] dark:focus:shadow-[0_0_0_3px_rgba(99,102,241,0.15)] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               required
             />
             <button
               type="submit"
               disabled={isLoading || !email.trim()}
-              className="w-full px-4 py-3 bg-[#4F46E5] hover:bg-[#4338CA] disabled:bg-[#9CA3AF] text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-[14px] font-medium"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-[#4F46E5] hover:bg-[#4338CA] disabled:bg-[#9CA3AF] text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-xs sm:text-[14px] font-medium"
             >
               {isLoading ? 'Signing in...' : 'Continue with Email'}
             </button>
@@ -171,7 +172,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         </form>
 
         {/* Footer text */}
-        <p className="text-center text-[12px] text-[#9CA3AF] dark:text-[#6B7280] mt-4">
+        <p className="text-center text-[11px] sm:text-[12px] text-[#9CA3AF] dark:text-[#6B7280] mt-4">
           By continuing, you agree to our{' '}
           <button
             type="button"
