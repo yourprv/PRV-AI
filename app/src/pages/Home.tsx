@@ -404,7 +404,8 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
           aiResponse = 'Response cancelled.';
         } else {
           console.error('Gemini request failed:', error);
-          aiResponse = 'I could not reach the Gemini API right now. Please try again in a moment.';
+          const message = error instanceof Error ? error.message : '';
+          aiResponse = message || 'I could not send your message right now. Please try again in a moment.';
         }
       }
 

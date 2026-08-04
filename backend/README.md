@@ -21,5 +21,9 @@ This Express + TypeScript backend hosts the API routes that were previously exec
 - `TAVILY_API_KEY`
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
+- `TURNSTILE_SECRET_KEY`
 
 The backend reads these environment variables directly. Do not use `VITE_` prefixes in `backend/.env`.
+
+Set `VITE_TURNSTILE_SITE_KEY` in the frontend deployment. It is the public
+Cloudflare site key; the secret key belongs only on the backend.

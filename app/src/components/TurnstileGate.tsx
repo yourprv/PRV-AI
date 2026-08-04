@@ -32,7 +32,8 @@ export default function TurnstileGate({ onVerified }: TurnstileGateProps) {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const siteKey = (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '').trim()
+    // Vite only exposes browser environment variables prefixed with VITE_.
+    const siteKey = (import.meta.env.VITE_TURNSTILE_SITE_KEY || '').trim()
 
     if (!siteKey) {
       setError('Turnstile is not configured yet. Add the site key to your environment variables.')
@@ -66,8 +67,15 @@ export default function TurnstileGate({ onVerified }: TurnstileGateProps) {
               throw new Error((await response.text()) || 'Turnstile verification failed.')
             }
 
+            const data = await response.json() as { verificationToken?: string }
+            if (!data.verificationToken) {
+              throw new Error('Turnstile verification did not return an access token.')
+            }
+
             setStatus('verified')
-            onVerified(token)
+            // This is an app-issued, short-lived ticket—not the one-time
+            // Cloudflare response token that was just consumed by verification.
+            onVerified(data.verificationToken)
           } catch (verificationError) {
             const message = verificationError instanceof Error ? verificationError.message : 'Turnstile verification failed.'
             setError(message)

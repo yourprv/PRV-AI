@@ -1,6 +1,7 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { existsSync } from 'fs';
+import { randomUUID } from 'crypto';
 import express, { type Request, type Response as ExpressResponse } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -31,6 +32,11 @@ const ALLOWED_ORIGINS = [
 ].filter(Boolean) as string[];
 
 const app = express();
+// A Cloudflare Turnstile response token can only be validated once.  After the
+// gate validates it, retain a short-lived, opaque ticket for this Render
+// instance so subsequent chat messages do not try to reuse that one-time token.
+const turnstileSessions = new Map<string, number>();
+const TURNSTILE_SESSION_TTL_MS = 30 * 60 * 1000;
 app.use(helmet());
 const corsOptions = {
   origin: ALLOWED_ORIGINS,
@@ -330,6 +336,29 @@ async function verifyTurnstileToken(token: string): Promise<boolean> {
   return Boolean(data.success);
 }
 
+function createTurnstileSession(): { token: string; expiresAt: number } {
+  const expiresAt = Date.now() + TURNSTILE_SESSION_TTL_MS;
+  const token = randomUUID();
+  turnstileSessions.set(token, expiresAt);
+
+  // Keep the in-memory store bounded even on a long-running service.
+  for (const [sessionToken, sessionExpiresAt] of turnstileSessions) {
+    if (sessionExpiresAt <= Date.now()) turnstileSessions.delete(sessionToken);
+  }
+
+  return { token, expiresAt };
+}
+
+function hasValidTurnstileSession(token: string): boolean {
+  const expiresAt = turnstileSessions.get(token);
+  if (!expiresAt) return false;
+  if (expiresAt <= Date.now()) {
+    turnstileSessions.delete(token);
+    return false;
+  }
+  return true;
+}
+
 app.post('/api/turnstile/verify', async (req: Request, res: ExpressResponse) => {
   const { token } = req.body as { token?: string };
   if (!token) {
@@ -344,7 +373,8 @@ app.post('/api/turnstile/verify', async (req: Request, res: ExpressResponse) => 
       return;
     }
 
-    res.json({ success: true });
+    const session = createTurnstileSession();
+    res.json({ success: true, verificationToken: session.token, expiresAt: session.expiresAt });
   } catch (error) {
     console.error('Turnstile verification error:', error);
     res.status(500).json({ message: 'Unable to verify Turnstile token.' });
@@ -360,7 +390,11 @@ app.post('/api/chat/stream', async (req: Request, res: ExpressResponse) => {
     return;
   }
 
-  const isTurnstileValid = await verifyTurnstileToken(turnstileToken);
+  // The browser normally sends the opaque ticket returned by
+  // /api/turnstile/verify.  Accepting a fresh Cloudflare token as a fallback
+  // also keeps direct API clients working.
+  const isTurnstileValid = hasValidTurnstileSession(turnstileToken)
+    || await verifyTurnstileToken(turnstileToken);
   if (!isTurnstileValid) {
     res.status(403).json({ message: 'Turnstile verification failed.' });
     return;
