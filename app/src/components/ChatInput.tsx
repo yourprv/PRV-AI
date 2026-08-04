@@ -1,10 +1,13 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { ArrowUp, Plus, Mic, X, UploadCloud, Globe } from 'lucide-react';
+import { toast } from 'sonner';
 import { ModeSelector } from './ModeSelector';
 import type { ModeType } from '@/types/chat';
 
 interface ChatInputProps {
   onSend: (message: string, attachments?: File[]) => void;
+  guestMode?: boolean;
+  onGuestFeatureRequest?: () => void;
   isLoading: boolean;
   mode: ModeType;
   onModeChange: (mode: ModeType) => void;
@@ -15,7 +18,7 @@ interface ChatInputProps {
   isEmptyState?: boolean;
 }
 
-export function ChatInput({ onSend, isLoading, mode, onModeChange, webSearchEnabled, isSearchingWeb, onToggleWebSearch, onCancel, isEmptyState }: ChatInputProps) {
+export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, isLoading, mode, onModeChange, webSearchEnabled, isSearchingWeb, onToggleWebSearch, onCancel, isEmptyState }: ChatInputProps) {
   const [text, setText] = useState('');
   const [attachments, setAttachments] = useState<File[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -53,11 +56,15 @@ export function ChatInput({ onSend, isLoading, mode, onModeChange, webSearchEnab
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    setAttachments((prev) => [...prev, ...files]);
+    const nextFiles = guestMode ? files.slice(0, Math.max(0, 3 - attachments.length)) : files;
+    if (guestMode && nextFiles.length < files.length) {
+      toast('Guest uploads are limited to 3 photos. Sign in for a fuller upload experience.', { icon: '📸' });
+    }
+    setAttachments((prev) => [...prev, ...nextFiles]);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-  }, []);
+  }, [attachments.length, guestMode]);
 
   const removeAttachment = useCallback((index: number) => {
     setAttachments((prev) => prev.filter((_, i) => i !== index));
@@ -83,13 +90,23 @@ export function ChatInput({ onSend, isLoading, mode, onModeChange, webSearchEnab
 
   const handleAddAttachment = useCallback(() => {
     setMenuOpen(false);
+    if (guestMode && attachments.length >= 3) {
+      onGuestFeatureRequest?.();
+      toast('Guest uploads are limited to 3 photos. Sign in for richer attachment support.', { icon: '📸' });
+      return;
+    }
     fileInputRef.current?.click();
-  }, []);
+  }, [attachments.length, guestMode, onGuestFeatureRequest]);
 
   const handleToggleSearch = useCallback(() => {
     setMenuOpen(false);
+    if (guestMode) {
+      onGuestFeatureRequest?.();
+      toast('Guest mode keeps chats temporary. Sign in to unlock web search and saved history.', { icon: '✨' });
+      return;
+    }
     onToggleWebSearch();
-  }, [onToggleWebSearch]);
+  }, [guestMode, onGuestFeatureRequest, onToggleWebSearch]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {

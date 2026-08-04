@@ -10,6 +10,8 @@ import type { Message, ModelId, ModeType, User } from '@/types/chat';
 interface ChatAreaProps {
   user?: User | null;
   onOpenAuthModal: () => void;
+  guestMode?: boolean;
+  onGuestFeatureRequest?: () => void;
   messages: Message[];
   isLoading: boolean;
   isSearchingWeb: boolean;
@@ -31,6 +33,8 @@ interface ChatAreaProps {
 export function ChatArea({
   user,
   onOpenAuthModal,
+  guestMode = false,
+  onGuestFeatureRequest,
   messages,
   isLoading,
   currentModel,
@@ -73,6 +77,7 @@ export function ChatArea({
             onSelect={onModelChange}
             disabled={modelSelectorDisabled}
             onDisabledClick={onModelSelectorClick}
+            guestMode={guestMode}
           />
         </div>
         <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
@@ -94,18 +99,18 @@ export function ChatArea({
       </header>
 
       {/* Main content */}
-      {!user ? (
+      {guestMode ? (
         <div className="bg-[#FEF3C7] dark:bg-[#92400E]/20 text-[#92400E] dark:text-[#FEF3C7] px-3 sm:px-4 py-2 sm:py-3">
           <div className="mx-auto flex max-w-5xl flex-col gap-2 sm:gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs sm:text-sm font-medium">
-              Please login/signup to continue using our AI Chatbot.
+              You are in guest mode. You can still use PRV V1 Pro now, and sign in later for more features.
             </p>
             <button
               type="button"
-              onClick={onOpenAuthModal}
+              onClick={onGuestFeatureRequest || onOpenAuthModal}
               className="inline-flex items-center justify-center rounded-full bg-[#92400E] px-4 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-[#7C2D12] transition-colors duration-200 shrink-0"
             >
-              Log in / Sign up
+              View benefits
             </button>
           </div>
         </div>
@@ -120,21 +125,23 @@ export function ChatArea({
               </h1>
             ) : (
               <div className="w-full rounded-2xl sm:rounded-[32px] border border-[#E5E7EB] dark:border-[#374151] bg-[#E0F2FE] dark:bg-[#0F172A] px-4 sm:px-6 py-4 sm:py-5 text-center">
-                <p className="text-base sm:text-[18px] font-semibold text-[#0F172A] dark:text-[#EFF6FF]">Please login to continue using PRV AI.</p>
+                <p className="text-base sm:text-[18px] font-semibold text-[#0F172A] dark:text-[#EFF6FF]">Continue as a guest with PRV V1 Pro.</p>
                 <p className="mt-2 text-xs sm:text-[14px] text-[#475569] dark:text-[#A5B4FC]">
-                  To keep your experience secure, please sign in before using the chatbot.
+                  Your chats stay in this session only. Sign in later for saved history, web search, and more models.
                 </p>
                 <button
                   type="button"
-                  onClick={onOpenAuthModal}
+                  onClick={onGuestFeatureRequest || onOpenAuthModal}
                   className="mt-4 inline-flex items-center justify-center rounded-full bg-[#4F46E5] px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-white shadow-sm hover:bg-[#4338CA] transition-colors duration-200"
                 >
-                  Log in / Sign up
+                  View benefits
                 </button>
               </div>
             )}
             <ChatInput
               onSend={onSend}
+              guestMode={guestMode}
+              onGuestFeatureRequest={onGuestFeatureRequest}
               isLoading={isLoading}
               mode={mode}
               onModeChange={onModeChange}
@@ -177,6 +184,8 @@ export function ChatArea({
           <div className="shrink-0 px-3 sm:px-4 py-2 sm:py-3 bg-white/80 dark:bg-[#1F2937]/80 backdrop-blur-sm border-t border-[#E5E7EB] dark:border-[#374151]">
             <ChatInput
               onSend={onSend}
+              guestMode={guestMode}
+              onGuestFeatureRequest={onGuestFeatureRequest}
               isLoading={isLoading}
               mode={mode}
               onModeChange={onModeChange}

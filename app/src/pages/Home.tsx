@@ -1,11 +1,11 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useAuth } from '@/hooks/useAuth';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Sidebar } from '@/components/Sidebar';
 import { ChatArea } from '@/components/ChatArea';
 import { SearchOverlay } from '@/components/SearchOverlay';
 import { AuthModal } from '@/components/AuthModal';
+import { GuestBenefitsModal } from '@/components/GuestBenefitsModal';
 import { streamGeminiReply } from '@/lib/gemini';
 import { fetchTavilySearch } from '@/lib/tavily';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -28,7 +28,7 @@ function generateTitle(content: string): string {
 export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   const navigate = useNavigate();
   const { chatId } = useParams<{ chatId?: string }>();
-  const [chats, setChats] = useLocalStorage<Chat[]>('prv_chats', []);
+  const [chats, setChats] = useState<Chat[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [currentModel, setCurrentModel] = useState<ModelId>('prv-v1-flash');
   const [mode, setMode] = useState<ModeType>('fast');
@@ -37,8 +37,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   const [requestController, setRequestController] = useState<AbortController | null>(null);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [unauthenticatedSendAttempts, setUnauthenticatedSendAttempts] = useState(0);
-  const [initialLoginPromptShown, setInitialLoginPromptShown] = useState(false);
+  const [showBenefitsModal, setShowBenefitsModal] = useState(false);
   const { user, isAuthReady } = useAuth();
   const [searchOpen, setSearchOpen] = useState(false);
   const [webSearchEnabled, setWebSearchEnabled] = useState(false);
@@ -70,21 +69,11 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   }, [activeChat]);
 
   useEffect(() => {
-    if (!isAuthReady) {
-      return;
-    }
-
-    if (!user && !initialLoginPromptShown) {
-      setShowLoginModal(true);
-      setInitialLoginPromptShown(true);
-      return;
-    }
-
+    if (!isAuthReady) return;
     if (user) {
-      setUnauthenticatedSendAttempts(0);
       setShowLoginModal(false);
     }
-  }, [user, isAuthReady, initialLoginPromptShown]);
+  }, [user, isAuthReady]);
 
   useEffect(() => {
     if (renameChat) {
@@ -105,7 +94,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   const handleSelectChat = useCallback(
     (chatId: string) => {
       setActiveChatId(chatId);
-      navigate(`/chat/${chatId}`);
+      navigate('/');
       // On mobile, collapse sidebar
       if (window.innerWidth < 768) {
         setSidebarExpanded(false);
@@ -120,8 +109,12 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   }, [navigate]);
 
   const handleToggleWebSearch = useCallback(() => {
+    if (!user && !webSearchEnabled) {
+      setShowBenefitsModal(true);
+      return;
+    }
     setWebSearchEnabled((prev) => !prev);
-  }, []);
+  }, [user, webSearchEnabled]);
 
   const handleCancelResponse = useCallback(() => {
     if (requestController) {
@@ -139,9 +132,13 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
         toast.info('You cannot change models inside an active chat. Start a new chat to use a different model.');
         return;
       }
+      if (!user && model !== 'prv-v1-flash') {
+        setShowBenefitsModal(true);
+        return;
+      }
       setCurrentModel(model);
     },
-    [activeChat]
+    [activeChat, user]
   );
 
   const handleBlockedModelChange = useCallback(() => {
@@ -193,20 +190,6 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   // Handle send message
   const handleSend = useCallback(
     async (content: string, attachmentFiles?: File[]) => {
-      if (!user) {
-        const nextAttempt = unauthenticatedSendAttempts + 1;
-        setUnauthenticatedSendAttempts(nextAttempt);
-        setShowLoginModal(true);
-
-        if (nextAttempt >= 2) {
-          toast.error('Please login/signup to continue using our AI Chatbot.');
-        } else {
-          toast('Please login to continue using PRV AI.', { icon: '🔒' });
-        }
-
-        return;
-      }
-
       // Create or update chat
       let chatId = activeChatId;
 
@@ -223,7 +206,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
         setChats((prev) => [newChat, ...prev]);
         chatId = newChat.id;
         setActiveChatId(chatId);
-        navigate(`/chat/${chatId}`);
+        navigate('/');
       }
 
       // Process attachments
@@ -443,7 +426,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
 
       setIsLoading(false);
     },
-    [activeChatId, currentModel, mode, setChats, turnstileToken, webSearchEnabled, unauthenticatedSendAttempts, user]
+    [activeChatId, currentModel, mode, setChats, turnstileToken, webSearchEnabled, user]
   );
 
   // Handle regenerate
@@ -659,6 +642,8 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
           onRegenerate={handleRegenerate}
           sidebarExpanded={sidebarExpanded}
           onSettingsClick={handleSettingsClick}
+          guestMode={!user}
+          onGuestFeatureRequest={() => setShowBenefitsModal(true)}
         />
       </main>
 
@@ -671,6 +656,14 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
       />
 
       <AuthModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
+      <GuestBenefitsModal
+        isOpen={showBenefitsModal}
+        onClose={() => setShowBenefitsModal(false)}
+        onSignIn={() => {
+          setShowBenefitsModal(false);
+          setShowLoginModal(true);
+        }}
+      />
 
       <Dialog open={Boolean(renameChatId)} onOpenChange={(open) => { if (!open) setRenameChatId(null); }}>
         <DialogContent>

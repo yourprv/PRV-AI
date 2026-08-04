@@ -9,9 +9,10 @@ interface ModelSelectorProps {
   compact?: boolean;
   disabled?: boolean;
   onDisabledClick?: () => void;
+  guestMode?: boolean;
 }
 
-export function ModelSelector({ selected, onSelect, compact, disabled, onDisabledClick }: ModelSelectorProps) {
+export function ModelSelector({ selected, onSelect, compact, disabled, onDisabledClick, guestMode = false }: ModelSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const currentModel = AVAILABLE_MODELS.find((m) => m.id === selected) || AVAILABLE_MODELS[0];
@@ -32,6 +33,10 @@ export function ModelSelector({ selected, onSelect, compact, disabled, onDisable
         onClick={() => {
           if (disabled) {
             onDisabledClick?.();
+            return;
+          }
+          if (guestMode) {
+            setIsOpen((prev) => !prev);
             return;
           }
           setIsOpen((prev) => !prev);
@@ -60,6 +65,10 @@ export function ModelSelector({ selected, onSelect, compact, disabled, onDisable
               <div key={model.id}>
                 <button
                   onClick={() => {
+                    if (guestMode && model.id !== 'prv-v1-flash') {
+                      setIsOpen(false);
+                      return;
+                    }
                     onSelect(model.id);
                     setIsOpen(false);
                   }}
