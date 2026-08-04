@@ -41,7 +41,7 @@ app.use(helmet());
 const corsOptions = {
   origin: ALLOWED_ORIGINS,
   credentials: true,
-  methods: ['GET', 'POST', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   // Explicitly allow Turnstile header variants for preflight
   allowedHeaders: ['Content-Type', 'Authorization', 'x-turnstile-token', 'X-Turnstile-Token'],
 };
@@ -64,6 +64,57 @@ const supabaseAdmin = SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY
       },
     })
   : null;
+
+type StoredChatMessage = {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: number;
+  thinking?: string;
+  mode?: string;
+};
+
+async function getAuthenticatedUser(req: Request, res: ExpressResponse) {
+  const token = req.headers.authorization?.replace(/^Bearer\s+/i, '').trim();
+  if (!token || !supabaseAdmin) {
+    res.status(401).json({ error: 'Sign in is required to access saved chats.' });
+    return null;
+  }
+
+  const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
+  if (error || !user) {
+    res.status(401).json({ error: error?.message || 'Your session is no longer valid.' });
+    return null;
+  }
+  return user;
+}
+
+function serializeChatMessages(value: unknown): StoredChatMessage[] {
+  if (!Array.isArray(value)) return [];
+  return value.map((message) => {
+    const item = (message || {}) as Record<string, unknown>;
+    const role = item.role === 'assistant' ? 'assistant' : 'user';
+    return {
+      id: typeof item.id === 'string' ? item.id : randomUUID(),
+      role,
+      content: typeof item.content === 'string' ? item.content : '',
+      timestamp: typeof item.timestamp === 'number' ? item.timestamp : Date.now(),
+      ...(typeof item.thinking === 'string' ? { thinking: item.thinking } : {}),
+      ...(typeof item.mode === 'string' ? { mode: item.mode } : {}),
+    };
+  });
+}
+
+function formatStoredChat(row: Record<string, any>) {
+  return {
+    id: row.id,
+    title: row.title,
+    messages: serializeChatMessages(row.messages),
+    createdAt: typeof row.created_at === 'number' ? row.created_at : Date.parse(row.created_at),
+    updatedAt: typeof row.updated_at === 'number' ? row.updated_at : Date.parse(row.updated_at),
+    model: row.model,
+  };
+}
 
 function getModelApiName(model: string): string {
   const normalized = model.toLowerCase();
@@ -379,6 +430,82 @@ app.post('/api/turnstile/verify', async (req: Request, res: ExpressResponse) => 
     console.error('Turnstile verification error:', error);
     res.status(500).json({ message: 'Unable to verify Turnstile token.' });
   }
+});
+
+app.get('/api/chats', async (req: Request, res: ExpressResponse) => {
+  const user = await getAuthenticatedUser(req, res);
+  if (!user || !supabaseAdmin) return;
+
+  const { data, error } = await supabaseAdmin
+    .from('chats')
+    .select('id, title, model, messages, created_at, updated_at')
+    .eq('user_id', user.id)
+    .order('updated_at', { ascending: false });
+
+  if (error) {
+    console.error('Failed to load chats:', error);
+    res.status(500).json({ error: 'Unable to load your saved chats.' });
+    return;
+  }
+
+  res.json({ chats: (data || []).map((row) => formatStoredChat(row)) });
+});
+
+app.put('/api/chats/:chatId', async (req: Request, res: ExpressResponse) => {
+  const user = await getAuthenticatedUser(req, res);
+  if (!user || !supabaseAdmin) return;
+
+  const chatId = String(req.params.chatId);
+  if (!/^c[a-zA-Z0-9_-]{8,100}$/.test(chatId)) {
+    res.status(400).json({ error: 'Invalid chat URL.' });
+    return;
+  }
+
+  const title = typeof req.body?.title === 'string' ? req.body.title.trim().slice(0, 160) : '';
+  const model = typeof req.body?.model === 'string' ? req.body.model : 'prv-v3.2-fire';
+  const messages = serializeChatMessages(req.body?.messages);
+  if (!title) {
+    res.status(400).json({ error: 'A chat title is required.' });
+    return;
+  }
+
+  const payload = { id: chatId, user_id: user.id, title, model, messages };
+  if (JSON.stringify(payload).length > 1_500_000) {
+    res.status(413).json({ error: 'This chat is too large to save.' });
+    return;
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from('chats')
+    .upsert(payload, { onConflict: 'id' })
+    .select('id, title, model, messages, created_at, updated_at')
+    .single();
+
+  if (error) {
+    console.error('Failed to save chat:', error);
+    res.status(500).json({ error: 'Unable to save this chat.' });
+    return;
+  }
+
+  res.json(formatStoredChat(data));
+});
+
+app.delete('/api/chats/:chatId', async (req: Request, res: ExpressResponse) => {
+  const user = await getAuthenticatedUser(req, res);
+  if (!user || !supabaseAdmin) return;
+
+  const { error } = await supabaseAdmin
+    .from('chats')
+    .delete()
+    .eq('id', String(req.params.chatId))
+    .eq('user_id', user.id);
+
+  if (error) {
+    console.error('Failed to delete chat:', error);
+    res.status(500).json({ error: 'Unable to delete this chat.' });
+    return;
+  }
+  res.status(204).end();
 });
 
 app.post('/api/chat/stream', async (req: Request, res: ExpressResponse) => {

@@ -7,7 +7,7 @@ This app includes:
 - Supabase authentication for email login and Google OAuth
 - Google Gemini API streaming responses
 - Tavily web search integration for richer answers
-- Local browser storage for chat history and settings
+- Account-scoped text-only chat history stored through the Supabase-backed backend
 - Responsive UI with a sidebar, chat panel, and settings page
 
 ## Requirements

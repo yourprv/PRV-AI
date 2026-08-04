@@ -193,3 +193,36 @@ export async function signOutBackend(): Promise<void> {
     method: 'POST',
   });
 }
+
+import type { Chat } from '@/types/chat';
+
+function authenticatedHeaders(): HeadersInit {
+  const token = getStoredAuthToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+export async function listChats(): Promise<Chat[]> {
+  const data = await apiRequest<{ chats: Chat[] }>('/api/chats', {
+    headers: authenticatedHeaders(),
+  });
+  return data.chats;
+}
+
+export async function saveChat(chat: Chat): Promise<Chat> {
+  return apiRequest<Chat>(`/api/chats/${encodeURIComponent(chat.id)}`, {
+    method: 'PUT',
+    headers: authenticatedHeaders(),
+    body: JSON.stringify({
+      title: chat.title,
+      model: chat.model,
+      messages: chat.messages,
+    }),
+  });
+}
+
+export async function removeChat(chatId: string): Promise<void> {
+  await apiRequest(`/api/chats/${encodeURIComponent(chatId)}`, {
+    method: 'DELETE',
+    headers: authenticatedHeaders(),
+  });
+}

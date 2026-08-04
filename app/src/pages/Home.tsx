@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useAuth } from '@/hooks/useAuth';
 import { Sidebar } from '@/components/Sidebar';
@@ -12,10 +12,11 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import type { Chat, Message, ModelId, ModeType } from '@/types/chat';
+import { listChats, removeChat, saveChat } from '@/lib/api';
 
 // Generate unique IDs
 function generateId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+  return `c${Date.now().toString(36)}${Math.random().toString(36).slice(2, 11)}`;
 }
 
 // Generate chat title from first message
@@ -45,6 +46,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   const [renameChatId, setRenameChatId] = useState<string | null>(null);
   const [renameTitle, setRenameTitle] = useState('');
   const [deleteChatId, setDeleteChatId] = useState<string | null>(null);
+  const chatHydratedRef = useRef(false);
 
   // Get active chat
   const activeChat = chats.find((c) => c.id === activeChatId);
@@ -77,6 +79,40 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   }, [user, isAuthReady]);
 
   useEffect(() => {
+    if (!isAuthReady) return;
+    chatHydratedRef.current = false;
+    if (!user || isIncognitoMode) {
+      setChats([]);
+      return;
+    }
+
+    let cancelled = false;
+    listChats().then((savedChats) => {
+      if (!cancelled) {
+        setChats(savedChats);
+        chatHydratedRef.current = true;
+      }
+    }).catch((error) => {
+      if (!cancelled) {
+        console.error('Failed to load saved chats:', error);
+        chatHydratedRef.current = true;
+        toast.error('Your saved chats could not be loaded.');
+      }
+    });
+    return () => { cancelled = true; };
+  }, [user, isAuthReady, isIncognitoMode]);
+
+  useEffect(() => {
+    if (!user || isIncognitoMode || !chatHydratedRef.current) return;
+    const timeout = window.setTimeout(() => {
+      Promise.all(chats.map((chat) => saveChat(chat))).catch((error) => {
+        console.error('Failed to save chats:', error);
+      });
+    }, 450);
+    return () => window.clearTimeout(timeout);
+  }, [chats, user, isIncognitoMode]);
+
+  useEffect(() => {
     if (renameChat) {
       setRenameTitle(renameChat.title);
     } else {
@@ -95,7 +131,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   const handleSelectChat = useCallback(
     (chatId: string) => {
       setActiveChatId(chatId);
-      navigate('/');
+      navigate(`/chat/${chatId}`);
       // On mobile, collapse sidebar
       if (window.innerWidth < 768) {
         setSidebarExpanded(false);
@@ -196,12 +232,15 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
     const chat = chats.find((c) => c.id === deleteChatId);
     if (!chat) return;
     setChats((prev) => prev.filter((c) => c.id !== deleteChatId));
+    if (user && !isIncognitoMode) {
+      void removeChat(deleteChatId).catch((error) => console.error('Failed to delete chat:', error));
+    }
     if (activeChatId === deleteChatId) {
       setActiveChatId(null);
       navigate('/');
     }
     setDeleteChatId(null);
-  }, [activeChatId, chats, deleteChatId, navigate, setChats]);
+  }, [activeChatId, chats, deleteChatId, navigate, setChats, user, isIncognitoMode]);
 
   const handleCancelRename = useCallback(() => {
     setRenameChatId(null);
@@ -230,7 +269,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
         setChats((prev) => [newChat, ...prev]);
         chatId = newChat.id;
         setActiveChatId(chatId);
-        navigate('/');
+        navigate(`/chat/${chatId}`);
       }
 
       // Process attachments

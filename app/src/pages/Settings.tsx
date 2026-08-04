@@ -146,7 +146,6 @@ export function Settings({ onBack }: SettingsProps) {
                         </div>
                         <h3 className="text-lg font-semibold text-slate-950 dark:text-white">{model.name}</h3>
                       </div>
-                      <span className="rounded-full border border-slate-200 px-3 py-1 text-[11px] text-slate-500 dark:border-slate-700 dark:text-slate-400">{model.api}</span>
                     </div>
                     <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-300">{model.description}</p>
                     <p className="mt-4 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-500 dark:border-slate-800 dark:text-slate-400">
@@ -218,7 +217,7 @@ export function Settings({ onBack }: SettingsProps) {
                     </button>
                     {showChatHistoryInfo ? (
                       <p className="mt-4 text-[14px] text-[#6B7280] dark:text-[#D1D5DB] leading-relaxed">
-                        Your chat history is stored entirely within your browser&apos;s local storage. PRV AI does not host cloud-based databases for conversation backups, meaning your chat history will not sync across different devices or browsers.
+                        When you are signed in, your text-only chat history is stored securely in Supabase and tied to your account, so it is available across supported browsers and devices. Guest and incognito chats are temporary.
                       </p>
                     ) : null}
                   </div>
