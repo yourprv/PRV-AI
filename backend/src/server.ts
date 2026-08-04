@@ -6,6 +6,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
+import { normalizeChatRequestPayload } from './chatRequest.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const envPath = [path.resolve(__dirname, '../../.env.local'), path.resolve(__dirname, '../../app/.env.local')].find((candidate) => existsSync(candidate));
@@ -343,14 +344,8 @@ app.post('/api/turnstile/verify', async (req: Request, res: ExpressResponse) => 
 });
 
 app.post('/api/chat/stream', async (req: Request, res: ExpressResponse) => {
-  const { content, model, mode, history, attachments, turnstileToken } = req.body as {
-    content?: string;
-    model?: string;
-    mode?: string;
-    history?: Array<{ role: string; content: string; attachments?: Array<{ name: string }> }>;
-    attachments?: Array<{ name: string; mimeType: string; data: string }>;
-    turnstileToken?: string;
-  };
+  const payload = normalizeChatRequestPayload(req.body, req.headers as Record<string, string | undefined>);
+  const { content, model, mode, history, attachments, turnstileToken } = payload;
 
   if (!turnstileToken) {
     res.status(403).json({ message: 'Turnstile verification token is required.' });

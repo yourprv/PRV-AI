@@ -1,5 +1,5 @@
 import type { Message, ModeType, Attachment, ModelId } from '@/types/chat';
-import { getApiBaseUrl } from '@/lib/api';
+import { getApiBaseUrl, getStoredAuthToken } from '@/lib/api';
 
 export interface GeminiStreamChunk {
   text?: string;
@@ -32,11 +32,17 @@ export async function streamGeminiReply({
   turnstileToken?: string;
   signal?: AbortSignal;
 }): Promise<GeminiReply> {
+  const authToken = getStoredAuthToken();
   const response = await fetch(`${getApiBaseUrl()}/api/chat/stream`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(turnstileToken ? { 'X-Turnstile-Token': turnstileToken } : {}),
+      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+    },
     body: JSON.stringify({
       content,
+      message: content,
       model,
       mode,
       history,
@@ -47,7 +53,8 @@ export async function streamGeminiReply({
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to reach backend chat endpoint: ${response.status}`);
+    const detail = await response.text();
+    throw new Error(detail || `Failed to reach backend chat endpoint: ${response.status}`);
   }
 
   const reader = response.body?.getReader();
