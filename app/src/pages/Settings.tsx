@@ -169,17 +169,17 @@ export function Settings({ onBack }: SettingsProps) {
               <div className="space-y-6">
                 <div className="border border-[#E5E7EB] dark:border-[#374151] rounded-xl p-6 bg-white dark:bg-[#1F2937]">
                   <p className="text-[14px] text-[#6B7280] dark:text-[#D1D5DB] mb-6 leading-relaxed">
-                    Your data might be shared with AI providers to improve our models and services. You can control this preference below.
+                    Your data is used to operate PRV AI and improve our models. PRV AI does not show targeted ads and does not sell your data.
                   </p>
 
                   {/* Toggle Option */}
                   <div className="flex items-center justify-between p-4 rounded-lg bg-[#F9F9FB] dark:bg-[#2D3748] border border-[#E5E7EB] dark:border-[#374151]">
                     <div className="flex-1">
                       <h3 className="text-[14px] font-medium text-[#111827] dark:text-[#F3F4F6] mb-1">
-                        Share Data with PRV Team
+                        Help improve PRV AI automatically
                       </h3>
                       <p className="text-[13px] text-[#6B7280] dark:text-[#9CA3AF]">
-                        Enable automated system diagnostics and feedback loops to optimize response generation metrics.
+                        Automated systems may use conversation signals to improve model quality. PRV Team does not routinely review or read your chats.
                       </p>
                     </div>
                     <button
@@ -217,14 +217,14 @@ export function Settings({ onBack }: SettingsProps) {
                     </button>
                     {showChatHistoryInfo ? (
                       <p className="mt-4 text-[14px] text-[#6B7280] dark:text-[#D1D5DB] leading-relaxed">
-                        When you are signed in, your text-only chat history is stored securely in Supabase and tied to your account, so it is available across supported browsers and devices. Guest and incognito chats are temporary.
+                        When you are signed in, your text-only chat history is stored securely in PRV Cloud and tied to your account, so it is available across supported browsers and devices. Guest and incognito chats are temporary.
                       </p>
                     ) : null}
                   </div>
 
                   <div className="mt-6 p-4 rounded-xl bg-[#F3F4F6] dark:bg-[#111827] border border-[#E5E7EB] dark:border-[#374151] text-[13px] text-[#374151] dark:text-[#D1D5DB] leading-relaxed">
                     <p>
-                      To maintain operational connectivity with frontier model networks, session data processing is managed in accordance with upstream AI infrastructure frameworks. System-level data handling and transmission rules default strictly to the external provider’s standard terms of service. Users may review the respective third-party documentation for a full breakdown of platform privacy schedules.
+                      PRV Cloud stores text-only conversation history for signed-in accounts. Automated safety systems may process chats to detect abuse or harmful content. We do not sell your data or use it for targeted advertising.
                     </p>
                   </div>
                 </div>

@@ -27,18 +27,18 @@ export function GuestBenefitsModal({ isOpen, onClose, onSignIn }: GuestBenefitsM
         </div>
 
         <h2 className="mt-4 text-xl font-semibold text-[#111827] dark:text-[#F3F4F6]">
-          Sign in for more from PRV AI
+          Unlock the full PRV AI lineup
         </h2>
         <p className="mt-2 text-sm leading-6 text-[#4B5563] dark:text-[#D1D5DB]">
-          You can continue using PRV V1 Pro right now. Sign in to unlock richer features and keep the experience more powerful.
+          Guest mode gives you a taste of PRV V3.2 Fire. Sign in to unlock the full model lineup, cloud-saved chats, and the complete PRV AI experience.
         </p>
 
         <div className="mt-5 space-y-3 text-sm text-[#374151] dark:text-[#E5E7EB]">
           <div className="flex items-start gap-3 rounded-2xl border border-[#E5E7EB] bg-[#F9FAFB] p-3 dark:border-[#374151] dark:bg-[#1F2937]">
             <ShieldCheck className="mt-0.5 shrink-0 text-[#4F46E5] dark:text-[#818CF8]" size={18} />
             <div>
-              <div className="font-medium">Full model access</div>
-              <p className="mt-1 text-xs text-[#6B7280] dark:text-[#9CA3AF]">Use PRV V1 Pro Max and Base when you sign in.</p>
+              <div className="font-medium">Unlock every PRV engine</div>
+              <p className="mt-1 text-xs text-[#6B7280] dark:text-[#9CA3AF]">Access PRV V3.5 Earth, PRV 4.0 Light, PRV V1 Pro Max, and the full lineup after signing in.</p>
             </div>
           </div>
           <div className="flex items-start gap-3 rounded-2xl border border-[#E5E7EB] bg-[#F9FAFB] p-3 dark:border-[#374151] dark:bg-[#1F2937]">
@@ -51,8 +51,8 @@ export function GuestBenefitsModal({ isOpen, onClose, onSignIn }: GuestBenefitsM
           <div className="flex items-start gap-3 rounded-2xl border border-[#E5E7EB] bg-[#F9FAFB] p-3 dark:border-[#374151] dark:bg-[#1F2937]">
             <MessagesSquare className="mt-0.5 shrink-0 text-[#4F46E5] dark:text-[#818CF8]" size={18} />
             <div>
-              <div className="font-medium">Saved history and shareable chats</div>
-              <p className="mt-1 text-xs text-[#6B7280] dark:text-[#9CA3AF]">Keep your conversations and access them later.</p>
+              <div className="font-medium">PRV Cloud chat history</div>
+              <p className="mt-1 text-xs text-[#6B7280] dark:text-[#9CA3AF]">Keep text-only conversations in PRV Cloud and reopen their unique chat links anywhere.</p>
             </div>
           </div>
         </div>

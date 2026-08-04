@@ -91,10 +91,10 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         {/* Header */}
         <div className="mb-4 sm:mb-6">
           <h2 className="text-base sm:text-[20px] font-semibold text-[#111827] dark:text-[#F3F4F6] mb-1">
-            Please log in to continue
+            Unlock the full PRV AI experience
           </h2>
           <p className="text-xs sm:text-[14px] text-[#6B7280] dark:text-[#D1D5DB]">
-            Sign in to access PRV AI chat and your personalized settings.
+            Sign in to unlock PRV V3.5 Earth, PRV 4.0 Light, PRV V1 Pro Max, PRV Cloud chat history, and more.
           </p>
         </div>
 
@@ -179,7 +179,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             onClick={() => setPolicyView('terms')}
             className="font-semibold text-[#4F46E5] dark:text-[#8B9BFF] hover:underline"
           >
-            Terms of Service
+            Terms and Conditions
           </button>{' '}
           and{' '}
           <button
@@ -211,17 +211,17 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             <div className="max-h-[75vh] overflow-y-auto pr-1">
               <div className="mb-6">
                 <p className="text-[12px] text-[#6B7280] dark:text-[#9CA3AF] uppercase tracking-[0.24em] font-semibold">
-                  {policyView === 'terms' ? 'Terms of Service' : 'Privacy Policy'}
+                  {policyView === 'terms' ? 'Terms and Conditions' : 'Privacy Policy'}
                 </p>
                 <h2 className="text-[24px] font-semibold text-[#111827] dark:text-[#F3F4F6] mt-3">
-                  {policyView === 'terms' ? 'Terms of Service' : 'Privacy Policy'}
+                  {policyView === 'terms' ? 'Terms and Conditions' : 'Privacy Policy'}
                 </h2>
               </div>
 
               {policyView === 'terms' ? (
                 <div className="space-y-5 text-sm leading-7 text-[#374151] dark:text-[#D1D5DB]">
                   <p>
-                    Welcome to PRV AI. By using our website and chatbot, you agree to these Terms and Conditions. This is a binding agreement between you and <strong>yourprv</strong> ("the Developer"). If you do not agree to these terms, please do not use the service. We reserve the right to update these terms at any time without notice.
+                    Welcome to PRV AI. By using the service, you agree to these Terms and Conditions. PRV AI provides AI-assisted tools, model experiences, and PRV Cloud chat storage. We may update these terms when the service, safety standards, or applicable law changes.
                   </p>
 
                   <div className="space-y-3">
@@ -267,7 +267,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                       5. Underlying Technology Network
                     </h3>
                     <p>
-                      PRV AI operates a custom, multi-tier intelligence system utilizing fine-tuned parameter weights. To process complex language calculations efficiently, our system relies on advanced, open-source decentralized infrastructure stacks. This setup includes the integration of local data-routing models known as the <strong>PRV V1 Pro</strong>, <strong>PRV 1.5 Base</strong>, and <strong>PRV V1 Pro Max</strong>, which are optimized using standard baseline architectures globally managed by Alphabet's open-access model distributions (including the Gemini 3.1 flash lite and Gemma 4 protocols). By using this service, you acknowledge that your prompt text flows through these background processing nodes to generate an accurate text response.
+                      PRV AI includes model experiences such as PRV V3.2 Fire, PRV V3.5 Earth, PRV 4.0 Light, PRV V1 Pro Max, and other PRV engines. Model names describe product experiences and do not guarantee a particular result. Outputs can be inaccurate, incomplete, or unsuitable for high-stakes decisions.
                     </p>
                   </div>
 
@@ -276,11 +276,11 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                       6. Chat Storage and Deletion
                     </h3>
                     <p>
-                      Your chat history is saved <strong>locally on your own device's browser cache</strong>. We do not store your chat logs on a centralized cloud database. Because of this local design:
+                      When you are signed in, your text-only chat history is stored in <strong>PRV Cloud</strong> and tied to your account. Guest and incognito chats are temporary and are not saved to PRV Cloud.
                     </p>
                     <ul className="list-disc pl-5 space-y-2">
-                      <li>Changing your phone or computer will result in a blank chat history.</li>
-                      <li>Clearing your browser cookies or cache will <strong>permanently delete</strong> your entire chat history. We cannot recover it for you.</li>
+                      <li>You can access signed-in chats from supported browsers and devices.</li>
+                      <li>You can delete individual chats from the PRV AI interface.</li>
                     </ul>
                   </div>
 
@@ -298,7 +298,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                       8. Data Processing and Third Parties
                     </h3>
                     <p>
-                      While your history is stored on your browser, the text you type must be sent to our background infrastructure providers (including Google's cloud system network) to analyze the words and return an answer. Please review our Privacy Policy to understand how your data is handled by these necessary technical systems.
+                      Your messages may be processed by automated systems to provide responses, operate safety controls, and improve PRV models. PRV Team does not routinely review or read your chats.
                     </p>
                   </div>
 
@@ -307,7 +307,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                       9. Termination of Access
                     </h3>
                     <p>
-                      We reserve the right to block your IP address, suspend your account, or permanently deny you access to PRV AI at any time if we detect harmful behavior or a breach of these terms.
+                      Automated safety systems may flag content that appears harmful, illegal, abusive, or intended to facilitate wrongdoing. PRV AI may suspend or permanently ban accounts when harmful behavior or serious violations are detected. Appeals may be sent to <strong>yourprvdeveloper@proton.me</strong>.
                     </p>
                   </div>
 
@@ -332,7 +332,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               ) : (
                 <div className="space-y-5 text-sm leading-7 text-[#374151] dark:text-[#D1D5DB]">
                   <p>
-                    Welcome to PRV AI. We are deeply committed to protecting your personal information and ensuring transparency in how data is processed within our ecosystem. This Privacy Policy outlines our data management, caching architectures, and transmission protocols in compliance with the prevailing laws of Nepal, including the right to privacy under <strong>Article 28 of the Constitution of Nepal</strong>.
+                    This Privacy Policy explains how PRV AI handles information when you use the service. We aim to keep collection focused, transparent, and limited to operating PRV AI, protecting users, and improving our models.
                   </p>
 
                   <p>
@@ -344,12 +344,12 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                       1. Information Collected
                     </h3>
                     <p>
-                      To maintain a streamlined application structure, PRV AI minimizes direct data harvesting:
+                      PRV AI may process the following information:
                     </p>
                     <ul className="list-disc pl-5 space-y-2">
                       <li><strong>Account Information:</strong> Your email address (if provided during setup or inquiry).</li>
                       <li><strong>Conversation Logs:</strong> The text inputs, prompts, and subsequent text outputs generated during your active session.</li>
-                      <li><strong>Technical Identifiers:</strong> Basic browser metadata, language configurations, and device token properties necessary to render the user interface smoothly.</li>
+                      <li><strong>Technical Information:</strong> Basic device, browser, security, and diagnostic information needed to operate and protect the service.</li>
                       <li><strong>Sensitive Data:</strong> PRV AI does not intentionally collect, store, or request health, financial, biometric, or legally sensitive data. Please do not input highly confidential information into the chat window.</li>
                     </ul>
                   </div>
@@ -359,12 +359,13 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                       2. How Data Is Used
                     </h3>
                     <p>
-                      We utilize gathered parameters strictly for the following purposes:
+                      We use information only for service-related purposes:
                     </p>
                     <ul className="list-disc pl-5 space-y-2">
                       <li>Providing real-time conversational responses and ensuring smooth client-side interface rendering.</li>
-                      <li>Optimizing localized software performance and fixing application bugs.</li>
-                      <li><strong>Marketing & Analytics:</strong> We do not sell your personal information to third-party brokers, nor do we run targeted commercial advertising campaigns using your personal chat history.</li>
+                      <li>Improving PRV models, reliability, safety, and the user experience through automated analysis.</li>
+                      <li><strong>No targeted ads or data sales:</strong> PRV AI does not show targeted advertising and does not sell your personal information or chat data.</li>
+                      <li><strong>No routine human reading:</strong> PRV Team does not routinely review or read your chats. Automated safety systems may flag content for enforcement.</li>
                     </ul>
                   </div>
 
@@ -373,11 +374,11 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                       3. Local Data Architecture and Deletion Rights
                     </h3>
                     <p>
-                      Your main conversation files are saved <strong>locally inside your device’s browser storage (such as IndexedDB or LocalStorage)</strong>. We do not host your conversation history on centralized cloud database servers.
+                      Signed-in text-only conversation history is saved in <strong>PRV Cloud</strong> and associated with your account. Guest and incognito conversations are temporary.
                     </p>
                     <ul className="list-disc pl-5 space-y-2">
-                      <li>Switching to a different computer or phone will result in a fresh, blank chat history.</li>
-                      <li>Clearing your browser cache, clearing site cookies, or resetting your browser data will <strong>permanently and irreversibly destroy</strong> your chat history. The PRV AI team has no way to restore or recover this data for you.</li>
+                      <li>You can access signed-in history across supported devices and browsers.</li>
+                      <li>You can delete chats from the interface; deletion may take a short time to complete across backups and systems.</li>
                     </ul>
                   </div>
 
@@ -386,13 +387,13 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                       4. Upstream Network Processing and Infrastructure Sync
                     </h3>
                     <p>
-                      While your session history is cached directly inside your browser app, generating a response requires text to be processed through advanced computing systems. PRV AI operates on a decentralized, distributed network architecture utilizing fine-tuned parameter distributions.
+                      Generating a response requires your message to be processed by PRV AI’s automated computing systems and safety controls.
                     </p>
                     <p>
-                      Linguistic inputs and prompt packets flow through specialized, external global data infrastructure nodes managing primary token processing and matrix analysis algorithms—specifically those aligning with the Gemini 3.1 Flash Lite and Gemma 4 foundational network tiers managed at the parent-infrastructure level by Alphabet.
+                      Messages may pass through infrastructure providers that help PRV AI deliver responses, maintain availability, and protect the service.
                     </p>
                     <p>
-                      Consequently, raw prompt strings and contextual objects are securely routed to our upstream cloud computing providers (including Google LLC's backend API systems) to compute the language variables and send back a written answer. This processing runs in tandem with standard network security monitoring. For a deep, absolute understanding of how linguistic data is retained, monitored for abuse, or indexed during external API calls, <strong>users are strongly encouraged to independently read and cross-reference the Google AI Privacy Policy and its corresponding API Terms of Service.</strong>
+                      PRV AI does not sell your data or use your chats for targeted advertising. Automated processing may use eligible chat data to improve PRV models, response quality, and safety. PRV Team does not routinely read individual conversations.
                     </p>
                   </div>
 
@@ -410,7 +411,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                       6. User Rights
                     </h3>
                     <p>
-                      You hold absolute control over your local data footprint. You may exercise your right to access, alter, or purge your conversational data simply by clearing your browser cache or manually wiping individual chat logs from the PRV AI user interface.
+                      You can access and delete your signed-in chats through the PRV AI interface. You may also contact us about account or privacy questions at <strong>yourprvdeveloper@proton.me</strong>.
                     </p>
                   </div>
 
@@ -419,7 +420,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                       7. Cookies and Tracking
                     </h3>
                     <p>
-                      PRV AI utilizes necessary local browser caching tokens to remember your UI configurations (such as theme choice and session variables). We do not deploy intrusive third-party cross-site marketing trackers. You can adjust your browser settings to reject cookies, though doing so might cause specific interface features to stop loading correctly.
+                      PRV AI uses necessary storage and session technologies for authentication, preferences, security, and core functionality. We do not use your chats to serve targeted ads.
                     </p>
                   </div>
 
@@ -446,7 +447,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                       10. Contact Information
                     </h3>
                     <p>
-                      For any complaints, clarifications regarding local storage, or data infrastructure inquiries, you can reach the developer directly at: <strong>yourprvdeveloper@proton.me</strong>
+                      For privacy questions, deletion requests, or policy concerns, contact: <strong>yourprvdeveloper@proton.me</strong>
                     </p>
                   </div>
                 </div>
