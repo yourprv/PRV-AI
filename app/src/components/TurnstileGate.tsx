@@ -32,8 +32,13 @@ export default function TurnstileGate({ onVerified }: TurnstileGateProps) {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // Vite only exposes browser environment variables prefixed with VITE_.
-    const siteKey = (import.meta.env.VITE_TURNSTILE_SITE_KEY || '').trim()
+    // Prefer Vite's public-variable convention, while supporting the existing
+    // NEXT_PUBLIC_ deployment variable during the migration from Next.js.
+    const siteKey = (
+      import.meta.env.VITE_TURNSTILE_SITE_KEY
+      || process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
+      || ''
+    ).trim()
 
     if (!siteKey) {
       setError('Turnstile is not configured yet. Add the site key to your environment variables.')
