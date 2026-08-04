@@ -125,7 +125,7 @@ export function ChatArea({
         <div className="bg-[#FEF3C7] dark:bg-[#92400E]/20 text-[#92400E] dark:text-[#FEF3C7] px-3 sm:px-4 py-2 sm:py-3">
           <div className="mx-auto flex max-w-5xl flex-col gap-2 sm:gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs sm:text-sm font-medium">
-              You are in guest mode. You can still use PRV V1 Pro now, and sign in later for more features.
+              You are in guest mode. You can use PRV V3.2 Fire now, and sign in later for more features.
             </p>
             <button
               type="button"
@@ -153,7 +153,7 @@ export function ChatArea({
               </div>
             ) : (
               <div className="w-full rounded-2xl sm:rounded-[32px] border border-violet-200/80 dark:border-violet-400/20 bg-white/75 dark:bg-white/5 px-4 sm:px-6 py-4 sm:py-5 text-center shadow-[0_20px_70px_-35px_rgba(91,33,182,0.35)] backdrop-blur">
-                <p className="text-base sm:text-[18px] font-semibold text-[#0F172A] dark:text-[#EFF6FF]">Continue as a guest with PRV V1 Pro.</p>
+                <p className="text-base sm:text-[18px] font-semibold text-[#0F172A] dark:text-[#EFF6FF]">Continue as a guest with PRV V3.2 Fire.</p>
                 <p className="mt-2 text-xs sm:text-[14px] text-[#475569] dark:text-[#A5B4FC]">
                   Your chats stay in this session only. Sign in later for saved history, web search, and more models.
                 </p>

@@ -30,7 +30,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   const { chatId } = useParams<{ chatId?: string }>();
   const [chats, setChats] = useState<Chat[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
-  const [currentModel, setCurrentModel] = useState<ModelId>('prv-v1-flash');
+  const [currentModel, setCurrentModel] = useState<ModelId>('prv-v3.2-fire');
   const [mode, setMode] = useState<ModeType>('fast');
   const [isLoading, setIsLoading] = useState(false);
   const [isSearchingWeb, setIsSearchingWeb] = useState(false);
@@ -115,7 +115,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
       if (next) {
         setChats([]);
         setActiveChatId(null);
-        setCurrentModel('prv-v1-flash');
+        setCurrentModel('prv-v3.2-fire');
         setMode('fast');
         setIsLoading(false);
         setIsSearchingWeb(false);
@@ -156,7 +156,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
         toast.info('You cannot change models inside an active chat. Start a new chat to use a different model.');
         return;
       }
-      if (!user && model !== 'prv-v1-flash') {
+      if (!user && model !== 'prv-v3.2-fire') {
         setShowBenefitsModal(true);
         return;
       }

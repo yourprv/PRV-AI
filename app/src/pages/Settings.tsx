@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { AVAILABLE_MODELS } from '@/types/chat';
 
 interface SettingsProps {
   onBack: () => void;
@@ -127,128 +128,37 @@ export function Settings({ onBack }: SettingsProps) {
               )}
             </div>
           ) : activeTab === 'models' ? (
-            <div className="max-w-4xl mx-auto px-8 py-8">
-              <h1 className="text-[28px] font-semibold text-[#111827] dark:text-[#F3F4F6] mb-8">
-                Models
-              </h1>
+            <div className="mx-auto max-w-4xl px-4 py-8 sm:px-8">
+              <div className="mb-8 rounded-3xl border border-violet-200/80 bg-gradient-to-br from-violet-50 via-white to-sky-50 p-6 dark:border-violet-400/20 dark:from-violet-950/40 dark:via-slate-900 dark:to-sky-950/30">
+                <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-violet-600 dark:text-violet-300">PRV model catalog</p>
+                <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white sm:text-3xl">The next-generation frontier.</h1>
+                <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-300">PRV V3 is our boldest leap yet: faster instincts, deeper reasoning, and a sharper sense of momentum. Choose the engine that matches the way you think.</p>
+              </div>
 
-              <div className="space-y-6">
-                {/* PRV V1 Flash */}
-                <div className="border border-[#E5E7EB] dark:border-[#374151] rounded-xl p-6 hover:shadow-lg dark:hover:shadow-[0_10px_15px_rgba(0,0,0,0.3)] transition-shadow duration-200 bg-white dark:bg-[#1F2937]">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h3 className="text-[16px] font-semibold text-[#111827] dark:text-[#F3F4F6]">
-                        PRV V1 Pro
-                      </h3>
+              <div className="space-y-4">
+                {AVAILABLE_MODELS.map((model) => (
+                  <div key={model.id} className="rounded-2xl border border-slate-200/80 bg-white p-5 transition-shadow hover:shadow-lg dark:border-slate-700 dark:bg-slate-900 sm:p-6">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <div className="mb-2 flex items-center gap-2">
+                          <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500 dark:bg-slate-800 dark:text-slate-300">{model.group}</span>
+                          {model.badge && <span className="rounded-full bg-sky-100 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-sky-600 dark:bg-sky-400/15 dark:text-sky-300">{model.badge}</span>}
+                        </div>
+                        <h3 className="text-lg font-semibold text-slate-950 dark:text-white">{model.name}</h3>
+                      </div>
+                      <span className="rounded-full border border-slate-200 px-3 py-1 text-[11px] text-slate-500 dark:border-slate-700 dark:text-slate-400">{model.api}</span>
                     </div>
+                    <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-300">{model.description}</p>
+                    <p className="mt-4 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-500 dark:border-slate-800 dark:text-slate-400">
+                      {model.id === 'prv-v3.2-fire' && 'The ignition point of the V3 frontier: rapid, lively, and built to turn a blank page into momentum.'}
+                      {model.id === 'prv-v3.5-earth' && 'The grounded titan of the V3 series: deliberate, durable, and engineered for demanding reasoning and creation.'}
+                      {model.id === 'prv-v4-light' && 'A bright beta glimpse at the next horizon: capable, agile, and tuned for effortless everyday intelligence.'}
+                      {model.id === 'prv-v1-flash' && 'The original quick-response PRV engine for clear answers and everyday flow.'}
+                      {model.id === 'prv-v1-pro' && 'The legacy powerhouse for dense reasoning and complex tasks.'}
+                      {model.id === 'prv-v1.5-beta' && 'The dependable legacy baseline: efficient, balanced, and easy to reach for.'}
+                    </p>
                   </div>
-                  <p className="text-[14px] text-[#6B7280] dark:text-[#D1D5DB] mb-4 leading-relaxed">
-                    The ultimate balance between lightning-fast intelligence and pure speed in answers. Your shortcut to brilliance—blazing-fast responses without compromise.
-                  </p>
-                  <div className="mb-4">
-                    <p className="text-[12px] font-medium text-[#111827] dark:text-[#F3F4F6] mb-2 uppercase tracking-wide">Supported File Types</p>
-                    <div className="grid grid-cols-2 gap-3 text-[12px] text-[#6B7280] dark:text-[#9CA3AF]">
-                      <div>
-                        <span className="font-medium text-[#374151] dark:text-[#D1D5DB]">Documents:</span> PDF, TXT, CSV, JSON, HTML, Markdown
-                      </div>
-                      <div>
-                        <span className="font-medium text-[#374151] dark:text-[#D1D5DB]">Images:</span> PNG, JPEG, WebP, HEIC, GIF
-                      </div>
-                      <div>
-                        <span className="font-medium text-[#374151] dark:text-[#D1D5DB]">Audio:</span> MP3, WAV, AAC, FLAC, M4A, OPUS
-                      </div>
-                      <div>
-                        <span className="font-medium text-[#374151] dark:text-[#D1D5DB]">Video:</span> MP4, MOV, WEBM, AVI, MPEG, WMV, 3GPP (up to 1 hour)
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex gap-4 text-[13px] text-[#6B7280] dark:text-[#D1D5DB]">
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-medium text-[#111827] dark:text-[#F3F4F6]">1,048,576</span>
-                      <span>Input Tokens</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-medium text-[#111827] dark:text-[#F3F4F6]">65,536</span>
-                      <span>Output Tokens</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* PRV V1 Pro */}
-                <div className="border border-[#E5E7EB] dark:border-[#374151] rounded-xl p-6 hover:shadow-lg dark:hover:shadow-[0_10px_15px_rgba(0,0,0,0.3)] transition-shadow duration-200 bg-white dark:bg-[#1F2937]">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h3 className="text-[16px] font-semibold text-[#111827] dark:text-[#F3F4F6]">
-                        PRV V1 Pro Max
-                      </h3>
-                    </div>
-                  </div>
-                  <p className="text-[14px] text-[#6B7280] dark:text-[#D1D5DB] mb-4 leading-relaxed">
-                    The full dense powerhouse with maximum AI index from the PRV family. Unleash pure capability for complex tasks—the most formidable mind in the V1 arsenal.
-                  </p>
-                  <div className="mb-4">
-                    <p className="text-[12px] font-medium text-[#111827] dark:text-[#F3F4F6] mb-2 uppercase tracking-wide">Supported File Types</p>
-                    <div className="space-y-2 text-[12px] text-[#6B7280] dark:text-[#9CA3AF]">
-                      <div>
-                        <span className="font-medium text-[#374151] dark:text-[#D1D5DB]">Text:</span> Plain text arrays (string). For PDF, CSV, JSON files, extract text using Python libraries (PyPDF, pandas) and inject into prompt.
-                      </div>
-                      <div>
-                        <span className="font-medium text-[#374151] dark:text-[#D1D5DB]">Images:</span> Raw image pixel matrices. Processes natively via frameworks like Hugging Face transformers or vLLM.
-                      </div>
-                      <div>
-                        <span className="font-medium text-[#374151] dark:text-[#D1D5DB]">Audio / Video:</span> Not supported. Audio encoder weights were omitted to optimize text and vision reasoning depth.
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex gap-4 text-[13px] text-[#6B7280] dark:text-[#D1D5DB]">
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-medium text-[#111827] dark:text-[#F3F4F6]">262,144</span>
-                      <span>Input Tokens</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-medium text-[#111827] dark:text-[#F3F4F6]">8,192</span>
-                      <span>Output Tokens</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* PRV V1.5 beta */}
-                <div className="border border-[#E5E7EB] dark:border-[#374151] rounded-xl p-6 hover:shadow-lg dark:hover:shadow-[0_10px_15px_rgba(0,0,0,0.3)] transition-shadow duration-200 bg-white dark:bg-[#1F2937]">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h3 className="text-[16px] font-semibold text-[#111827] dark:text-[#F3F4F6]">
-                        PRV V1 Base
-                      </h3>
-                    </div>
-                  </div>
-                  <p className="text-[14px] text-[#6B7280] dark:text-[#D1D5DB] mb-4 leading-relaxed">
-                    The reliable PRV V1 Base model—balanced, efficient, and designed for general-purpose reasoning with strong performance across everyday tasks.
-                  </p>
-                  <div className="mb-4">
-                    <p className="text-[12px] font-medium text-[#111827] dark:text-[#F3F4F6] mb-2 uppercase tracking-wide">Supported File Types</p>
-                    <div className="space-y-2 text-[12px] text-[#6B7280] dark:text-[#9CA3AF]">
-                      <div>
-                        <span className="font-medium text-[#374151] dark:text-[#D1D5DB]">Text:</span> Plain text arrays (string). For PDF, CSV, JSON files, extract text using Python libraries (PyPDF, pandas) and inject into prompt.
-                      </div>
-                      <div>
-                        <span className="font-medium text-[#374151] dark:text-[#D1D5DB]">Images:</span> Raw image pixel matrices. Processes natively via frameworks like Hugging Face transformers or vLLM.
-                      </div>
-                      <div>
-                        <span className="font-medium text-[#374151] dark:text-[#D1D5DB]">Audio / Video:</span> Not supported. Audio encoder weights were omitted to optimize text and vision reasoning depth.
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex gap-4 text-[13px] text-[#6B7280] dark:text-[#D1D5DB]">
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-medium text-[#111827] dark:text-[#F3F4F6]">262,144</span>
-                      <span>Input Tokens</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-medium text-[#111827] dark:text-[#F3F4F6]">8,192</span>
-                      <span>Output Tokens</span>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           ) : activeTab === 'data' ? (

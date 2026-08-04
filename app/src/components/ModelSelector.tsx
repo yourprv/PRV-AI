@@ -31,6 +31,7 @@ function ModelGlyph({ accent }: { accent: ModelAccent }) {
 
 export function ModelSelector({ selected, onSelect, compact, disabled, onDisabledClick, guestMode = false }: ModelSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [legacyOpen, setLegacyOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const currentModel = AVAILABLE_MODELS.find((m) => m.id === selected) || AVAILABLE_MODELS[0];
   const groups = ['PRV models', 'Legacy models'] as const;
@@ -82,11 +83,11 @@ export function ModelSelector({ selected, onSelect, compact, disabled, onDisable
           )}
           <div className="p-2 sm:p-2.5">
             {groups.map((group) => <div key={group} className="mb-2 last:mb-0">
-              <div className="flex items-center gap-2 px-2 pb-1.5 pt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500"><span>{group}</span><span className="h-px flex-1 bg-slate-100 dark:bg-slate-800" /></div>
-              {AVAILABLE_MODELS.filter((model) => model.group === group).map((model) => <div key={model.id}>
+              {group === 'Legacy models' ? <button type="button" onClick={() => setLegacyOpen((open) => !open)} className="flex w-full items-center gap-2 rounded-xl px-2 pb-2 pt-2 text-left text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400 transition-colors hover:bg-slate-50 dark:text-slate-500 dark:hover:bg-slate-800/60"><span className={`transition-transform ${legacyOpen ? 'rotate-90' : ''}`}>›</span><span>{group}</span><span className="h-px flex-1 bg-slate-100 dark:bg-slate-800" /><span className="normal-case tracking-normal">{AVAILABLE_MODELS.filter((model) => model.group === group).length}</span></button> : <div className="flex items-center gap-2 px-2 pb-1.5 pt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500"><span>{group}</span><span className="h-px flex-1 bg-slate-100 dark:bg-slate-800" /></div>}
+              {(group !== 'Legacy models' || legacyOpen) && AVAILABLE_MODELS.filter((model) => model.group === group).map((model) => <div key={model.id}>
                 <button
                   onClick={() => {
-                    if (guestMode && model.id !== 'prv-v1-flash') {
+                    if (guestMode && model.id !== 'prv-v3.2-fire') {
                       setIsOpen(false);
                       return;
                     }
