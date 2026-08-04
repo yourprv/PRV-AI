@@ -268,8 +268,8 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
 
   // Bottom-fixed input for active chat
   return (
-    <div className="w-full max-w-[720px] mx-auto px-3 sm:px-0">
-      <div className="relative rounded-2xl sm:rounded-[32px] border border-[#E5E7EB] dark:border-[#374151] bg-white/95 dark:bg-[#111827]/95 shadow-[0_20px_70px_-35px_rgba(15,23,42,0.8)] transition-all duration-300 pb-12">
+    <div className="w-full max-w-[720px] mx-auto px-1 sm:px-0">
+      <div className="relative rounded-2xl sm:rounded-[32px] border border-[#E5E7EB] dark:border-[#374151] bg-white/95 dark:bg-[#111827]/95 shadow-[0_12px_35px_-24px_rgba(15,23,42,0.8)] sm:shadow-[0_20px_70px_-35px_rgba(15,23,42,0.8)] transition-all duration-300 pb-11 sm:pb-12">
         {/* Attachments display */}
         {(attachments.length > 0 || webSearchEnabled || isSearchingWeb) && (
           <div className="px-3 sm:px-4 pt-3 pb-2 space-y-2">
@@ -317,7 +317,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
           onKeyDown={handleKeyDown}
           placeholder="How can I help you today?"
           rows={1}
-          className="w-full min-h-12 sm:min-h-[58px] rounded-xl sm:rounded-[24px] border border-transparent bg-[#F8FAFC] dark:bg-[#111827] px-3 sm:px-4 py-2 sm:py-3.5 text-sm sm:text-[15px] text-[#111827] dark:text-[#E5E7EB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:border-[#6366F1] dark:focus:border-[#8B5CF6] focus:bg-white dark:focus:bg-[#111827] focus:outline-none resize-none leading-relaxed"
+          className="w-full min-h-11 sm:min-h-[58px] rounded-xl sm:rounded-[24px] border border-transparent bg-[#F8FAFC] dark:bg-[#111827] px-3 sm:px-4 py-2 sm:py-3.5 text-[15px] text-[#111827] dark:text-[#E5E7EB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:border-[#6366F1] dark:focus:border-[#8B5CF6] focus:bg-white dark:focus:bg-[#111827] focus:outline-none resize-none leading-relaxed"
           aria-label="Chat input"
         />
 

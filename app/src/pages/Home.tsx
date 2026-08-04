@@ -36,7 +36,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSearchingWeb, setIsSearchingWeb] = useState(false);
   const [requestController, setRequestController] = useState<AbortController | null>(null);
-  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [sidebarExpanded, setSidebarExpanded] = useState(() => window.innerWidth >= 1024);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showBenefitsModal, setShowBenefitsModal] = useState(false);
   const [isIncognitoMode, setIsIncognitoMode] = useState(false);
@@ -124,7 +124,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   const handleNewChat = useCallback(() => {
     setActiveChatId(null);
     navigate('/');
-    setSidebarExpanded(true);
+    setSidebarExpanded(window.innerWidth >= 1024);
   }, [navigate]);
 
   // Handle select chat
@@ -635,7 +635,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   // Load sidebar state
   useEffect(() => {
     const stored = localStorage.getItem('prv_sidebar');
-    if (stored !== null) {
+    if (stored !== null && window.innerWidth >= 1024) {
       setSidebarExpanded(JSON.parse(stored));
     }
   }, []);
@@ -704,6 +704,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
           onSend={handleSend}
           onRegenerate={handleRegenerate}
           sidebarExpanded={sidebarExpanded}
+          onToggleSidebar={toggleSidebar}
           onSettingsClick={handleSettingsClick}
           guestMode={!user}
           isIncognitoMode={isIncognitoMode}

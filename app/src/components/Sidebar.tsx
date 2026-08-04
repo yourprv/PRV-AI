@@ -46,6 +46,9 @@ export function Sidebar({
   const monthChats = chats.filter(
     (c) => Date.now() - c.updatedAt >= 604800000 && Date.now() - c.updatedAt < 2592000000
   );
+  const olderChats = chats.filter(
+    (c) => Date.now() - c.updatedAt >= 2592000000
+  );
 
   const renderChatGroup = (title: string, groupChats: Chat[]) => {
     if (groupChats.length === 0) return null;
@@ -224,7 +227,7 @@ export function Sidebar({
           onClick={() => setChatsExpanded(!chatsExpanded)}
           className="w-full flex items-center justify-between px-2 py-2 mb-1 text-[12px] font-medium text-[#9CA3AF] dark:text-[#6B7280] uppercase tracking-wide hover:text-[#6B7280] dark:hover:text-[#9CA3AF] transition-colors duration-200"
         >
-          <span>All chats</span>
+          <span>Chat history</span>
           <ChevronDown
             size={14}
             className={`transition-transform duration-200 ${chatsExpanded ? '' : '-rotate-90'}`}
@@ -236,7 +239,8 @@ export function Sidebar({
             {renderChatGroup('Today', yesterdayChats)}
             {renderChatGroup('Previous 7 days', weekChats)}
             {renderChatGroup('Previous 30 days', monthChats)}
-            {yesterdayChats.length === 0 && weekChats.length === 0 && monthChats.length === 0 && (
+            {renderChatGroup('Older', olderChats)}
+            {yesterdayChats.length === 0 && weekChats.length === 0 && monthChats.length === 0 && olderChats.length === 0 && (
               <div className="px-3 py-6 text-center">
                 <MessageSquare size={24} className="text-[#E5E7EB] dark:text-[#374151] mx-auto mb-2" />
                 <p className="text-[12px] text-[#9CA3AF] dark:text-[#6B7280]">No chats yet</p>

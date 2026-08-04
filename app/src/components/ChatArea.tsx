@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Settings, Sun, Moon, EyeOff, ArrowUpRight, Sparkles, Waves, Layers3 } from 'lucide-react';
+import { Settings, Sun, Moon, EyeOff, ArrowUpRight, Sparkles, Waves, Layers3, Menu } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import { MessageBubble } from './MessageBubble';
 import { TypingIndicator } from './TypingIndicator';
@@ -29,6 +29,7 @@ interface ChatAreaProps {
   onSend: (message: string, attachments?: File[]) => void;
   onRegenerate: (messageId: string) => void;
   sidebarExpanded: boolean;
+  onToggleSidebar: () => void;
   onSettingsClick: () => void;
 }
 
@@ -53,6 +54,7 @@ export function ChatArea({
   onModeChange,
   onSend,
   onRegenerate,
+  onToggleSidebar,
   onSettingsClick,
 }: ChatAreaProps) {
   const { isDark, toggleTheme } = useTheme();
@@ -72,10 +74,19 @@ export function ChatArea({
     messages[messages.length - 1].content.trim() === '';
 
   return (
-    <div className="flex-1 flex flex-col h-screen relative">
+    <div className="flex-1 flex min-h-0 min-w-0 flex-col h-[100dvh] relative">
       {/* Top bar */}
-      <header className="h-14 sm:h-16 flex items-center justify-between px-3 sm:px-5 border-b border-violet-100/80 dark:border-slate-800 bg-white/75 dark:bg-[#111426]/80 backdrop-blur-xl shrink-0 z-20 gap-2">
+      <header className="min-h-14 sm:h-16 flex items-center justify-between px-2.5 sm:px-5 py-1.5 sm:py-0 border-b border-violet-100/80 dark:border-slate-800 bg-white/90 dark:bg-[#111426]/90 backdrop-blur-xl shrink-0 z-20 gap-1.5">
         <div className="flex items-center flex-1 min-w-0">
+          <button
+            type="button"
+            onClick={onToggleSidebar}
+            className="mr-1.5 flex h-9 shrink-0 items-center gap-1 rounded-lg px-2 text-[#6B7280] transition-colors hover:bg-[#F5F5F7] hover:text-[#111827] dark:text-[#9CA3AF] dark:hover:bg-[#374151] dark:hover:text-[#F3F4F6] lg:hidden"
+            aria-label="Open chat history"
+          >
+            <Menu size={20} />
+            <span className="text-xs font-medium">Chats</span>
+          </button>
           <ModelSelector
             selected={currentModel}
             onSelect={onModelChange}
@@ -113,7 +124,7 @@ export function ChatArea({
 
       {/* Main content */}
       {isIncognitoMode ? (
-        <div className="bg-[#F5F3FF] px-3 py-2 text-[#5B21B6] dark:bg-[#2E1065]/30 dark:text-[#DDD6FE] sm:px-4">
+        <div className="bg-[#F5F3FF] px-3 py-1.5 text-[#5B21B6] dark:bg-[#2E1065]/30 dark:text-[#DDD6FE] sm:px-4 sm:py-2">
           <div className="mx-auto flex max-w-5xl items-center justify-center text-center text-xs sm:text-sm">
             <p>
               Private chats are anonymous. Your chats are permanently removed and are not saved once you leave this chat.
@@ -122,7 +133,7 @@ export function ChatArea({
         </div>
       ) : null}
       {guestMode ? (
-        <div className="bg-[#FEF3C7] dark:bg-[#92400E]/20 text-[#92400E] dark:text-[#FEF3C7] px-3 sm:px-4 py-2 sm:py-3">
+        <div className="bg-[#FEF3C7] dark:bg-[#92400E]/20 text-[#92400E] dark:text-[#FEF3C7] px-3 py-1.5 sm:px-4 sm:py-3">
           <div className="mx-auto flex max-w-5xl flex-col gap-2 sm:gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs sm:text-sm font-medium">
               You are in guest mode. You can use PRV V3.2 Fire now, and sign in later for more features.
@@ -139,7 +150,7 @@ export function ChatArea({
       ) : null}
       {isEmpty ? (
         // Empty state
-        <div className="relative flex-1 overflow-hidden flex flex-col items-center justify-center px-3 sm:px-4 bg-[#fbfbfe] dark:bg-[#0d1020]">
+        <div className="relative flex-1 min-h-0 overflow-y-auto flex flex-col items-center justify-center px-3 py-4 sm:px-4 sm:py-0 bg-[#fbfbfe] dark:bg-[#0d1020]">
           <div className="pointer-events-none absolute -top-32 left-1/2 h-80 w-[38rem] -translate-x-1/2 rounded-full bg-violet-300/25 blur-3xl dark:bg-violet-600/15" />
           <div className="pointer-events-none absolute bottom-[-12rem] right-[-8rem] h-96 w-96 rounded-full bg-sky-200/30 blur-3xl dark:bg-sky-600/10" />
           <div className="relative w-full max-w-5xl mx-auto flex flex-col items-center gap-5 sm:gap-7">
@@ -197,7 +208,7 @@ export function ChatArea({
           {/* Messages area */}
           <div
             ref={scrollContainerRef}
-            className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6 bg-white dark:bg-[#111827]"
+            className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 py-3 sm:px-4 sm:py-6 space-y-4 sm:space-y-6 bg-white dark:bg-[#111827]"
           >
             <div className="w-full max-w-5xl mx-auto space-y-4 sm:space-y-6">
               {messages.map((message, index) => (
@@ -219,7 +230,7 @@ export function ChatArea({
           </div>
 
           {/* Input at bottom */}
-          <div className="shrink-0 px-3 sm:px-4 py-2 sm:py-3 bg-white/80 dark:bg-[#1F2937]/80 backdrop-blur-sm border-t border-[#E5E7EB] dark:border-[#374151]">
+          <div className="shrink-0 px-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 sm:px-4 sm:py-3 bg-white/95 dark:bg-[#1F2937]/95 backdrop-blur-sm border-t border-[#E5E7EB] dark:border-[#374151]">
             <ChatInput
               onSend={onSend}
               guestMode={guestMode}

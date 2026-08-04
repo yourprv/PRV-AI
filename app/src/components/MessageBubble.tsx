@@ -49,9 +49,9 @@ export function MessageBubble({ message, onRegenerate, isLatest, isLoading }: Me
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
     >
-      <div className={`flex gap-2 sm:gap-3 max-w-[100%] sm:max-w-[92%] md:max-w-[80ch] min-w-0 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+      <div className={`flex gap-1.5 sm:gap-3 max-w-[calc(100vw-2.5rem)] sm:max-w-[92%] md:max-w-[80ch] min-w-0 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
         {/* Avatar */}
-<div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full shrink-0 overflow-hidden">
+<div className="w-5 h-5 sm:w-7 sm:h-7 rounded-full shrink-0 overflow-hidden">
             {isUser ? (
               <User size={14} className="text-white" />
             ) : (
@@ -144,7 +144,7 @@ export function MessageBubble({ message, onRegenerate, isLatest, isLoading }: Me
             {!isUser && (
               <div
                 className={`flex items-center gap-0.5 transition-opacity duration-200 ${
-                  showActions ? 'opacity-100' : 'opacity-0'
+                  showActions ? 'opacity-100' : 'opacity-100 sm:opacity-0'
                 }`}
               >
                 <button
