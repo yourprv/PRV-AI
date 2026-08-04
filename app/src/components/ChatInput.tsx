@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { ArrowUp, Plus, Mic, X, UploadCloud, Globe } from 'lucide-react';
+import { ArrowUp, Plus, Sparkles, X, UploadCloud, Globe } from 'lucide-react';
 import { toast } from 'sonner';
 import { ModeSelector } from './ModeSelector';
 import type { ModeType } from '@/types/chat';
@@ -15,13 +15,15 @@ interface ChatInputProps {
   isSearchingWeb: boolean;
   onToggleWebSearch: () => void;
   onCancel: () => void;
+  onEnhancePrompt?: (prompt: string) => Promise<string>;
   isEmptyState?: boolean;
 }
 
-export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, isLoading, mode, onModeChange, webSearchEnabled, isSearchingWeb, onToggleWebSearch, onCancel, isEmptyState }: ChatInputProps) {
+export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, isLoading, mode, onModeChange, webSearchEnabled, isSearchingWeb, onToggleWebSearch, onCancel, onEnhancePrompt, isEmptyState }: ChatInputProps) {
   const [text, setText] = useState('');
   const [attachments, setAttachments] = useState<File[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isEnhancing, setIsEnhancing] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const menuRootRef = useRef<HTMLDivElement>(null);
@@ -82,6 +84,18 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
       textareaRef.current.style.height = 'auto';
     }
   }, [text, isLoading, onSend, attachments]);
+
+  const handleEnhance = useCallback(async () => {
+    if (!onEnhancePrompt || !text.trim() || isLoading || isEnhancing) return;
+    setIsEnhancing(true);
+    try {
+      setText(await onEnhancePrompt(text.trim()));
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Unable to enhance this prompt.');
+    } finally {
+      setIsEnhancing(false);
+    }
+  }, [isEnhancing, isLoading, onEnhancePrompt, text]);
 
   const toggleMenu = useCallback(() => {
     if (isLoading) return;
@@ -235,11 +249,15 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
             <div className="flex items-center gap-0.5 sm:gap-1">
               <ModeSelector selected={mode} onSelect={onModeChange} />
               <button
-                className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full text-[#9CA3AF] dark:text-[#6B7280] hover:text-[#6B7280] dark:hover:text-[#9CA3AF] hover:bg-[#F0F0F2] dark:hover:bg-[#374151] transition-all duration-200 active:scale-95"
-                aria-label="Voice input"
-                title="Voice input"
+                type="button"
+                onClick={handleEnhance}
+                disabled={!text.trim() || isLoading || isEnhancing}
+                className="flex h-8 items-center gap-1 rounded-full px-2 text-[#9CA3AF] transition-all duration-200 hover:bg-[#F0F0F2] hover:text-violet-600 disabled:opacity-40 dark:text-[#6B7280] dark:hover:bg-[#374151] dark:hover:text-violet-300"
+                aria-label="Enhance prompt"
+                title="Enhance prompt"
               >
-                <Mic size={16} />
+                <Sparkles size={15} />
+                <span className="hidden sm:inline text-[11px] font-medium">Enhance</span>
               </button>
               <button
                 onClick={handleSend}
@@ -377,11 +395,15 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
           <div className="flex items-center gap-1">
             <ModeSelector selected={mode} onSelect={onModeChange} />
             <button
-              className="w-8 h-8 flex items-center justify-center rounded-full text-[#9CA3AF] dark:text-[#6B7280] hover:text-[#6B7280] dark:hover:text-[#9CA3AF] hover:bg-[#F0F0F2] dark:hover:bg-[#374151] transition-all duration-200"
-              aria-label="Voice input"
-              title="Voice input"
+              type="button"
+              onClick={handleEnhance}
+              disabled={!text.trim() || isLoading || isEnhancing}
+              className="flex h-8 items-center gap-1 rounded-full px-2 text-[#9CA3AF] transition-all duration-200 hover:bg-[#F0F0F2] hover:text-violet-600 disabled:opacity-40 dark:text-[#6B7280] dark:hover:bg-[#374151] dark:hover:text-violet-300"
+              aria-label="Enhance prompt"
+              title="Enhance prompt"
             >
-              <Mic size={16} />
+              <Sparkles size={15} />
+              <span className="hidden sm:inline text-[11px] font-medium">Enhance</span>
             </button>
             {isLoading ? (
               <button

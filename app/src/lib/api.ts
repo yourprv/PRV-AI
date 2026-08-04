@@ -194,7 +194,7 @@ export async function signOutBackend(): Promise<void> {
   });
 }
 
-import type { Chat } from '@/types/chat';
+import type { Chat, CustomPRV } from '@/types/chat';
 
 function authenticatedHeaders(): HeadersInit {
   const token = getStoredAuthToken();
@@ -216,6 +216,7 @@ export async function saveChat(chat: Chat): Promise<Chat> {
       title: chat.title,
       model: chat.model,
       messages: chat.messages,
+      customPrv: chat.customPrv,
     }),
   });
 }
@@ -234,4 +235,26 @@ export async function enhanceCustomPrompt(prompt: string, turnstileToken?: strin
     body: JSON.stringify({ prompt, turnstileToken }),
   });
   return data.prompt;
+}
+
+export async function enhancePrompt(prompt: string, kind: 'chat' | 'custom', turnstileToken?: string): Promise<string> {
+  const data = await apiRequest<{ prompt: string }>('/api/custom-prv/enhance', {
+    method: 'POST',
+    headers: turnstileToken ? { 'X-Turnstile-Token': turnstileToken } : {},
+    body: JSON.stringify({ prompt, kind, turnstileToken }),
+  });
+  return data.prompt;
+}
+
+export async function listPublicCustomPRVs(): Promise<CustomPRV[]> {
+  const data = await apiRequest<{ customPrvs: CustomPRV[] }>('/api/custom-prvs');
+  return data.customPrvs;
+}
+
+export async function createCustomPRV(customPrv: CustomPRV): Promise<CustomPRV> {
+  return apiRequest<CustomPRV>('/api/custom-prvs', {
+    method: 'POST',
+    headers: authenticatedHeaders(),
+    body: JSON.stringify(customPrv),
+  });
 }

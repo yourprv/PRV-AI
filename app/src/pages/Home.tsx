@@ -13,7 +13,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import type { Chat, CustomPRV, Message, ModelId, ModeType } from '@/types/chat';
-import { listChats, removeChat, saveChat } from '@/lib/api';
+import { enhancePrompt, listChats, removeChat, saveChat } from '@/lib/api';
 
 // Generate unique IDs
 function generateId(): string {
@@ -71,6 +71,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   useEffect(() => {
     if (activeChat) {
       setCurrentModel(activeChat.model);
+      setCustomPrv(activeChat.customPrv ?? null);
     }
   }, [activeChat]);
 
@@ -155,6 +156,10 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
     navigate('/');
     setSidebarExpanded(false);
   }, [navigate]);
+
+  const handleEnhanceChatPrompt = useCallback((prompt: string) => {
+    return enhancePrompt(prompt, 'chat', turnstileToken);
+  }, [turnstileToken]);
 
   const handleToggleIncognitoMode = useCallback(() => {
     setIsIncognitoMode((prev) => {
@@ -279,6 +284,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
           createdAt: Date.now(),
           updatedAt: Date.now(),
           model: currentModel,
+          customPrv: customPrv ?? undefined,
         };
         setChats((prev) => [newChat, ...prev]);
         chatId = newChat.id;
@@ -723,6 +729,8 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
           onRegenerate={handleRegenerate}
           sidebarExpanded={sidebarExpanded}
           onToggleSidebar={toggleSidebar}
+          customPrv={customPrv}
+          onEnhancePrompt={handleEnhanceChatPrompt}
           onSettingsClick={handleSettingsClick}
           guestMode={!user}
           isIncognitoMode={isIncognitoMode}

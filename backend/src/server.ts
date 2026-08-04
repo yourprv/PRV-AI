@@ -113,6 +113,17 @@ function formatStoredChat(row: Record<string, any>) {
     createdAt: typeof row.created_at === 'number' ? row.created_at : Date.parse(row.created_at),
     updatedAt: typeof row.updated_at === 'number' ? row.updated_at : Date.parse(row.updated_at),
     model: row.model,
+    customPrv: row.custom_prv || undefined,
+  };
+}
+
+function formatCustomPrv(row: Record<string, any>) {
+  return {
+    id: row.id,
+    name: row.name,
+    description: row.description,
+    instructions: row.instructions,
+    model: row.model,
   };
 }
 
@@ -442,7 +453,7 @@ app.get('/api/chats', async (req: Request, res: ExpressResponse) => {
 
   const { data, error } = await supabaseAdmin
     .from('chats')
-    .select('id, title, model, messages, created_at, updated_at')
+    .select('id, title, model, messages, custom_prv, created_at, updated_at')
     .eq('user_id', user.id)
     .order('updated_at', { ascending: false });
 
@@ -473,7 +484,16 @@ app.put('/api/chats/:chatId', async (req: Request, res: ExpressResponse) => {
     return;
   }
 
-  const payload = { id: chatId, user_id: user.id, title, model, messages };
+  const customPrv = req.body?.customPrv && typeof req.body.customPrv === 'object'
+    ? {
+        id: String(req.body.customPrv.id || '').slice(0, 120),
+        name: String(req.body.customPrv.name || '').slice(0, 120),
+        description: String(req.body.customPrv.description || '').slice(0, 300),
+        instructions: String(req.body.customPrv.instructions || '').slice(0, 12000),
+        model: req.body.customPrv.model === 'prv-v1-flash' ? 'prv-v1-flash' : 'prv-v3.2-fire',
+      }
+    : null;
+  const payload = { id: chatId, user_id: user.id, title, model, messages, custom_prv: customPrv };
   if (JSON.stringify(payload).length > 1_500_000) {
     res.status(413).json({ error: 'This chat is too large to save.' });
     return;
@@ -482,7 +502,7 @@ app.put('/api/chats/:chatId', async (req: Request, res: ExpressResponse) => {
   const { data, error } = await supabaseAdmin
     .from('chats')
     .upsert(payload, { onConflict: 'id' })
-    .select('id, title, model, messages, created_at, updated_at')
+    .select('id, title, model, messages, custom_prv, created_at, updated_at')
     .single();
 
   if (error) {
@@ -512,8 +532,47 @@ app.delete('/api/chats/:chatId', async (req: Request, res: ExpressResponse) => {
   res.status(204).end();
 });
 
+app.get('/api/custom-prvs', async (_req: Request, res: ExpressResponse) => {
+  if (!supabaseAdmin) {
+    res.json({ customPrvs: [] });
+    return;
+  }
+  const { data, error } = await supabaseAdmin
+    .from('custom_prvs')
+    .select('id, name, description, instructions, model')
+    .eq('is_public', true)
+    .order('created_at', { ascending: false });
+  if (error) {
+    console.error('Failed to load public Custom PRVs:', error);
+    res.status(500).json({ error: 'Unable to load public Custom PRVs.' });
+    return;
+  }
+  res.json({ customPrvs: (data || []).map((row) => formatCustomPrv(row)) });
+});
+
+app.post('/api/custom-prvs', async (req: Request, res: ExpressResponse) => {
+  const user = await getAuthenticatedUser(req, res);
+  if (!user || !supabaseAdmin) return;
+  const name = typeof req.body?.name === 'string' ? req.body.name.trim().slice(0, 80) : '';
+  const description = typeof req.body?.description === 'string' ? req.body.description.trim().slice(0, 300) : '';
+  const instructions = typeof req.body?.instructions === 'string' ? req.body.instructions.trim().slice(0, 12000) : '';
+  if (!name || !instructions) {
+    res.status(400).json({ error: 'A name and instruction are required.' });
+    return;
+  }
+  const model = req.body?.model === 'prv-v1-flash' ? 'prv-v1-flash' : 'prv-v3.2-fire';
+  const payload = { id: `cprv${randomUUID().replace(/-/g, '')}`, creator_id: user.id, name, description, instructions, model, is_public: true };
+  const { data, error } = await supabaseAdmin.from('custom_prvs').insert(payload).select('id, name, description, instructions, model').single();
+  if (error) {
+    console.error('Failed to create Custom PRV:', error);
+    res.status(500).json({ error: 'Unable to publish this Custom PRV.' });
+    return;
+  }
+  res.status(201).json(formatCustomPrv(data));
+});
+
 app.post('/api/custom-prv/enhance', async (req: Request, res: ExpressResponse) => {
-  const { prompt, turnstileToken } = req.body as { prompt?: string; turnstileToken?: string };
+  const { prompt, kind, turnstileToken } = req.body as { prompt?: string; kind?: 'chat' | 'custom'; turnstileToken?: string };
   if (!prompt?.trim()) {
     res.status(400).json({ error: 'A custom PRV description is required.' });
     return;
@@ -534,7 +593,9 @@ app.post('/api/custom-prv/enhance', async (req: Request, res: ExpressResponse) =
           contents: [{
             role: 'user',
             parts: [{
-              text: `Rewrite the following rough description into a precise system instruction for a specialized AI assistant. Return only the rewritten instruction, with no preface, no quotation marks, and no labels such as "Enhanced prompt". Preserve the user's intent, define the assistant's role, workflow, quality bar, and output style.\n\nRough description:\n${prompt.trim()}`,
+              text: kind === 'chat'
+                ? `Improve the following user prompt so an AI can answer it more accurately. Return only the improved prompt, with no preface, no quotation marks, and no labels such as "Enhanced prompt". Preserve the user's intent, add useful missing context or structure, and do not answer the prompt.\n\nRaw prompt:\n${prompt.trim()}`
+                : `Rewrite the following rough description into a precise system instruction for a specialized AI assistant. Return only the rewritten instruction, with no preface, no quotation marks, and no labels such as "Enhanced prompt". Preserve the user's intent, define the assistant's role, workflow, quality bar, and output style.\n\nRough description:\n${prompt.trim()}`,
             }],
           }],
           generationConfig: { temperature: 0.35, maxOutputTokens: 900 },

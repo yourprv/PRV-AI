@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Bot, BookOpen, Code2, Calculator, FileText, Lightbulb, Network, Plus, Sparkles, X } from 'lucide-react';
 import { toast } from 'sonner';
-import { enhanceCustomPrompt } from '@/lib/api';
+import { createCustomPRV, enhancePrompt, listPublicCustomPRVs } from '@/lib/api';
 import type { CustomPRV } from '@/types/chat';
 
 interface CustomPRVModalProps {
@@ -27,6 +27,12 @@ export function CustomPRVModal({ isOpen, onClose, onSelect, turnstileToken }: Cu
   const [description, setDescription] = useState('');
   const [enhancing, setEnhancing] = useState(false);
   const [selectedModel, setSelectedModel] = useState<CustomPRV['model']>('prv-v3.2-fire');
+  const [publicPrvs, setPublicPrvs] = useState<CustomPRV[]>([]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    listPublicCustomPRVs().then(setPublicPrvs).catch(() => undefined);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -45,7 +51,7 @@ export function CustomPRVModal({ isOpen, onClose, onSelect, turnstileToken }: Cu
     if (!description.trim()) return;
     setEnhancing(true);
     try {
-      setDescription(await enhanceCustomPrompt(description, turnstileToken));
+      setDescription(await enhancePrompt(description, 'custom', turnstileToken));
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Unable to enhance this prompt.');
     } finally {
@@ -53,12 +59,24 @@ export function CustomPRVModal({ isOpen, onClose, onSelect, turnstileToken }: Cu
     }
   };
 
-  const create = () => {
+  const create = async () => {
     if (!name.trim() || !description.trim()) {
       toast.error('Add a name and describe the assistant you want to create.');
       return;
     }
-    choose(name.trim(), description.trim().slice(0, 140), description.trim());
+    try {
+      const published = await createCustomPRV({
+        id: `cprv-${Date.now()}`,
+        name: name.trim(),
+        description: description.trim().slice(0, 140),
+        instructions: description.trim(),
+        model: selectedModel,
+      });
+      setPublicPrvs((previous) => [published, ...previous]);
+      choose(published.name, published.description, published.instructions);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Sign in to publish a Custom PRV.');
+    }
   };
 
   return (
@@ -80,6 +98,7 @@ export function CustomPRVModal({ isOpen, onClose, onSelect, turnstileToken }: Cu
               <div className="grid gap-3 sm:grid-cols-2">
                 {presets.map((preset) => { const Icon = preset.icon; return <button key={preset.id} type="button" onClick={() => choose(preset.name, preset.description, preset.instructions)} className="group rounded-2xl border border-slate-200 bg-slate-50 p-4 text-left transition hover:-translate-y-0.5 hover:border-violet-300 hover:bg-violet-50 dark:border-slate-700 dark:bg-slate-800/60 dark:hover:border-violet-500 dark:hover:bg-violet-950/30"><span className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-white text-violet-600 shadow-sm dark:bg-slate-900 dark:text-violet-300"><Icon size={18} /></span><span className="block text-sm font-semibold text-slate-900 dark:text-white">{preset.name}</span><span className="mt-1 block text-xs leading-5 text-slate-500 dark:text-slate-400">{preset.description}</span></button>; })}
               </div>
+              {publicPrvs.length > 0 ? <div className="mt-7"><p className="mb-3 text-sm font-medium text-slate-700 dark:text-slate-200">Community specialists</p><div className="grid gap-3 sm:grid-cols-2">{publicPrvs.map((customPrv) => <button key={customPrv.id} type="button" onClick={() => { onSelect(customPrv); onClose(); }} className="rounded-2xl border border-sky-200 bg-sky-50/60 p-4 text-left transition hover:border-sky-400 dark:border-sky-900 dark:bg-sky-950/20"><span className="mb-2 flex h-8 w-8 items-center justify-center rounded-xl bg-white text-sky-600 dark:bg-slate-900 dark:text-sky-300"><Bot size={16} /></span><span className="block text-sm font-semibold text-slate-900 dark:text-white">{customPrv.name}</span><span className="mt-1 block text-xs leading-5 text-slate-500 dark:text-slate-400">{customPrv.description}</span></button>)}</div></div> : null}
             </>
           ) : (
             <div className="mx-auto max-w-2xl space-y-5">

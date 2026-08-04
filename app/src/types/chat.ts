@@ -23,6 +23,7 @@ export interface Chat {
   createdAt: number;
   updatedAt: number;
   model: ModelId;
+  customPrv?: CustomPRV;
 }
 
 export interface User {

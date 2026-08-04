@@ -5,7 +5,7 @@ import { MessageBubble } from './MessageBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { ChatInput } from './ChatInput';
 import { ModelSelector } from './ModelSelector';
-import type { Message, ModelId, ModeType, User } from '@/types/chat';
+import type { CustomPRV, Message, ModelId, ModeType, User } from '@/types/chat';
 
 interface ChatAreaProps {
   user?: User | null;
@@ -24,10 +24,12 @@ interface ChatAreaProps {
   webSearchEnabled: boolean;
   onToggleWebSearch: () => void;
   onCancel: () => void;
+  onEnhancePrompt: (prompt: string) => Promise<string>;
   mode: ModeType;
   onModeChange: (mode: ModeType) => void;
   onSend: (message: string, attachments?: File[]) => void;
   onRegenerate: (messageId: string) => void;
+  customPrv?: CustomPRV | null;
   sidebarExpanded: boolean;
   onToggleSidebar: () => void;
   onSettingsClick: () => void;
@@ -50,10 +52,12 @@ export function ChatArea({
   onToggleWebSearch,
   isSearchingWeb,
   onCancel,
+  onEnhancePrompt,
   mode,
   onModeChange,
   onSend,
   onRegenerate,
+  customPrv,
   onToggleSidebar,
   onSettingsClick,
 }: ChatAreaProps) {
@@ -121,6 +125,10 @@ export function ChatArea({
           </button>
         </div>
       </header>
+
+      {customPrv ? <div className="border-b border-violet-200/70 bg-gradient-to-r from-violet-50 to-sky-50 px-3 py-2 dark:border-violet-400/20 dark:from-violet-950/40 dark:to-slate-900">
+        <div className="mx-auto flex max-w-5xl items-center gap-2 text-xs text-violet-800 dark:text-violet-200"><span className="flex h-6 w-6 items-center justify-center rounded-lg bg-violet-600 text-white">✦</span><span><strong>{customPrv.name}</strong><span className="ml-1.5 text-violet-600/80 dark:text-violet-300/70">public Custom PRV</span></span></div>
+      </div> : null}
 
       {/* Main content */}
       {isIncognitoMode ? (
@@ -198,6 +206,7 @@ export function ChatArea({
               isSearchingWeb={isSearchingWeb}
               onToggleWebSearch={onToggleWebSearch}
               onCancel={onCancel}
+              onEnhancePrompt={onEnhancePrompt}
               isEmptyState
             />
           </div>
@@ -242,6 +251,7 @@ export function ChatArea({
               isSearchingWeb={isSearchingWeb}
               onToggleWebSearch={onToggleWebSearch}
               onCancel={onCancel}
+              onEnhancePrompt={onEnhancePrompt}
             />
           </div>
         </>

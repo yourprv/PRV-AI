@@ -6,9 +6,12 @@ create table if not exists public.chats (
   title text not null,
   model text not null,
   messages jsonb not null default '[]'::jsonb,
+  custom_prv jsonb,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.chats add column if not exists custom_prv jsonb;
 
 create index if not exists chats_user_updated_idx
   on public.chats (user_id, updated_at desc);
@@ -45,3 +48,27 @@ create policy "Users can update their own chats"
 drop policy if exists "Users can delete their own chats" on public.chats;
 create policy "Users can delete their own chats"
   on public.chats for delete using (auth.uid() = user_id);
+
+create table if not exists public.custom_prvs (
+  id text primary key,
+  creator_id uuid not null references auth.users(id) on delete cascade,
+  name text not null,
+  description text not null default '',
+  instructions text not null,
+  model text not null check (model in ('prv-v3.2-fire', 'prv-v1-flash')),
+  is_public boolean not null default true,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists custom_prvs_public_created_idx
+  on public.custom_prvs (is_public, created_at desc);
+
+alter table public.custom_prvs enable row level security;
+
+drop policy if exists "Anyone can read public Custom PRVs" on public.custom_prvs;
+create policy "Anyone can read public Custom PRVs"
+  on public.custom_prvs for select using (is_public = true or auth.uid() = creator_id);
+
+drop policy if exists "Signed in users can publish Custom PRVs" on public.custom_prvs;
+create policy "Signed in users can publish Custom PRVs"
+  on public.custom_prvs for insert with check (auth.uid() = creator_id);
