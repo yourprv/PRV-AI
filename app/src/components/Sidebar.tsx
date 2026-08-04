@@ -22,6 +22,7 @@ interface SidebarProps {
   onSearchOpen: () => void;
   onRenameChat: (chatId: string) => void;
   onDeleteChat: (chatId: string) => void;
+  onCustomPRV: () => void;
 }
 
 export function Sidebar({
@@ -34,6 +35,7 @@ export function Sidebar({
   onSearchOpen,
   onRenameChat,
   onDeleteChat,
+  onCustomPRV,
 }: SidebarProps) {
   const [chatsExpanded, setChatsExpanded] = useState(true);
 
@@ -205,16 +207,13 @@ export function Sidebar({
         </button>
         <div className="relative">
           <button
-            disabled
-            className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-[14px] text-[#D1D5DB] dark:text-[#6B7280] bg-[#F5F5F7] dark:bg-[#374151]/50 cursor-not-allowed transition-colors duration-200"
-            title="Coming Soon"
+            onClick={onCustomPRV}
+            className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-[14px] text-[#374151] dark:text-[#D1D5DB] hover:bg-[#F5F5F7] dark:hover:bg-[#374151] transition-colors duration-200"
+            title="Open Custom PRV"
           >
             <span className="text-[16px]">⚙️</span>
-            Custom PRVs
+            Custom PRV
           </button>
-          <div className="absolute -top-2 -right-2 bg-[#FF6B6B] text-white text-[8px] font-bold px-2 py-1 rounded-full whitespace-nowrap">
-            Coming Soon
-          </div>
         </div>
       </div>
 

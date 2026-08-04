@@ -226,3 +226,12 @@ export async function removeChat(chatId: string): Promise<void> {
     headers: authenticatedHeaders(),
   });
 }
+
+export async function enhanceCustomPrompt(prompt: string, turnstileToken?: string): Promise<string> {
+  const data = await apiRequest<{ prompt: string }>('/api/custom-prv/enhance', {
+    method: 'POST',
+    headers: turnstileToken ? { 'X-Turnstile-Token': turnstileToken } : {},
+    body: JSON.stringify({ prompt, turnstileToken }),
+  });
+  return data.prompt;
+}

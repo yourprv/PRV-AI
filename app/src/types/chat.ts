@@ -40,6 +40,14 @@ export type ModelId =
   | 'prv-v3.5-earth'
   | 'prv-v4-light';
 
+export interface CustomPRV {
+  id: string;
+  name: string;
+  description: string;
+  instructions: string;
+  model: 'prv-v3.2-fire' | 'prv-v1-flash';
+}
+
 export interface ModelOption {
   id: ModelId;
   name: string;

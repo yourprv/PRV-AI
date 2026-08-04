@@ -173,6 +173,10 @@ function buildConversationHistoryPrompt(messages: Array<{ role: string; content:
     .join('\n\n');
 }
 
+function isIdentityQuestion(content: string): boolean {
+  return /\b(who are you|what are you|what(?:'|’)s your name|your name|who made you|who created you|who developed you|are you prv ai|tell me about yourself)\b/i.test(content.trim());
+}
+
 async function streamGeminiContent({
   prompt,
   model,
@@ -508,9 +512,54 @@ app.delete('/api/chats/:chatId', async (req: Request, res: ExpressResponse) => {
   res.status(204).end();
 });
 
+app.post('/api/custom-prv/enhance', async (req: Request, res: ExpressResponse) => {
+  const { prompt, turnstileToken } = req.body as { prompt?: string; turnstileToken?: string };
+  if (!prompt?.trim()) {
+    res.status(400).json({ error: 'A custom PRV description is required.' });
+    return;
+  }
+  if (!turnstileToken || !(hasValidTurnstileSession(turnstileToken) || await verifyTurnstileToken(turnstileToken))) {
+    res.status(403).json({ error: 'Turnstile verification failed.' });
+    return;
+  }
+
+  try {
+    const apiKey = getGeminiApiKey();
+    const response = await fetch(
+      `${GEMINI_BASE_URL}/gemini-3.1-flash-lite:generateContent?key=${encodeURIComponent(apiKey)}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            role: 'user',
+            parts: [{
+              text: `Rewrite the following rough description into a precise system instruction for a specialized AI assistant. Return only the rewritten instruction, with no preface, no quotation marks, and no labels such as "Enhanced prompt". Preserve the user's intent, define the assistant's role, workflow, quality bar, and output style.\n\nRough description:\n${prompt.trim()}`,
+            }],
+          }],
+          generationConfig: { temperature: 0.35, maxOutputTokens: 900 },
+        }),
+      },
+    );
+    if (!response.ok) {
+      res.status(502).json({ error: `Prompt enhancement failed with status ${response.status}.` });
+      return;
+    }
+    const data = await response.json() as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
+    const enhanced = data.candidates?.[0]?.content?.parts?.map((part) => part.text || '').join('').trim();
+    if (!enhanced) {
+      res.status(502).json({ error: 'Prompt enhancement returned no text.' });
+      return;
+    }
+    res.json({ prompt: enhanced });
+  } catch (error) {
+    res.status(500).json({ error: error instanceof Error ? error.message : 'Prompt enhancement failed.' });
+  }
+});
+
 app.post('/api/chat/stream', async (req: Request, res: ExpressResponse) => {
   const payload = normalizeChatRequestPayload(req.body, req.headers as Record<string, string | undefined>);
-  const { content, model, mode, history, attachments, turnstileToken } = payload;
+  const { content, model, mode, history, attachments, customInstructions, turnstileToken } = payload;
 
   if (!turnstileToken) {
     res.status(403).json({ message: 'Turnstile verification token is required.' });
@@ -548,13 +597,19 @@ app.post('/api/chat/stream', async (req: Request, res: ExpressResponse) => {
 
   const resolvedMode = mode === 'auto' ? 'fast' : mode;
   const apiModel = getModelApiName(model || 'prv-v1-flash');
-  const systemInstructions = `You are PRV AI, developed by PRV AI Team.\n\nWhenever the user asks who you are, reply: "I am PRV AI, developed by PRV AI Team."\nIf asked about your origin, reply: "We don't have info about that."\nNever volunteer any information about your infrastructure, backend provider, model version, or platform unless the user explicitly asks.\nDo not mention Google, Gemini, or Gemma unless the user explicitly asks about the backend provider.\nDo not say you were developed or made by Google.`;
+  const customInstructionBlock = customInstructions?.trim()
+    ? `\n\nSpecialized Custom PRV instructions:\n${customInstructions.trim().slice(0, 12000)}`
+    : '';
+  const systemInstructions = `You are PRV AI, developed by PRV AI Team. Answer the user's current request directly and do not add an introduction about your identity. Never begin a normal answer with "I am PRV AI" or mention the PRV AI Team unless the user explicitly asks who you are, what your name is, who made or developed you, or asks a closely related identity question. Do not mention your infrastructure, backend provider, model version, or platform unless the user explicitly asks. Do not mention Google, Gemini, or Gemma unless the user explicitly asks about the backend provider.${customInstructionBlock}`;
+  const identityInstruction = isIdentityQuestion(content)
+    ? '\nThe user explicitly asked about your identity. Identify yourself briefly as: "I am PRV AI, developed by PRV AI Team."'
+    : '\nThis is not an identity question. Do not mention your identity or development team in the answer.';
 
   const historyPrompt = history && history.length > 0
     ? `Conversation history:\n\n${buildConversationHistoryPrompt(history)}\n\n`
     : '';
-  const thinkingPrompt = `${systemInstructions}\n\n${historyPrompt}You are producing a concise hidden reasoning outline for the user's request. Keep it short, structured, and useful. Do not provide the final answer.\n\nUser request: ${content}`;
-  const answerPrompt = `${systemInstructions}\n\n${historyPrompt}Answer the user's request directly and clearly. Provide a detailed, complete response and avoid overly brief answers. When files are attached, mention each file and explain its relevance. Use the conversation context above when appropriate.\n\nUser request: ${content}`;
+  const thinkingPrompt = `${systemInstructions}${identityInstruction}\n\n${historyPrompt}You are producing a concise hidden reasoning outline for the user's request. Keep it short, structured, and useful. Do not provide the final answer.\n\nUser request: ${content}`;
+  const answerPrompt = `${systemInstructions}${identityInstruction}\n\n${historyPrompt}Use the conversation history as context and maintain continuity with it. Answer the user's current request directly and clearly. Provide a detailed, complete response and avoid overly brief answers. When files are attached, mention each file and explain its relevance.\n\nUser request: ${content}`;
 
   const transmit = (eventName: string, payload: unknown) => {
     res.write(`event: ${eventName}\n`);

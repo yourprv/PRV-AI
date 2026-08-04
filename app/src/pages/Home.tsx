@@ -6,12 +6,13 @@ import { ChatArea } from '@/components/ChatArea';
 import { SearchOverlay } from '@/components/SearchOverlay';
 import { AuthModal } from '@/components/AuthModal';
 import { GuestBenefitsModal } from '@/components/GuestBenefitsModal';
+import { CustomPRVModal } from '@/components/CustomPRVModal';
 import { streamGeminiReply } from '@/lib/gemini';
 import { fetchTavilySearch } from '@/lib/tavily';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import type { Chat, Message, ModelId, ModeType } from '@/types/chat';
+import type { Chat, CustomPRV, Message, ModelId, ModeType } from '@/types/chat';
 import { listChats, removeChat, saveChat } from '@/lib/api';
 
 // Generate unique IDs
@@ -46,6 +47,8 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   const [renameChatId, setRenameChatId] = useState<string | null>(null);
   const [renameTitle, setRenameTitle] = useState('');
   const [deleteChatId, setDeleteChatId] = useState<string | null>(null);
+  const [showCustomPRV, setShowCustomPRV] = useState(false);
+  const [customPrv, setCustomPrv] = useState<CustomPRV | null>(null);
   const chatHydratedRef = useRef(false);
 
   // Get active chat
@@ -143,6 +146,14 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   // Handle settings click
   const handleSettingsClick = useCallback(() => {
     navigate('/settings');
+  }, [navigate]);
+
+  const handleSelectCustomPRV = useCallback((nextCustomPrv: CustomPRV) => {
+    setCustomPrv(nextCustomPrv);
+    setCurrentModel(nextCustomPrv.model);
+    setActiveChatId(null);
+    navigate('/');
+    setSidebarExpanded(false);
   }, [navigate]);
 
   const handleToggleIncognitoMode = useCallback(() => {
@@ -255,6 +266,9 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
     async (content: string, attachmentFiles?: File[]) => {
       // Create or update chat
       let chatId = activeChatId;
+      const conversationHistory = activeChatId
+        ? (chats.find((chat) => chat.id === activeChatId)?.messages ?? [])
+        : [];
 
       if (!chatId) {
         // Create new chat when the first message is sent
@@ -395,8 +409,9 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
           content: promptContent,
           model: currentModel,
           mode,
-          history: activeChat?.messages ?? [],
+          history: conversationHistory,
           attachments,
+          customInstructions: customPrv?.instructions,
           turnstileToken,
           signal: controller.signal,
           onChunk: ({ text, thinking, phase }) => {
@@ -489,7 +504,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
 
       setIsLoading(false);
     },
-    [activeChatId, currentModel, mode, setChats, turnstileToken, webSearchEnabled, user]
+    [activeChatId, chats, currentModel, customPrv, mode, navigate, setChats, turnstileToken, webSearchEnabled]
   );
 
   // Handle regenerate
@@ -553,6 +568,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
           mode,
           history: chat.messages.slice(0, msgIndex - 1),
           attachments: userMessage.attachments,
+          customInstructions: customPrv?.instructions,
           turnstileToken,
           signal: regenController.signal,
           onChunk: ({ text, thinking, phase }) => {
@@ -629,7 +645,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
       setIsSearchingWeb(false);
       setIsLoading(false);
     },
-    [activeChatId, chats, currentModel, mode, setChats, turnstileToken]
+    [activeChatId, chats, currentModel, customPrv, mode, setChats, turnstileToken]
   );
 
   // Load sidebar state
@@ -659,6 +675,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
           onSearchOpen={() => setSearchOpen(true)}
           onRenameChat={handleRenameChat}
           onDeleteChat={handleDeleteChat}
+          onCustomPRV={() => setShowCustomPRV(true)}
         />
       </div>
 
@@ -680,6 +697,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
             onSearchOpen={() => setSearchOpen(true)}
             onRenameChat={handleRenameChat}
             onDeleteChat={handleDeleteChat}
+            onCustomPRV={() => setShowCustomPRV(true)}
           />
         </div>
       )}
@@ -729,6 +747,12 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
           setShowBenefitsModal(false);
           setShowLoginModal(true);
         }}
+      />
+      <CustomPRVModal
+        isOpen={showCustomPRV}
+        onClose={() => setShowCustomPRV(false)}
+        onSelect={handleSelectCustomPRV}
+        turnstileToken={turnstileToken}
       />
 
       <Dialog open={Boolean(renameChatId)} onOpenChange={(open) => { if (!open) setRenameChatId(null); }}>

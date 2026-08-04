@@ -4,6 +4,7 @@ export interface ChatStreamRequestPayload {
   mode?: string;
   history?: Array<{ role: string; content: string; attachments?: Array<{ name: string }> }>;
   attachments?: Array<{ name: string; mimeType: string; data: string }>;
+  customInstructions?: string;
   turnstileToken?: string;
   authorization?: string;
 }
@@ -26,6 +27,7 @@ export function normalizeChatRequestPayload(body: unknown, headers?: Record<stri
     mode: asString(payload.mode),
     history: Array.isArray(payload.history) ? payload.history as ChatStreamRequestPayload['history'] : undefined,
     attachments: Array.isArray(payload.attachments) ? payload.attachments as ChatStreamRequestPayload['attachments'] : undefined,
+    customInstructions: asString(payload.customInstructions),
     turnstileToken: asString(payload.turnstileToken)
       || asString(payload.turnstile)
       || asString(payload.token)
