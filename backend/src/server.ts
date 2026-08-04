@@ -36,10 +36,18 @@ const corsOptions = {
   origin: ALLOWED_ORIGINS,
   credentials: true,
   methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  // Explicitly allow Turnstile header variants for preflight
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-turnstile-token', 'X-Turnstile-Token'],
 };
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+// Ensure preflight responses include the allowed headers
+app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', Array.isArray(corsOptions.origin) ? req.header('Origin') || '' : (corsOptions.origin as string));
+  res.header('Access-Control-Allow-Credentials', String(Boolean(corsOptions.credentials)));
+  res.header('Access-Control-Allow-Methods', (corsOptions.methods || ['GET', 'POST', 'OPTIONS']).join(', '));
+  res.header('Access-Control-Allow-Headers', (corsOptions.allowedHeaders || ['Content-Type', 'Authorization']).join(', '));
+  res.sendStatus(204);
+});
 app.use(express.json({ limit: '10mb' }));
 
 const supabaseAdmin = SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY
