@@ -67,11 +67,11 @@ const supabaseAdmin = SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY
 
 function getModelApiName(model: string): string {
   const normalized = model.toLowerCase();
-  if (normalized.includes('pro max') || normalized.includes('v1-pro')) {
+  if (normalized.includes('v3.5') || normalized.includes('earth') || normalized.includes('pro max') || normalized.includes('v1-pro')) {
     return 'gemma-4-31b-it';
   }
-  if (normalized.includes('base') || normalized.includes('v1.5')) {
-    return 'gemma-4-26b-a4b-it';
+  if (normalized.includes('v4') || normalized.includes('light') || normalized.includes('base') || normalized.includes('v1.5')) {
+    return 'gemma-4-27b-it';
   }
   return 'gemini-3.1-flash-lite';
 }

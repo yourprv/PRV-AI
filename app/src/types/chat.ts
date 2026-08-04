@@ -32,13 +32,21 @@ export interface User {
   avatar?: string;
 }
 
-export type ModelId = 'prv-v1-flash' | 'prv-v1-pro' | 'prv-v1.5-beta';
+export type ModelId =
+  | 'prv-v1-flash'
+  | 'prv-v1-pro'
+  | 'prv-v1.5-beta'
+  | 'prv-v3.2-fire'
+  | 'prv-v3.5-earth'
+  | 'prv-v4-light';
 
 export interface ModelOption {
   id: ModelId;
   name: string;
   description: string;
   api: string;
+  group: 'PRV models' | 'Legacy models';
+  accent: 'violet' | 'orange' | 'green' | 'sky' | 'slate';
   badge?: string;
 }
 
@@ -46,20 +54,51 @@ export const AVAILABLE_MODELS: ModelOption[] = [
   {
     id: 'prv-v1-flash',
     name: 'PRV V1 Pro',
-    description: 'The ultimate balance between lightning-fast intelligence and pure speed in answers. Your shortcut to brilliance.',
+    description: 'Fast, balanced, and ready for everyday work.',
     api: 'gemini-3.1-flash-lite',
+    group: 'Legacy models',
+    accent: 'violet',
   },
   {
     id: 'prv-v1-pro',
     name: 'PRV V1 Pro Max',
-    description: 'The full dense powerhouse with maximum AI index from the PRV family. Unleash pure capability for complex tasks—the most formidable mind in the V1 arsenal.',
+    description: 'The original dense powerhouse for complex tasks.',
     api: 'gemma-4-31b-it',
+    group: 'Legacy models',
+    accent: 'slate',
   },
   {
     id: 'prv-v1.5-beta',
     name: 'PRV V1 Base',
-    description: 'The reliable PRV V1 Base model—balanced, efficient, and designed for general-purpose reasoning with strong performance across everyday tasks.',
-    api: 'gemma-4-26b-a4b-it',
+    description: 'Reliable, efficient, and built for general-purpose reasoning.',
+    api: 'gemma-4-27b-it',
+    group: 'Legacy models',
+    accent: 'slate',
+  },
+  {
+    id: 'prv-v3.2-fire',
+    name: 'PRV V3.2 Fire',
+    description: 'Quick ignition for ideas, answers, and high-tempo workflows.',
+    api: 'gemini-3.1-flash-lite',
+    group: 'PRV models',
+    accent: 'orange',
+  },
+  {
+    id: 'prv-v3.5-earth',
+    name: 'PRV V3.5 Earth',
+    description: 'Grounded depth for reasoning, planning, and serious creation.',
+    api: 'gemma-4-31b-it',
+    group: 'PRV models',
+    accent: 'green',
+  },
+  {
+    id: 'prv-v4-light',
+    name: 'PRV 4.0 Light',
+    description: 'A bright next-generation model for fast, capable responses.',
+    api: 'gemma-4-27b-it',
+    group: 'PRV models',
+    accent: 'sky',
+    badge: 'BETA',
   },
 ];
 

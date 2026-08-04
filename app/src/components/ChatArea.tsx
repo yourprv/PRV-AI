@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Settings, Sun, Moon, EyeOff } from 'lucide-react';
+import { Settings, Sun, Moon, EyeOff, ArrowUpRight, Sparkles, Waves, Layers3 } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import { MessageBubble } from './MessageBubble';
 import { TypingIndicator } from './TypingIndicator';
@@ -74,7 +74,7 @@ export function ChatArea({
   return (
     <div className="flex-1 flex flex-col h-screen relative">
       {/* Top bar */}
-      <header className="h-12 sm:h-14 flex items-center justify-between px-3 sm:px-4 border-b border-[#E5E7EB] dark:border-[#374151] bg-white/80 dark:bg-[#1F2937]/80 backdrop-blur-sm shrink-0 z-20 gap-2">
+      <header className="h-14 sm:h-16 flex items-center justify-between px-3 sm:px-5 border-b border-violet-100/80 dark:border-slate-800 bg-white/75 dark:bg-[#111426]/80 backdrop-blur-xl shrink-0 z-20 gap-2">
         <div className="flex items-center flex-1 min-w-0">
           <ModelSelector
             selected={currentModel}
@@ -139,14 +139,20 @@ export function ChatArea({
       ) : null}
       {isEmpty ? (
         // Empty state
-        <div className="flex-1 flex flex-col items-center justify-center px-3 sm:px-4 bg-white dark:bg-[#111827]">
-          <div className="w-full max-w-5xl mx-auto flex flex-col items-center gap-4 sm:gap-6">
+        <div className="relative flex-1 overflow-hidden flex flex-col items-center justify-center px-3 sm:px-4 bg-[#fbfbfe] dark:bg-[#0d1020]">
+          <div className="pointer-events-none absolute -top-32 left-1/2 h-80 w-[38rem] -translate-x-1/2 rounded-full bg-violet-300/25 blur-3xl dark:bg-violet-600/15" />
+          <div className="pointer-events-none absolute bottom-[-12rem] right-[-8rem] h-96 w-96 rounded-full bg-sky-200/30 blur-3xl dark:bg-sky-600/10" />
+          <div className="relative w-full max-w-5xl mx-auto flex flex-col items-center gap-5 sm:gap-7">
+            <div className="flex items-center gap-2 rounded-full border border-violet-200/80 bg-white/70 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-violet-600 shadow-sm backdrop-blur dark:border-violet-400/20 dark:bg-white/5 dark:text-violet-300">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" /> PRV studio · online
+            </div>
             {user ? (
-              <h1 className="text-xl sm:text-[28px] font-semibold text-[#111827] dark:text-[#F3F4F6] tracking-tight text-center">
-                Ready when you are.
-              </h1>
+              <div className="text-center">
+                <h1 className="text-3xl sm:text-5xl font-semibold tracking-[-0.04em] text-slate-950 dark:text-white">Make something <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-sky-500 bg-clip-text text-transparent">remarkable.</span></h1>
+                <p className="mt-3 text-sm sm:text-base text-slate-500 dark:text-slate-400">A calmer space for fast ideas, deep work, and everything in between.</p>
+              </div>
             ) : (
-              <div className="w-full rounded-2xl sm:rounded-[32px] border border-[#E5E7EB] dark:border-[#374151] bg-[#E0F2FE] dark:bg-[#0F172A] px-4 sm:px-6 py-4 sm:py-5 text-center">
+              <div className="w-full rounded-2xl sm:rounded-[32px] border border-violet-200/80 dark:border-violet-400/20 bg-white/75 dark:bg-white/5 px-4 sm:px-6 py-4 sm:py-5 text-center shadow-[0_20px_70px_-35px_rgba(91,33,182,0.35)] backdrop-blur">
                 <p className="text-base sm:text-[18px] font-semibold text-[#0F172A] dark:text-[#EFF6FF]">Continue as a guest with PRV V1 Pro.</p>
                 <p className="mt-2 text-xs sm:text-[14px] text-[#475569] dark:text-[#A5B4FC]">
                   Your chats stay in this session only. Sign in later for saved history, web search, and more models.
@@ -160,6 +166,16 @@ export function ChatArea({
                 </button>
               </div>
             )}
+            {user && <div className="grid w-full max-w-3xl grid-cols-1 gap-3 sm:grid-cols-3">
+              {[
+                { icon: <Sparkles size={17} />, label: 'Spark an idea', text: 'Turn a rough thought into a clear direction.', tone: 'violet' },
+                { icon: <Waves size={17} />, label: 'Go deeper', text: 'Explore complex questions with steady focus.', tone: 'sky' },
+                { icon: <Layers3 size={17} />, label: 'Build a plan', text: 'Shape scattered notes into next steps.', tone: 'emerald' },
+              ].map((card) => <div key={card.label} className="rounded-2xl border border-slate-200/80 bg-white/65 p-4 text-left shadow-sm backdrop-blur transition-transform hover:-translate-y-0.5 dark:border-slate-800 dark:bg-white/[0.04]">
+                <div className={`mb-3 flex h-8 w-8 items-center justify-center rounded-xl ${card.tone === 'violet' ? 'bg-violet-100 text-violet-600 dark:bg-violet-400/15 dark:text-violet-300' : card.tone === 'sky' ? 'bg-sky-100 text-sky-600 dark:bg-sky-400/15 dark:text-sky-300' : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-400/15 dark:text-emerald-300'}`}>{card.icon}</div>
+                <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{card.label}</p><p className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">{card.text}</p><ArrowUpRight size={14} className="mt-3 text-slate-400" />
+              </div>)}
+            </div>}
             <ChatInput
               onSend={onSend}
               guestMode={guestMode}
