@@ -1,7 +1,7 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { existsSync } from 'fs';
-import express, { type Request, type Response } from 'express';
+import express, { type Request, type Response as ExpressResponse } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
@@ -13,28 +13,32 @@ dotenv.config({ path: envPath });
 
 const PORT = process.env.PORT || 5000;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '';
 const TAVILY_API_KEY = process.env.TAVILY_API_KEY || '';
 const SUPABASE_URL = process.env.SUPABASE_URL || '';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY || '';
 
 const GEMINI_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
+const ALLOWED_ORIGINS = [
+  FRONTEND_URL,
+  'https://prv-ai.vercel.app',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+].filter(Boolean) as string[];
 
 const app = express();
 app.use(helmet());
-app.use(
-  cors({
-    origin: [
-      FRONTEND_URL,
-      'http://localhost:3000',
-      'http://127.0.0.1:3000',
-      'http://localhost:5173',
-      'http://127.0.0.1:5173',
-    ],
-    credentials: true,
-  }),
-);
+const corsOptions = {
+  origin: ALLOWED_ORIGINS,
+  credentials: true,
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 
 const supabaseAdmin = SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY
@@ -63,6 +67,30 @@ function extractVisibleTextFromStreamPayload(payload: any): string {
     .filter((part: any) => !part?.thought)
     .map((part: any) => part?.text || '')
     .join('');
+}
+
+function getGeminiApiKey(): string {
+  const apiKey = (GEMINI_API_KEY || '').trim();
+  if (!apiKey) {
+    throw new Error('Server configuration error: GEMINI_API_KEY (or GOOGLE_API_KEY) is not configured.');
+  }
+  return apiKey;
+}
+
+function getErrorInfo(error: unknown): { status?: number; message: string; details?: unknown } {
+  const status = typeof error === 'object' && error !== null && 'status' in error
+    ? Number((error as { status?: number }).status)
+    : undefined;
+  const message = error instanceof Error
+    ? error.message
+    : typeof error === 'string'
+      ? error
+      : 'Unknown error';
+  const details = typeof error === 'object' && error !== null && 'details' in error
+    ? (error as { details?: unknown }).details
+    : undefined;
+
+  return { status, message, details };
 }
 
 function buildConversationHistoryPrompt(messages: Array<{ role: string; content: string; attachments?: Array<{ name: string }> }>): string {
@@ -94,6 +122,7 @@ async function streamGeminiContent({
   attachments?: Array<{ mimeType: string; data: string }>;
   signal?: AbortSignal;
 }): Promise<string> {
+  const apiKey = getGeminiApiKey();
   const parts: Array<{ text?: string; inline_data?: { mime_type: string; data: string } }> = [{ text: prompt }];
 
   if (attachments?.length) {
@@ -107,25 +136,45 @@ async function streamGeminiContent({
     }
   }
 
-  const response = await fetch(
-    `${GEMINI_BASE_URL}/${model}:streamGenerateContent?alt=sse&key=${GEMINI_API_KEY}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ role: 'user', parts }],
-        generationConfig: {
-          temperature: 0.7,
-          topP: 0.95,
-          maxOutputTokens: 1800,
-        },
-      }),
-      signal,
-    },
-  );
+  let response: Response;
+  try {
+    response = await fetch(
+      `${GEMINI_BASE_URL}/${model}:streamGenerateContent?alt=sse&key=${encodeURIComponent(apiKey)}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts }],
+          generationConfig: {
+            temperature: 0.7,
+            topP: 0.95,
+            maxOutputTokens: 1800,
+          },
+        }),
+        signal,
+      },
+    );
+  } catch (error) {
+    const errorInfo = getErrorInfo(error);
+    console.error('Gemini stream request failed', errorInfo);
+    throw new Error(errorInfo.message || 'Gemini stream request failed.');
+  }
 
   if (!response.ok) {
-    throw new Error(`Gemini stream request failed with status ${response.status}`);
+    let errorBody = '';
+    try {
+      errorBody = await response.text();
+    } catch {
+      errorBody = '';
+    }
+
+    const errorMessage = errorBody ? `Gemini stream request failed with status ${response.status}: ${errorBody}` : `Gemini stream request failed with status ${response.status}`;
+    console.error('Gemini stream returned a non-OK response', {
+      status: response.status,
+      message: errorMessage,
+      details: errorBody,
+    });
+    throw new Error(errorMessage);
   }
 
   const reader = response.body?.getReader();
@@ -249,11 +298,11 @@ async function streamGeminiContentWithFallback(params: GeminiStreamParams): Prom
   }
 }
 
-app.get('/health', (_req: Request, res: Response) => {
+app.get('/health', (_req: Request, res: ExpressResponse) => {
   res.json({ ok: true, message: 'PRV AI backend is running.' });
 });
 
-app.get('/wake-up', (_req: Request, res: Response) => {
+app.get('/wake-up', (_req: Request, res: ExpressResponse) => {
   res.json({ status: 'awake' });
 });
 
@@ -272,7 +321,7 @@ async function verifyTurnstileToken(token: string): Promise<boolean> {
   return Boolean(data.success);
 }
 
-app.post('/api/turnstile/verify', async (req: Request, res: Response) => {
+app.post('/api/turnstile/verify', async (req: Request, res: ExpressResponse) => {
   const { token } = req.body as { token?: string };
   if (!token) {
     res.status(400).json({ message: 'Turnstile token is required.' });
@@ -293,7 +342,7 @@ app.post('/api/turnstile/verify', async (req: Request, res: Response) => {
   }
 });
 
-app.post('/api/chat/stream', async (req: Request, res: Response) => {
+app.post('/api/chat/stream', async (req: Request, res: ExpressResponse) => {
   const { content, model, mode, history, attachments, turnstileToken } = req.body as {
     content?: string;
     model?: string;
@@ -319,8 +368,12 @@ app.post('/api/chat/stream', async (req: Request, res: Response) => {
     return;
   }
 
-  if (!GEMINI_API_KEY) {
-    res.status(500).json({ error: 'GEMINI_API_KEY is not configured on the server.' });
+  try {
+    getGeminiApiKey();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Server configuration error.';
+    console.error('Gemini chat stream route configuration error', { message });
+    res.status(500).json({ error: message });
     return;
   }
 
@@ -387,15 +440,17 @@ app.post('/api/chat/stream', async (req: Request, res: Response) => {
       transmit('done', { content: finalAnswer || 'I’m ready to help with that.' });
     }
   } catch (error) {
+    const errorInfo = getErrorInfo(error);
+    console.error('Gemini chat stream route error', errorInfo);
     transmit('error', {
-      message: error instanceof Error ? error.message : 'Gemini stream failed.',
+      message: errorInfo.message || 'Gemini stream failed.',
     });
   } finally {
     res.end();
   }
 });
 
-app.post('/api/search/tavily', async (req: Request, res: Response) => {
+app.post('/api/search/tavily', async (req: Request, res: ExpressResponse) => {
   const { query } = req.body as { query?: string };
 
   if (!query) {
@@ -455,7 +510,7 @@ app.post('/api/search/tavily', async (req: Request, res: Response) => {
   res.json({ result: parts.join('\n\n') });
 });
 
-app.post('/api/auth/refresh', async (req: Request, res: Response) => {
+app.post('/api/auth/refresh', async (req: Request, res: ExpressResponse) => {
   const { refreshToken } = req.body as { refreshToken?: string };
 
   if (!refreshToken) {
@@ -498,7 +553,7 @@ app.post('/api/auth/refresh', async (req: Request, res: Response) => {
   }
 });
 
-app.get('/api/auth/session', async (req: Request, res: Response) => {
+app.get('/api/auth/session', async (req: Request, res: ExpressResponse) => {
   const token = req.headers.authorization?.replace(/^Bearer\s+/i, '').trim();
   if (!token || !supabaseAdmin) {
     res.json({ user: null });
@@ -514,7 +569,7 @@ app.get('/api/auth/session', async (req: Request, res: Response) => {
   res.json({ user });
 });
 
-app.post('/api/auth/sign-in/oauth', async (req: Request, res: Response) => {
+app.post('/api/auth/sign-in/oauth', async (req: Request, res: ExpressResponse) => {
   const { provider, redirectTo } = req.body as { provider?: string; redirectTo?: string };
   if (!provider || !redirectTo || !SUPABASE_URL) {
     res.status(400).json({ error: 'A provider and redirect URL are required.' });
@@ -525,7 +580,7 @@ app.post('/api/auth/sign-in/oauth', async (req: Request, res: Response) => {
   res.json({ url: authUrl });
 });
 
-app.post('/api/auth/sign-in/otp', async (req: Request, res: Response) => {
+app.post('/api/auth/sign-in/otp', async (req: Request, res: ExpressResponse) => {
   const { email, redirectTo } = req.body as { email?: string; redirectTo?: string };
   if (!email || !redirectTo || !supabaseAdmin) {
     res.status(400).json({ error: 'Email and redirect URL are required.' });
@@ -545,7 +600,7 @@ app.post('/api/auth/sign-in/otp', async (req: Request, res: Response) => {
   res.json({ ok: true });
 });
 
-app.post('/api/auth/logout', (_req: Request, res: Response) => {
+app.post('/api/auth/logout', (_req: Request, res: ExpressResponse) => {
   res.json({ ok: true });
 });
 
