@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Settings, Sun, Moon, EyeOff, ArrowUpRight, Sparkles, Waves, Layers3, Menu } from 'lucide-react';
+import { Settings, Sun, Moon, EyeOff, ArrowUpRight, Sparkles, Waves, Menu, LockKeyhole, ShieldCheck } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import { MessageBubble } from './MessageBubble';
 import { TypingIndicator } from './TypingIndicator';
@@ -78,9 +78,9 @@ export function ChatArea({
     messages[messages.length - 1].content.trim() === '';
 
   return (
-    <div className="flex-1 flex min-h-0 min-w-0 flex-col h-[100dvh] relative">
+    <div className={`flex-1 flex min-h-0 min-w-0 flex-col h-[100dvh] relative ${isIncognitoMode ? 'bg-[#090b14] text-white' : ''}`}>
       {/* Top bar */}
-      <header className="min-h-14 sm:h-16 flex items-center justify-between px-2.5 sm:px-5 py-1.5 sm:py-0 border-b border-violet-100/80 dark:border-slate-800 bg-white/90 dark:bg-[#111426]/90 backdrop-blur-xl shrink-0 z-20 gap-1.5">
+      <header className={`min-h-14 sm:h-16 flex items-center justify-between px-2.5 sm:px-5 py-1.5 sm:py-0 border-b backdrop-blur-xl shrink-0 z-20 gap-1.5 ${isIncognitoMode ? 'border-white/10 bg-[#0d1020]/95' : 'border-violet-100/80 bg-white/90 dark:border-slate-800 dark:bg-[#111426]/90'}`}>
         <div className="flex items-center flex-1 min-w-0">
           <button
             type="button"
@@ -107,7 +107,7 @@ export function ChatArea({
             aria-label="Toggle incognito mode"
           >
             <EyeOff size={16} />
-            <span className="hidden sm:inline">Incognito</span>
+            <span className="hidden sm:inline">{isIncognitoMode ? 'Private' : 'Incognito'}</span>
           </button>
           <button
             onClick={onSettingsClick}
@@ -127,16 +127,16 @@ export function ChatArea({
       </header>
 
       {customPrv ? <div className="border-b border-violet-200/70 bg-gradient-to-r from-violet-50 to-sky-50 px-3 py-2 dark:border-violet-400/20 dark:from-violet-950/40 dark:to-slate-900">
-        <div className="mx-auto flex max-w-5xl items-center gap-2 text-xs text-violet-800 dark:text-violet-200"><span className="flex h-6 w-6 items-center justify-center rounded-lg bg-violet-600 text-white">✦</span><span><strong>{customPrv.name}</strong><span className="ml-1.5 text-violet-600/80 dark:text-violet-300/70">public Custom PRV</span></span></div>
+        <div className="mx-auto flex max-w-5xl items-center gap-2 text-xs text-violet-800 dark:text-violet-200"><span className="flex h-6 w-6 items-center justify-center rounded-lg bg-violet-600 text-white">✦</span><span><strong>{customPrv.name}</strong><span className="ml-1.5 rounded-full border border-violet-300/70 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-violet-600 dark:border-violet-400/30 dark:text-violet-300">Experimental</span></span></div>
       </div> : null}
 
       {/* Main content */}
       {isIncognitoMode ? (
-        <div className="bg-[#F5F3FF] px-3 py-1.5 text-[#5B21B6] dark:bg-[#2E1065]/30 dark:text-[#DDD6FE] sm:px-4 sm:py-2">
-          <div className="mx-auto flex max-w-5xl items-center justify-center text-center text-xs sm:text-sm">
-            <p>
-              Private chats are anonymous. Your chats are permanently removed and are not saved once you leave this chat.
-            </p>
+        <div className="border-b border-white/10 bg-[#101426] px-4 py-3 text-slate-200">
+          <div className="mx-auto flex max-w-5xl items-center gap-3 text-left">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-500/15 text-violet-300"><LockKeyhole size={17} /></span>
+            <div><p className="text-[11px] font-bold uppercase tracking-[0.2em] text-violet-300">Private · anonymous chats</p><p className="mt-0.5 text-xs text-slate-400">This conversation is temporary and won’t be saved to your history.</p></div>
+            <ShieldCheck size={18} className="ml-auto hidden shrink-0 text-emerald-300 sm:block" />
           </div>
         </div>
       ) : null}
@@ -158,17 +158,17 @@ export function ChatArea({
       ) : null}
       {isEmpty ? (
         // Empty state
-        <div className="relative flex-1 min-h-0 overflow-y-auto flex flex-col items-center justify-center px-3 py-4 sm:px-4 sm:py-0 bg-[#fbfbfe] dark:bg-[#0d1020]">
+        <div className={`relative flex-1 min-h-0 overflow-y-auto flex flex-col items-center justify-center px-3 py-4 sm:px-4 sm:py-0 ${isIncognitoMode ? 'bg-[#090b14]' : 'bg-[#fbfbfe] dark:bg-[#0d1020]'}`}>
           <div className="pointer-events-none absolute -top-32 left-1/2 h-80 w-[38rem] -translate-x-1/2 rounded-full bg-violet-300/25 blur-3xl dark:bg-violet-600/15" />
           <div className="pointer-events-none absolute bottom-[-12rem] right-[-8rem] h-96 w-96 rounded-full bg-sky-200/30 blur-3xl dark:bg-sky-600/10" />
           <div className="relative w-full max-w-5xl mx-auto flex flex-col items-center gap-5 sm:gap-7">
-            <div className="flex items-center gap-2 rounded-full border border-violet-200/80 bg-white/70 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-violet-600 shadow-sm backdrop-blur dark:border-violet-400/20 dark:bg-white/5 dark:text-violet-300">
+            <div className="hidden sm:flex items-center gap-2 rounded-full border border-violet-200/80 bg-white/70 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-violet-600 shadow-sm backdrop-blur dark:border-violet-400/20 dark:bg-white/5 dark:text-violet-300">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" /> PRV studio · online
             </div>
             {user ? (
               <div className="text-center">
-                <h1 className="text-3xl sm:text-5xl font-semibold tracking-[-0.04em] text-slate-950 dark:text-white">Make something <span className="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-sky-500 bg-clip-text text-transparent">remarkable.</span></h1>
-                <p className="mt-3 text-sm sm:text-base text-slate-500 dark:text-slate-400">A calmer space for fast ideas, deep work, and everything in between.</p>
+                <h1 className={`text-3xl sm:text-5xl font-semibold tracking-[-0.04em] ${isIncognitoMode ? 'text-white' : 'text-slate-950 dark:text-white'}`}>Make something <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-sky-400 bg-clip-text text-transparent">remarkable.</span></h1>
+                <p className={`mt-3 text-sm sm:text-base ${isIncognitoMode ? 'text-slate-400' : 'text-slate-500 dark:text-slate-400'}`}>{isIncognitoMode ? 'A quiet space for private thinking.' : 'A calmer space for fast ideas, deep work, and everything in between.'}</p>
               </div>
             ) : (
               <div className="w-full rounded-2xl sm:rounded-[32px] border border-violet-200/80 dark:border-violet-400/20 bg-white/75 dark:bg-white/5 px-4 sm:px-6 py-4 sm:py-5 text-center shadow-[0_20px_70px_-35px_rgba(91,33,182,0.35)] backdrop-blur">
@@ -185,15 +185,14 @@ export function ChatArea({
                 </button>
               </div>
             )}
-            {user && <div className="grid w-full max-w-3xl grid-cols-1 gap-3 sm:grid-cols-3">
+            {user && <div className="hidden w-full max-w-3xl grid-cols-2 gap-3 sm:grid">
               {[
-                { icon: <Sparkles size={17} />, label: 'Spark an idea', text: 'Turn a rough thought into a clear direction.', tone: 'violet' },
-                { icon: <Waves size={17} />, label: 'Go deeper', text: 'Explore complex questions with steady focus.', tone: 'sky' },
-                { icon: <Layers3 size={17} />, label: 'Build a plan', text: 'Shape scattered notes into next steps.', tone: 'emerald' },
-              ].map((card) => <div key={card.label} className="rounded-2xl border border-slate-200/80 bg-white/65 p-4 text-left shadow-sm backdrop-blur transition-transform hover:-translate-y-0.5 dark:border-slate-800 dark:bg-white/[0.04]">
+                { icon: <Sparkles size={17} />, label: 'Shape an idea', text: 'Turn a rough thought into a clear direction.', prompt: 'Help me turn this rough idea into a clear direction. Ask one useful question, then give me a concise starting point.', tone: 'violet' },
+                { icon: <Waves size={17} />, label: 'Think it through', text: 'Explore a complex question with steady focus.', prompt: 'Help me think this through carefully. Break down the question, surface the key tradeoffs, and recommend a practical next step.', tone: 'sky' },
+              ].map((card) => <button type="button" key={card.label} onClick={() => onSend(card.prompt)} className="rounded-2xl border border-slate-200/80 bg-white/65 p-4 text-left shadow-sm backdrop-blur transition-transform hover:-translate-y-0.5 dark:border-slate-800 dark:bg-white/[0.04]">
                 <div className={`mb-3 flex h-8 w-8 items-center justify-center rounded-xl ${card.tone === 'violet' ? 'bg-violet-100 text-violet-600 dark:bg-violet-400/15 dark:text-violet-300' : card.tone === 'sky' ? 'bg-sky-100 text-sky-600 dark:bg-sky-400/15 dark:text-sky-300' : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-400/15 dark:text-emerald-300'}`}>{card.icon}</div>
                 <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{card.label}</p><p className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">{card.text}</p><ArrowUpRight size={14} className="mt-3 text-slate-400" />
-              </div>)}
+              </button>)}
             </div>}
             <ChatInput
               onSend={onSend}
@@ -217,7 +216,7 @@ export function ChatArea({
           {/* Messages area */}
           <div
             ref={scrollContainerRef}
-            className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 py-3 sm:px-4 sm:py-6 space-y-4 sm:space-y-6 bg-white dark:bg-[#111827]"
+            className={`min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 py-3 sm:px-4 sm:py-6 space-y-4 sm:space-y-6 ${isIncognitoMode ? 'bg-[#090b14]' : 'bg-white dark:bg-[#111827]'}`}
           >
             <div className="w-full max-w-5xl mx-auto space-y-4 sm:space-y-6">
               {messages.map((message, index) => (
@@ -239,7 +238,7 @@ export function ChatArea({
           </div>
 
           {/* Input at bottom */}
-          <div className="shrink-0 px-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 sm:px-4 sm:py-3 bg-white/95 dark:bg-[#1F2937]/95 backdrop-blur-sm border-t border-[#E5E7EB] dark:border-[#374151]">
+          <div className={`shrink-0 px-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 sm:px-4 sm:py-3 backdrop-blur-sm border-t ${isIncognitoMode ? 'bg-[#0d1020]/95 border-white/10' : 'bg-white/95 dark:bg-[#1F2937]/95 border-[#E5E7EB] dark:border-[#374151]'}`}>
             <ChatInput
               onSend={onSend}
               guestMode={guestMode}

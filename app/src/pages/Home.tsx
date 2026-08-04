@@ -127,6 +127,8 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   // Handle new chat
   const handleNewChat = useCallback(() => {
     setActiveChatId(null);
+    setCustomPrv(null);
+    setCurrentModel('prv-v3.2-fire');
     navigate('/');
     setSidebarExpanded(window.innerWidth >= 1024);
   }, [navigate]);
