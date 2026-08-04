@@ -25,7 +25,7 @@ function generateTitle(content: string): string {
   return trimmed.substring(0, 40) + '...';
 }
 
-export default function Home() {
+export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   const navigate = useNavigate();
   const { chatId } = useParams<{ chatId?: string }>();
   const [chats, setChats] = useLocalStorage<Chat[]>('prv_chats', []);
@@ -351,6 +351,7 @@ export default function Home() {
           mode,
           history: activeChat?.messages ?? [],
           attachments,
+          turnstileToken,
           signal: controller.signal,
           onChunk: ({ text, thinking, phase }) => {
             if (phase === 'thinking') {
@@ -441,7 +442,7 @@ export default function Home() {
 
       setIsLoading(false);
     },
-    [activeChatId, currentModel, mode, setChats, webSearchEnabled, unauthenticatedSendAttempts, user]
+    [activeChatId, currentModel, mode, setChats, turnstileToken, webSearchEnabled, unauthenticatedSendAttempts, user]
   );
 
   // Handle regenerate
@@ -505,6 +506,7 @@ export default function Home() {
           mode,
           history: chat.messages.slice(0, msgIndex - 1),
           attachments: userMessage.attachments,
+          turnstileToken,
           signal: regenController.signal,
           onChunk: ({ text, thinking, phase }) => {
             if (phase === 'thinking') {
@@ -580,7 +582,7 @@ export default function Home() {
       setIsSearchingWeb(false);
       setIsLoading(false);
     },
-    [activeChatId, chats, currentModel, mode, setChats]
+    [activeChatId, chats, currentModel, mode, setChats, turnstileToken]
   );
 
   // Load sidebar state

@@ -20,6 +20,7 @@ export async function streamGeminiReply({
   history,
   onChunk,
   attachments,
+  turnstileToken,
   signal,
 }: {
   content: string;
@@ -28,6 +29,7 @@ export async function streamGeminiReply({
   history?: Message[];
   onChunk: (chunk: GeminiStreamChunk) => void;
   attachments?: Attachment[];
+  turnstileToken?: string;
   signal?: AbortSignal;
 }): Promise<GeminiReply> {
   const response = await fetch(`${getApiBaseUrl()}/api/chat/stream`, {
@@ -39,6 +41,7 @@ export async function streamGeminiReply({
       mode,
       history,
       attachments,
+      turnstileToken,
     }),
     signal,
   });

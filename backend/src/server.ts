@@ -1,10 +1,15 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { existsSync } from 'fs';
 import express, { type Request, type Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 
-dotenv.config();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const envPath = [path.resolve(__dirname, '../../.env.local'), path.resolve(__dirname, '../../app/.env.local')].find((candidate) => existsSync(candidate));
+dotenv.config({ path: envPath });
 
 const PORT = process.env.PORT || 5000;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
@@ -12,6 +17,7 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
 const TAVILY_API_KEY = process.env.TAVILY_API_KEY || '';
 const SUPABASE_URL = process.env.SUPABASE_URL || '';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY || '';
 
 const GEMINI_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 
@@ -251,14 +257,62 @@ app.get('/wake-up', (_req: Request, res: Response) => {
   res.json({ status: 'awake' });
 });
 
+async function verifyTurnstileToken(token: string): Promise<boolean> {
+  if (!TURNSTILE_SECRET_KEY || !token) {
+    return false;
+  }
+
+  const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ secret: TURNSTILE_SECRET_KEY, response: token }).toString(),
+  });
+
+  const data = await response.json() as { success?: boolean };
+  return Boolean(data.success);
+}
+
+app.post('/api/turnstile/verify', async (req: Request, res: Response) => {
+  const { token } = req.body as { token?: string };
+  if (!token) {
+    res.status(400).json({ message: 'Turnstile token is required.' });
+    return;
+  }
+
+  try {
+    const isValid = await verifyTurnstileToken(token);
+    if (!isValid) {
+      res.status(403).json({ message: 'Turnstile verification failed.' });
+      return;
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Turnstile verification error:', error);
+    res.status(500).json({ message: 'Unable to verify Turnstile token.' });
+  }
+});
+
 app.post('/api/chat/stream', async (req: Request, res: Response) => {
-  const { content, model, mode, history, attachments } = req.body as {
+  const { content, model, mode, history, attachments, turnstileToken } = req.body as {
     content?: string;
     model?: string;
     mode?: string;
     history?: Array<{ role: string; content: string; attachments?: Array<{ name: string }> }>;
     attachments?: Array<{ name: string; mimeType: string; data: string }>;
+    turnstileToken?: string;
   };
+
+  if (!turnstileToken) {
+    res.status(403).json({ message: 'Turnstile verification token is required.' });
+    return;
+  }
+
+  const isTurnstileValid = await verifyTurnstileToken(turnstileToken);
+  if (!isTurnstileValid) {
+    res.status(403).json({ message: 'Turnstile verification failed.' });
+    return;
+  }
 
   if (!content) {
     res.status(400).json({ error: 'A chat message is required.' });

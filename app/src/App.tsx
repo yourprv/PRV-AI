@@ -4,10 +4,11 @@ import Home from './pages/Home'
 import AuthCallback from './pages/AuthCallback'
 import { Settings } from './pages/Settings'
 import { Toaster } from '@/components/ui/sonner'
-import FakeCaptchaGate from './components/FakeCaptchaGate'
+import TurnstileGate from './components/TurnstileGate'
 
 export default function App() {
   const [isVerified, setIsVerified] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
 
   useEffect(() => {
     // Wake the backend in the background as soon as the app loads.
@@ -20,14 +21,17 @@ export default function App() {
   }, [])
 
   if (!isVerified) {
-    return <FakeCaptchaGate onVerified={() => setIsVerified(true)} />
+    return <TurnstileGate onVerified={(token) => {
+      setTurnstileToken(token)
+      setIsVerified(true)
+    }} />
   }
 
   return (
     <>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/chat/:chatId" element={<Home />} />
+        <Route path="/" element={<Home turnstileToken={turnstileToken ?? undefined} />} />
+        <Route path="/chat/:chatId" element={<Home turnstileToken={turnstileToken ?? undefined} />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/settings" element={<Settings onBack={() => window.history.back()} />} />
       </Routes>
