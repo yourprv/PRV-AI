@@ -38,6 +38,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showBenefitsModal, setShowBenefitsModal] = useState(false);
+  const [isIncognitoMode, setIsIncognitoMode] = useState(false);
   const { user, isAuthReady } = useAuth();
   const [searchOpen, setSearchOpen] = useState(false);
   const [webSearchEnabled, setWebSearchEnabled] = useState(false);
@@ -107,6 +108,29 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   const handleSettingsClick = useCallback(() => {
     navigate('/settings');
   }, [navigate]);
+
+  const handleToggleIncognitoMode = useCallback(() => {
+    setIsIncognitoMode((prev) => {
+      const next = !prev;
+      if (next) {
+        setChats([]);
+        setActiveChatId(null);
+        setCurrentModel('prv-v1-flash');
+        setMode('fast');
+        setIsLoading(false);
+        setIsSearchingWeb(false);
+        setWebSearchEnabled(false);
+        setRenameChatId(null);
+        setDeleteChatId(null);
+        setSearchOpen(false);
+        setRequestController((currentController) => {
+          currentController?.abort();
+          return null;
+        });
+      }
+      return next;
+    });
+  }, []);
 
   const handleToggleWebSearch = useCallback(() => {
     if (!user && !webSearchEnabled) {
@@ -643,6 +667,8 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
           sidebarExpanded={sidebarExpanded}
           onSettingsClick={handleSettingsClick}
           guestMode={!user}
+          isIncognitoMode={isIncognitoMode}
+          onToggleIncognitoMode={handleToggleIncognitoMode}
           onGuestFeatureRequest={() => setShowBenefitsModal(true)}
         />
       </main>

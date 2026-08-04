@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Settings, Sun, Moon } from 'lucide-react';
+import { Settings, Sun, Moon, EyeOff } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import { MessageBubble } from './MessageBubble';
 import { TypingIndicator } from './TypingIndicator';
@@ -11,6 +11,8 @@ interface ChatAreaProps {
   user?: User | null;
   onOpenAuthModal: () => void;
   guestMode?: boolean;
+  isIncognitoMode?: boolean;
+  onToggleIncognitoMode?: () => void;
   onGuestFeatureRequest?: () => void;
   messages: Message[];
   isLoading: boolean;
@@ -34,6 +36,8 @@ export function ChatArea({
   user,
   onOpenAuthModal,
   guestMode = false,
+  isIncognitoMode = false,
+  onToggleIncognitoMode,
   onGuestFeatureRequest,
   messages,
   isLoading,
@@ -82,6 +86,15 @@ export function ChatArea({
         </div>
         <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
           <button
+            type="button"
+            onClick={onToggleIncognitoMode}
+            className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-2 text-xs sm:text-sm font-medium transition-colors duration-200 ${isIncognitoMode ? 'bg-[#4F46E5] text-white shadow-sm' : 'text-[#6B7280] hover:text-[#111827] hover:bg-[#F5F5F7] dark:text-[#9CA3AF] dark:hover:text-[#F3F4F6] dark:hover:bg-[#374151]'}`}
+            aria-label="Toggle incognito mode"
+          >
+            <EyeOff size={16} />
+            <span className="hidden sm:inline">Incognito</span>
+          </button>
+          <button
             onClick={onSettingsClick}
             className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-lg text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] hover:bg-[#F5F5F7] dark:hover:bg-[#374151] transition-colors duration-200"
             aria-label="Settings"
@@ -99,6 +112,15 @@ export function ChatArea({
       </header>
 
       {/* Main content */}
+      {isIncognitoMode ? (
+        <div className="bg-[#F5F3FF] px-3 py-2 text-[#5B21B6] dark:bg-[#2E1065]/30 dark:text-[#DDD6FE] sm:px-4">
+          <div className="mx-auto flex max-w-5xl items-center justify-center text-center text-xs sm:text-sm">
+            <p>
+              Private chats are anonymous. Your chats are permanently removed and are not saved once you leave this chat.
+            </p>
+          </div>
+        </div>
+      ) : null}
       {guestMode ? (
         <div className="bg-[#FEF3C7] dark:bg-[#92400E]/20 text-[#92400E] dark:text-[#FEF3C7] px-3 sm:px-4 py-2 sm:py-3">
           <div className="mx-auto flex max-w-5xl flex-col gap-2 sm:gap-3 sm:flex-row sm:items-center sm:justify-between">
