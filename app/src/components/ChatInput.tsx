@@ -23,6 +23,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
   const [text, setText] = useState('');
   const [attachments, setAttachments] = useState<File[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [attachmentMenuOpen, setAttachmentMenuOpen] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [imageGenerationEnabled, setImageGenerationEnabled] = useState(false);
   const [canvasEnabled, setCanvasEnabled] = useState(false);
@@ -41,7 +42,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
   }, [text]);
 
   useEffect(() => {
-    if (!menuOpen) return;
+    if (!menuOpen && !attachmentMenuOpen) return;
 
     const handleDocumentClick = (event: MouseEvent) => {
       if (
@@ -52,11 +53,12 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
       }
 
       setMenuOpen(false);
+      setAttachmentMenuOpen(false);
     };
 
     document.addEventListener('click', handleDocumentClick);
     return () => document.removeEventListener('click', handleDocumentClick);
-  }, [menuOpen]);
+  }, [menuOpen, attachmentMenuOpen]);
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -83,6 +85,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
       return;
     }
     setMenuOpen(false);
+    setAttachmentMenuOpen(false);
     onSend(trimmed, attachments.length > 0 ? attachments : undefined, imageGenerationEnabled, canvasEnabled);
     setText('');
     setAttachments([]);
@@ -105,7 +108,14 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
 
   const toggleMenu = useCallback(() => {
     if (isLoading) return;
+    setAttachmentMenuOpen(false);
     setMenuOpen((prev) => !prev);
+  }, [isLoading]);
+
+  const toggleAttachmentMenu = useCallback(() => {
+    if (isLoading) return;
+    setMenuOpen(false);
+    setAttachmentMenuOpen((previous) => !previous);
   }, [isLoading]);
 
   const toggleImageGeneration = useCallback(() => {
@@ -117,15 +127,18 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
     }
     setImageGenerationEnabled((previous) => !previous);
     setMenuOpen(false);
+    setAttachmentMenuOpen(false);
   }, [guestMode, onGuestFeatureRequest]);
 
   const toggleCanvas = useCallback(() => {
     setCanvasEnabled((previous) => !previous);
     setMenuOpen(false);
+    setAttachmentMenuOpen(false);
   }, []);
 
   const handleAddAttachment = useCallback(() => {
     setMenuOpen(false);
+    setAttachmentMenuOpen(false);
     if (guestMode && attachments.length >= 3) {
       onGuestFeatureRequest?.();
       toast('Guest uploads are limited to 3 photos. Sign in for richer attachment support.', { icon: '📸' });
@@ -224,7 +237,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
             onKeyDown={handleKeyDown}
             placeholder={imageGenerationEnabled ? 'Describe the image you want to create...' : 'How can I help you today?'}
             rows={1}
-            className="w-full min-h-11 sm:min-h-[42px] rounded-xl sm:rounded-[24px] border border-transparent bg-[#F8FAFC] dark:bg-[#111827] px-3 sm:px-4 py-2 sm:py-2 text-sm sm:text-[15px] text-[#111827] dark:text-[#E5E7EB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:border-[#D1D5DB] dark:focus:border-[#4B5563] focus:ring-0 focus:bg-white dark:focus:bg-[#111827] focus:outline-none resize-none leading-relaxed"
+            className="w-full min-h-11 sm:min-h-[42px] rounded-xl sm:rounded-[24px] border border-transparent bg-[#F8FAFC] dark:bg-[#111827] px-3 sm:px-4 pl-16 sm:pl-20 py-2 sm:py-2 text-sm sm:text-[15px] text-[#111827] dark:text-[#E5E7EB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:border-[#D1D5DB] dark:focus:border-[#4B5563] focus:ring-0 focus:bg-white dark:focus:bg-[#111827] focus:outline-none resize-none leading-relaxed"
             aria-label="Chat input"
           />
 
@@ -240,32 +253,24 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
 
           {/* Bottom controls */}
           <div ref={menuRootRef} className="absolute bottom-2 sm:bottom-2.5 left-2 sm:left-3 right-2 sm:right-3 flex items-center justify-between">
-            <div className="relative">
+            <div className="relative flex items-center gap-1">
               <button
                 type="button"
-                onClick={handleAddAttachment}
+                onClick={toggleAttachmentMenu}
                 className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#0F172A] text-[#6B7280] hover:text-[#111827] dark:hover:text-[#F9FAFB] shadow-sm transition-all duration-200 active:scale-95"
                 aria-label="Open attachment menu"
                 title="Add attachment"
               >
                 <Plus size={20} />
               </button>
+              {attachmentMenuOpen && (
+                <div className="absolute bottom-full left-0 mb-2 w-64 overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white shadow-xl dark:border-[#374151] dark:bg-[#111827] z-50">
+                  <button type="button" onClick={handleAddAttachment} className="flex w-full items-start gap-3 px-4 py-4 text-left hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937]"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EEF2FF] text-[#1E40AF] dark:bg-[#4338CA] dark:text-[#E0E7FF]"><UploadCloud size={18} /></span><span><span className="block text-sm font-medium text-[#111827] dark:text-[#F8FAFC]">Add files and photos</span><span className="mt-0.5 block text-xs text-[#6B7280] dark:text-[#9CA3AF]">Upload documents, images, video, or audio</span></span></button>
+                </div>
+              )}
               <button type="button" onClick={toggleMenu} className="ml-1 flex h-9 w-9 items-center justify-center rounded-full border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#0F172A] text-[#6B7280] hover:text-[#111827] dark:hover:text-[#F9FAFB] shadow-sm transition-all duration-200" aria-label="More tools" title="More tools"><MoreHorizontal size={19} /></button>
               {menuOpen && (
                 <div ref={menuRef} className="absolute bottom-full left-0 mb-2 w-64 sm:w-72 overflow-hidden rounded-2xl sm:rounded-[28px] border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#111827] shadow-xl z-50">
-                  <button
-                    type="button"
-                    onClick={handleAddAttachment}
-                    className="w-full px-3 sm:px-4 py-3 sm:py-4 flex items-start gap-3 text-left hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937] active:bg-[#F0F0F0] dark:active:bg-[#2D3748] transition-colors"
-                  >
-                    <span className="flex h-10 sm:h-11 w-10 sm:w-11 items-center justify-center rounded-2xl bg-[#EEF2FF] dark:bg-[#4338CA] text-[#1E40AF] dark:text-[#E0E7FF] shrink-0">
-                      <UploadCloud size={18} />
-                    </span>
-                    <div className="min-w-0">
-                      <div className="font-medium text-xs sm:text-sm text-[#111827] dark:text-[#F8FAFC]">Upload attachment</div>
-                      <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Files, images, video, or audio</p>
-                    </div>
-                  </button>
                   <button
                     type="button"
                     onClick={toggleImageGeneration}
@@ -403,7 +408,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
           onKeyDown={handleKeyDown}
           placeholder={imageGenerationEnabled ? 'Describe the image you want to create...' : 'How can I help you today?'}
           rows={1}
-          className="w-full min-h-11 sm:min-h-[58px] rounded-xl sm:rounded-[24px] border border-transparent bg-[#F8FAFC] dark:bg-[#111827] px-3 sm:px-4 py-2 sm:py-3.5 text-[15px] text-[#111827] dark:text-[#E5E7EB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:border-[#6366F1] dark:focus:border-[#8B5CF6] focus:bg-white dark:focus:bg-[#111827] focus:outline-none resize-none leading-relaxed"
+          className="w-full min-h-11 sm:min-h-[58px] rounded-xl sm:rounded-[24px] border border-transparent bg-[#F8FAFC] dark:bg-[#111827] px-3 sm:px-4 pl-16 sm:pl-20 py-2 sm:py-3.5 text-[15px] text-[#111827] dark:text-[#E5E7EB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:border-[#6366F1] dark:focus:border-[#8B5CF6] focus:bg-white dark:focus:bg-[#111827] focus:outline-none resize-none leading-relaxed"
           aria-label="Chat input"
         />
 
@@ -418,32 +423,24 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
         />
 
         <div ref={menuRootRef} className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between">
-          <div className="relative">
+          <div className="relative flex items-center gap-1">
             <button
               type="button"
-              onClick={handleAddAttachment}
+              onClick={toggleAttachmentMenu}
               className="w-10 h-10 flex items-center justify-center rounded-full border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#0F172A] text-[#6B7280] hover:text-[#111827] dark:hover:text-[#F9FAFB] shadow-sm transition-all duration-200"
               aria-label="Open attachment menu"
               title="Add attachment"
             >
               <Plus size={20} />
             </button>
+            {attachmentMenuOpen && (
+              <div className="absolute bottom-full left-0 mb-2 w-72 overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white shadow-xl dark:border-[#374151] dark:bg-[#111827] z-50">
+                <button type="button" onClick={handleAddAttachment} className="flex w-full items-start gap-3 px-4 py-4 text-left hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937]"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#EEF2FF] text-[#1E40AF] dark:bg-[#4338CA] dark:text-[#E0E7FF]"><UploadCloud size={18} /></span><span><span className="block text-sm font-medium text-[#111827] dark:text-[#F8FAFC]">Add files and photos</span><span className="mt-0.5 block text-xs text-[#6B7280] dark:text-[#9CA3AF]">Upload documents, images, video, or audio</span></span></button>
+              </div>
+            )}
             <button type="button" onClick={toggleMenu} className="ml-1 flex h-10 w-10 items-center justify-center rounded-full border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#0F172A] text-[#6B7280] hover:text-[#111827] dark:hover:text-[#F9FAFB] shadow-sm transition-all duration-200" aria-label="More tools" title="More tools"><MoreHorizontal size={19} /></button>
             {menuOpen && (
               <div ref={menuRef} className="absolute bottom-full left-0 mb-2 w-72 overflow-hidden rounded-[28px] border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#111827] shadow-xl z-50">
-                <button
-                  type="button"
-                  onClick={handleAddAttachment}
-                  className="w-full px-4 py-4 flex items-start gap-3 text-left hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937]"
-                >
-                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#EEF2FF] dark:bg-[#4338CA] text-[#1E40AF] dark:text-[#E0E7FF]">
-                    <UploadCloud size={18} />
-                  </span>
-                  <div>
-                    <div className="font-medium text-sm text-[#111827] dark:text-[#F8FAFC]">Upload attachment</div>
-                    <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Files, images, video, or audio</p>
-                  </div>
-                </button>
                 <button
                   type="button"
                   onClick={toggleImageGeneration}
