@@ -30,6 +30,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
   const fileInputRef = useRef<HTMLInputElement>(null);
   const menuRootRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const isComposingRef = useRef(false);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -146,7 +147,9 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
+      // Do not submit while an IME is composing a character. This keeps the
+      // composer reliable for languages that confirm text with Enter.
+      if (e.key === 'Enter' && !e.shiftKey && !isComposingRef.current) {
         e.preventDefault();
         handleSend();
       }
@@ -155,14 +158,6 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
   );
 
   const canSend = text.trim().length > 0 || attachments.length > 0;
-
-  const focusComposer = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
-    // The controls share this overlay, so a click in its open space should still
-    // behave exactly like clicking the text field.
-    if (!(event.target as HTMLElement).closest('button')) {
-      textareaRef.current?.focus();
-    }
-  }, []);
 
   if (isEmptyState) {
     // Centered empty state input
@@ -230,9 +225,11 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={handleKeyDown}
+            onCompositionStart={() => { isComposingRef.current = true; }}
+            onCompositionEnd={() => { isComposingRef.current = false; }}
             placeholder={imageGenerationEnabled ? 'Describe the image you want to create...' : 'How can I help you today?'}
             rows={1}
-            className="w-full min-h-[52px] rounded-2xl border border-transparent bg-[#F8FAFC] dark:bg-[#111827] px-3 pl-14 pr-40 py-4 text-sm text-[#111827] dark:text-[#E5E7EB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:border-[#D1D5DB] dark:focus:border-[#4B5563] focus:ring-0 focus:bg-white dark:focus:bg-[#111827] focus:outline-none resize-none leading-5"
+            className="block w-full min-h-[76px] rounded-t-2xl border border-transparent bg-transparent px-4 pt-4 pb-2 text-sm text-[#111827] dark:text-[#E5E7EB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:ring-0 focus:outline-none resize-none leading-6"
             aria-label="Chat input"
           />
 
@@ -247,7 +244,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
           />
 
           {/* Bottom controls */}
-          <div ref={menuRootRef} onMouseDown={focusComposer} className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
+          <div ref={menuRootRef} className="flex items-center justify-between gap-2 border-t border-slate-100 px-3 py-2 dark:border-slate-800">
             <div className="relative flex items-center gap-1">
               <button
                 type="button"
@@ -307,6 +304,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
                 <span className="hidden sm:inline text-[11px] font-medium">Enhance</span>
               </button>
               <button
+                type="button"
                 onClick={handleSend}
                 disabled={!canSend || isLoading}
                 className={`w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full transition-all duration-200 active:scale-95 ${
@@ -396,9 +394,11 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
+          onCompositionStart={() => { isComposingRef.current = true; }}
+          onCompositionEnd={() => { isComposingRef.current = false; }}
           placeholder={imageGenerationEnabled ? 'Describe the image you want to create...' : 'How can I help you today?'}
           rows={1}
-          className="w-full min-h-[52px] rounded-2xl border border-transparent bg-[#F8FAFC] dark:bg-[#111827] px-3 pl-14 pr-40 py-4 text-sm text-[#111827] dark:text-[#E5E7EB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:border-[#6366F1] dark:focus:border-[#8B5CF6] focus:bg-white dark:focus:bg-[#111827] focus:outline-none resize-none leading-5"
+          className="block w-full min-h-[76px] rounded-t-2xl border border-transparent bg-transparent px-4 pt-4 pb-2 text-sm text-[#111827] dark:text-[#E5E7EB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:ring-0 focus:outline-none resize-none leading-6"
           aria-label="Chat input"
         />
 
@@ -412,7 +412,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
           accept=".pdf,.txt,.csv,.json,.html,.md,.png,.jpeg,.webp,.heic,.gif,.mp3,.wav,.aac,.flac,.m4a,.opus,.mp4,.mov,.webm,.avi,.mpeg,.wmv,.3gpp"
         />
 
-        <div ref={menuRootRef} onMouseDown={focusComposer} className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
+        <div ref={menuRootRef} className="flex items-center justify-between gap-2 border-t border-slate-100 px-3 py-2 dark:border-slate-800">
           <div className="relative flex items-center gap-1">
             <button
               type="button"
@@ -481,6 +481,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
               </button>
             ) : (
               <button
+                type="button"
                 onClick={handleSend}
                 disabled={!canSend || isLoading}
                 className={`w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 ${
