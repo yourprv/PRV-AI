@@ -5,7 +5,7 @@ import { MessageBubble } from './MessageBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { ChatInput } from './ChatInput';
 import { ModelSelector } from './ModelSelector';
-import type { CustomPRV, Message, ModelId, ModeType, User } from '@/types/chat';
+import type { CustomPRV, Message, ModelId, ModeType, PlanTier, User } from '@/types/chat';
 
 interface ChatAreaProps {
   user?: User | null;
@@ -33,6 +33,8 @@ interface ChatAreaProps {
   sidebarExpanded: boolean;
   onToggleSidebar: () => void;
   onSettingsClick: () => void;
+  onOpenPlans: () => void;
+  planTier?: PlanTier;
 }
 
 export function ChatArea({
@@ -60,6 +62,8 @@ export function ChatArea({
   customPrv,
   onToggleSidebar,
   onSettingsClick,
+  onOpenPlans,
+  planTier = 'free',
 }: ChatAreaProps) {
   // Private mode temporarily forces the UI dark without changing the saved preference.
   // This means light mode returns when private mode ends, while an existing dark
@@ -111,6 +115,15 @@ export function ChatArea({
           >
             <Settings size={18} />
           </button>
+          {user ? (
+            <button
+              type="button"
+              onClick={onOpenPlans}
+              className="hidden lg:inline-flex h-9 rounded-full items-center justify-center bg-[#4F46E5] px-4 text-xs font-semibold text-white shadow-sm hover:bg-[#4338CA] transition-colors duration-200"
+            >
+              Upgrade to Pro
+            </button>
+          ) : null}
           <button
             type="button"
             onClick={onToggleIncognitoMode}
@@ -167,9 +180,19 @@ export function ChatArea({
           <div className="pointer-events-none absolute -top-32 left-1/2 h-80 w-[38rem] -translate-x-1/2 rounded-full bg-violet-300/25 blur-3xl dark:bg-violet-600/15" />
           <div className="pointer-events-none absolute bottom-[-12rem] right-[-8rem] h-96 w-96 rounded-full bg-sky-200/30 blur-3xl dark:bg-sky-600/10" />
           <div className="relative w-full max-w-5xl mx-auto flex flex-col items-center gap-5 sm:gap-7">
-            <div className="hidden sm:flex items-center gap-2 rounded-full border border-violet-200/80 bg-white/70 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-violet-600 shadow-sm backdrop-blur dark:border-violet-400/20 dark:bg-white/5 dark:text-violet-300">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" /> PRV studio · online
-            </div>
+            {user ? (
+              <button
+                type="button"
+                onClick={onOpenPlans}
+                className="inline-flex items-center gap-2 rounded-full border border-violet-200/80 bg-white/90 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-violet-700 shadow-sm transition-colors hover:bg-violet-50 backdrop-blur dark:border-violet-400/20 dark:bg-violet-950/80 dark:text-violet-200 dark:hover:bg-violet-900"
+              >
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" /> Upgrade to Pro
+              </button>
+            ) : (
+              <div className="hidden sm:flex items-center gap-2 rounded-full border border-violet-200/80 bg-white/70 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-violet-600 shadow-sm backdrop-blur dark:border-violet-400/20 dark:bg-white/5 dark:text-violet-300">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" /> PRV studio · online
+              </div>
+            )}
             {user ? (
               <div className="text-center">
                 <h1 className={`text-3xl sm:text-5xl font-semibold tracking-[-0.04em] ${isIncognitoMode ? 'text-white' : 'text-slate-950 dark:text-white'}`}>Make something <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-sky-400 bg-clip-text text-transparent">remarkable.</span></h1>

@@ -4,6 +4,8 @@ export interface Attachment {
   data: string; // base64 encoded
 }
 
+export type PlanTier = 'free' | 'education' | 'pro' | 'legend';
+
 export interface Message {
   id: string;
   role: 'user' | 'assistant';

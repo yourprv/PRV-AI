@@ -45,6 +45,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [webSearchEnabled, setWebSearchEnabled] = useState(false);
   const [renameChatId, setRenameChatId] = useState<string | null>(null);
+  const { planTier } = usePlan();
   const [renameTitle, setRenameTitle] = useState('');
   const [deleteChatId, setDeleteChatId] = useState<string | null>(null);
   const [showCustomPRV, setShowCustomPRV] = useState(false);
@@ -149,6 +150,10 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   // Handle settings click
   const handleSettingsClick = useCallback(() => {
     navigate('/settings');
+  }, [navigate]);
+
+  const handleOpenPlans = useCallback(() => {
+    navigate('/plans');
   }, [navigate]);
 
   const handleSelectCustomPRV = useCallback((nextCustomPrv: CustomPRV) => {
@@ -740,6 +745,8 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
           onDeleteChat={handleDeleteChat}
           onCustomPRV={() => setShowCustomPRV(true)}
           onSettingsClick={handleSettingsClick}
+          planTier={planTier}
+          onOpenPlans={handleOpenPlans}
         />
       </div>
 
@@ -758,6 +765,8 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
             onDeleteChat={handleDeleteChat}
             onCustomPRV={() => setShowCustomPRV(true)}
             onSettingsClick={handleSettingsClick}
+            planTier={planTier}
+            onOpenPlans={handleOpenPlans}
           />
       </div>
 
@@ -789,6 +798,8 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
           isIncognitoMode={isIncognitoMode}
           onToggleIncognitoMode={handleToggleIncognitoMode}
           onGuestFeatureRequest={() => setShowBenefitsModal(true)}
+          onOpenPlans={handleOpenPlans}
+          planTier={planTier}
         />
       </main>
 

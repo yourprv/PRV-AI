@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router'
 import Home from './pages/Home'
 import AuthCallback from './pages/AuthCallback'
 import { Settings } from './pages/Settings'
+import Plans from './pages/Plans'
 import { Toaster } from '@/components/ui/sonner'
 import TurnstileGate from './components/TurnstileGate'
 
@@ -32,6 +33,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home turnstileToken={turnstileToken ?? undefined} />} />
         <Route path="/chat/:chatId" element={<Home turnstileToken={turnstileToken ?? undefined} />} />
+        <Route path="/plans" element={<Plans />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/settings" element={<Settings onBack={() => window.history.back()} />} />
       </Routes>

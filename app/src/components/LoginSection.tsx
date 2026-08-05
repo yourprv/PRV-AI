@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { LogIn, LogOut, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { AuthModal } from './AuthModal';
+import type { PlanTier } from '@/types/chat';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,9 +15,11 @@ import {
 
 interface LoginSectionProps {
   isExpanded?: boolean;
+  planTier?: PlanTier;
+  onOpenPlans: () => void;
 }
 
-export function LoginSection({ isExpanded = true }: LoginSectionProps) {
+export function LoginSection({ isExpanded = true, planTier = 'free', onOpenPlans }: LoginSectionProps) {
   const { user, getInitials, logout } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
@@ -105,6 +108,20 @@ export function LoginSection({ isExpanded = true }: LoginSectionProps) {
           {/* Dropdown menu */}
           {isMenuOpen && (
             <div className="absolute bottom-full mb-2 left-0 right-0 bg-white dark:bg-[#374151] rounded-lg shadow-lg border border-[#E5E7EB] dark:border-[#4B5563] overflow-hidden z-50">
+              <div className="px-3 py-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                <p className="text-[12px] uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">Current plan</p>
+                <p className="mt-1 text-sm font-semibold text-slate-900 dark:text-white">{planTier ? planTier.charAt(0).toUpperCase() + planTier.slice(1) : 'Free'}</p>
+              </div>
+              <button
+                onClick={() => {
+                  onOpenPlans();
+                  setIsMenuOpen(false);
+                }}
+                className="w-full px-3 py-2.5 text-[13px] text-left flex items-center gap-2 text-[#4F46E5] hover:bg-[#EEF2FF] dark:hover:bg-[#2D3A5A] transition-colors"
+              >
+                <span className="h-2.5 w-2.5 rounded-full bg-[#4F46E5]" />
+                <span>{planTier === 'legend' ? 'Manage plan' : 'Upgrade or manage'}</span>
+              </button>
               <button
                 onClick={handleLogoutClick}
                 className="w-full px-3 py-2.5 text-[13px] text-left flex items-center gap-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"

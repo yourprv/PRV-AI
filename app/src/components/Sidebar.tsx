@@ -12,7 +12,7 @@ import {
   Settings,
 } from 'lucide-react';
 import { LoginSection } from './LoginSection';
-import type { Chat } from '@/types/chat';
+import type { Chat, PlanTier } from '@/types/chat';
 
 interface SidebarProps {
   isExpanded: boolean;
@@ -26,6 +26,8 @@ interface SidebarProps {
   onDeleteChat: (chatId: string) => void;
   onCustomPRV: () => void;
   onSettingsClick: () => void;
+  planTier?: PlanTier;
+  onOpenPlans: () => void;
 }
 
 export function Sidebar({
@@ -40,6 +42,8 @@ export function Sidebar({
   onDeleteChat,
   onCustomPRV,
   onSettingsClick,
+  planTier = 'free',
+  onOpenPlans,
 }: SidebarProps) {
   const [chatsExpanded, setChatsExpanded] = useState(true);
 
@@ -158,7 +162,7 @@ export function Sidebar({
 
         {/* Login/Avatar at bottom */}
         <div className="flex justify-center">
-          <LoginSection isExpanded={false} />
+          <LoginSection isExpanded={false} planTier={planTier} onOpenPlans={onOpenPlans} />
         </div>
       </aside>
     );
@@ -285,7 +289,7 @@ export function Sidebar({
 
       {/* Login section */}
       <div className="px-3 py-3">
-        <LoginSection isExpanded={true} />
+        <LoginSection isExpanded={true} planTier={planTier} onOpenPlans={onOpenPlans} />
       </div>
     </aside>
   );
