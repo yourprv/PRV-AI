@@ -739,6 +739,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
           onRenameChat={handleRenameChat}
           onDeleteChat={handleDeleteChat}
           onCustomPRV={() => setShowCustomPRV(true)}
+          onSettingsClick={handleSettingsClick}
         />
       </div>
 
@@ -756,6 +757,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
             onRenameChat={handleRenameChat}
             onDeleteChat={handleDeleteChat}
             onCustomPRV={() => setShowCustomPRV(true)}
+            onSettingsClick={handleSettingsClick}
           />
       </div>
 

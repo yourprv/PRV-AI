@@ -88,11 +88,11 @@ export function ChatArea({
           <button
             type="button"
             onClick={onToggleSidebar}
-            className="mr-1.5 flex h-9 shrink-0 items-center gap-1 rounded-lg px-2 text-[#6B7280] transition-colors hover:bg-[#F5F5F7] hover:text-[#111827] dark:text-[#9CA3AF] dark:hover:bg-[#374151] dark:hover:text-[#F3F4F6] lg:hidden"
+            className="mr-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-[#4F46E5] shadow-sm transition-colors hover:bg-violet-50 hover:text-[#4338CA] dark:border-slate-700 dark:bg-slate-800 dark:text-violet-300 dark:hover:bg-slate-700 lg:hidden"
             aria-label="Open chat history"
+            title="Open chat history"
           >
-            <Menu size={20} />
-            <span className="text-xs font-medium">Chats</span>
+            <Menu size={21} />
           </button>
           <ModelSelector
             selected={currentModel}
@@ -105,19 +105,20 @@ export function ChatArea({
         <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
           <button
             type="button"
+            onClick={onSettingsClick}
+            className="hidden h-9 w-9 items-center justify-center rounded-lg text-[#6B7280] transition-colors hover:bg-[#F5F5F7] hover:text-[#111827] dark:text-[#9CA3AF] dark:hover:bg-[#374151] dark:hover:text-[#F3F4F6] lg:flex"
+            aria-label="Settings"
+          >
+            <Settings size={18} />
+          </button>
+          <button
+            type="button"
             onClick={onToggleIncognitoMode}
             className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-2 text-xs sm:text-sm font-medium transition-colors duration-200 ${isIncognitoMode ? 'bg-[#4F46E5] text-white shadow-sm' : 'text-[#6B7280] hover:text-[#111827] hover:bg-[#F5F5F7] dark:text-[#9CA3AF] dark:hover:text-[#F3F4F6] dark:hover:bg-[#374151]'}`}
             aria-label="Toggle incognito mode"
           >
             <EyeOff size={16} />
             <span className="hidden sm:inline">{isIncognitoMode ? 'Private' : 'Incognito'}</span>
-          </button>
-          <button
-            onClick={onSettingsClick}
-            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-lg text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] hover:bg-[#F5F5F7] dark:hover:bg-[#374151] transition-colors duration-200"
-            aria-label="Settings"
-          >
-            <Settings size={18} />
           </button>
           <button
             onClick={toggleTheme}

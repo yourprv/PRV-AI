@@ -9,6 +9,7 @@ import {
   Pencil,
   Trash2,
   Code2,
+  Settings,
 } from 'lucide-react';
 import { LoginSection } from './LoginSection';
 import type { Chat } from '@/types/chat';
@@ -24,6 +25,7 @@ interface SidebarProps {
   onRenameChat: (chatId: string) => void;
   onDeleteChat: (chatId: string) => void;
   onCustomPRV: () => void;
+  onSettingsClick: () => void;
 }
 
 export function Sidebar({
@@ -37,6 +39,7 @@ export function Sidebar({
   onRenameChat,
   onDeleteChat,
   onCustomPRV,
+  onSettingsClick,
 }: SidebarProps) {
   const [chatsExpanded, setChatsExpanded] = useState(true);
 
@@ -205,6 +208,14 @@ export function Sidebar({
         >
           <Search size={16} className="text-[#6B7280] dark:text-[#9CA3AF]" />
           Search Chats
+        </button>
+        <button
+          type="button"
+          onClick={onSettingsClick}
+          className="lg:hidden w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-[14px] text-[#374151] dark:text-[#D1D5DB] hover:bg-[#F5F5F7] dark:hover:bg-[#374151] hover:text-[#111827] dark:hover:text-[#F3F4F6] transition-colors duration-200"
+        >
+          <Settings size={16} className="text-[#6B7280] dark:text-[#9CA3AF]" />
+          Settings
         </button>
         <div className="relative">
           <button
