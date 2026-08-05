@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { ArrowUp, Plus, MoreHorizontal, Sparkles, X, UploadCloud, Globe, ImagePlus, PanelTop } from 'lucide-react';
+import { ArrowUp, Plus, Sparkles, X, UploadCloud, Globe, ImagePlus, PanelTop } from 'lucide-react';
 import { toast } from 'sonner';
 import { ModeSelector } from './ModeSelector';
 import type { ModeType } from '@/types/chat';
@@ -23,7 +23,6 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
   const [text, setText] = useState('');
   const [attachments, setAttachments] = useState<File[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [attachmentMenuOpen, setAttachmentMenuOpen] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [imageGenerationEnabled, setImageGenerationEnabled] = useState(false);
   const [canvasEnabled, setCanvasEnabled] = useState(false);
@@ -42,7 +41,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
   }, [text]);
 
   useEffect(() => {
-    if (!menuOpen && !attachmentMenuOpen) return;
+    if (!menuOpen) return;
 
     const handleDocumentClick = (event: MouseEvent) => {
       if (
@@ -53,12 +52,11 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
       }
 
       setMenuOpen(false);
-      setAttachmentMenuOpen(false);
     };
 
     document.addEventListener('click', handleDocumentClick);
     return () => document.removeEventListener('click', handleDocumentClick);
-  }, [menuOpen, attachmentMenuOpen]);
+  }, [menuOpen]);
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -85,7 +83,6 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
       return;
     }
     setMenuOpen(false);
-    setAttachmentMenuOpen(false);
     onSend(trimmed, attachments.length > 0 ? attachments : undefined, imageGenerationEnabled, canvasEnabled);
     setText('');
     setAttachments([]);
@@ -108,14 +105,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
 
   const toggleMenu = useCallback(() => {
     if (isLoading) return;
-    setAttachmentMenuOpen(false);
     setMenuOpen((prev) => !prev);
-  }, [isLoading]);
-
-  const toggleAttachmentMenu = useCallback(() => {
-    if (isLoading) return;
-    setMenuOpen(false);
-    setAttachmentMenuOpen((previous) => !previous);
   }, [isLoading]);
 
   const toggleImageGeneration = useCallback(() => {
@@ -127,18 +117,15 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
     }
     setImageGenerationEnabled((previous) => !previous);
     setMenuOpen(false);
-    setAttachmentMenuOpen(false);
   }, [guestMode, onGuestFeatureRequest]);
 
   const toggleCanvas = useCallback(() => {
     setCanvasEnabled((previous) => !previous);
     setMenuOpen(false);
-    setAttachmentMenuOpen(false);
   }, []);
 
   const handleAddAttachment = useCallback(() => {
     setMenuOpen(false);
-    setAttachmentMenuOpen(false);
     if (guestMode && attachments.length >= 3) {
       onGuestFeatureRequest?.();
       toast('Guest uploads are limited to 3 photos. Sign in for richer attachment support.', { icon: '📸' });
@@ -256,32 +243,27 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
             <div className="relative flex items-center gap-1">
               <button
                 type="button"
-                onClick={toggleAttachmentMenu}
+                onClick={toggleMenu}
                 className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#0F172A] text-[#6B7280] hover:text-[#111827] dark:hover:text-[#F9FAFB] shadow-sm transition-all duration-200 active:scale-95"
                 aria-label="Open attachment menu"
                 title="Add attachment"
               >
                 <Plus size={20} />
               </button>
-              {attachmentMenuOpen && (
-                <div className="absolute bottom-full left-0 mb-2 w-64 overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white shadow-xl dark:border-[#374151] dark:bg-[#111827] z-50">
-                  <button type="button" onClick={handleAddAttachment} className="flex w-full items-start gap-3 px-4 py-4 text-left hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937]"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EEF2FF] text-[#1E40AF] dark:bg-[#4338CA] dark:text-[#E0E7FF]"><UploadCloud size={18} /></span><span><span className="block text-sm font-medium text-[#111827] dark:text-[#F8FAFC]">Add files and photos</span><span className="mt-0.5 block text-xs text-[#6B7280] dark:text-[#9CA3AF]">Upload documents, images, video, or audio</span></span></button>
-                </div>
-              )}
-              <button type="button" onClick={toggleMenu} className="ml-1 flex h-9 w-9 items-center justify-center rounded-full border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#0F172A] text-[#6B7280] hover:text-[#111827] dark:hover:text-[#F9FAFB] shadow-sm transition-all duration-200" aria-label="More tools" title="More tools"><MoreHorizontal size={19} /></button>
               {menuOpen && (
                 <div ref={menuRef} className="absolute bottom-full left-0 mb-2 w-64 sm:w-72 overflow-hidden rounded-2xl sm:rounded-[28px] border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#111827] shadow-xl z-50">
+                  <button type="button" onClick={handleAddAttachment} className="w-full px-3 py-2.5 flex items-center gap-2.5 text-left hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937] transition-colors"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#EEF2FF] text-[#1E40AF] dark:bg-[#4338CA] dark:text-[#E0E7FF]"><UploadCloud size={15} /></span><span><span className="block text-xs font-medium text-[#111827] dark:text-[#F8FAFC]">Add photos &amp; files</span><span className="block text-[10px] text-[#6B7280] dark:text-[#9CA3AF]">Upload from your computer</span></span></button>
                   <button
                     type="button"
                     onClick={toggleImageGeneration}
-                    className={`w-full px-3 sm:px-4 py-3 sm:py-4 flex items-start gap-3 text-left transition-colors ${imageGenerationEnabled ? 'bg-fuchsia-50 dark:bg-fuchsia-950/30' : 'hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937] active:bg-[#F0F0F0] dark:active:bg-[#2D3748]'}`}
+                    className={`w-full px-3 py-2.5 flex items-center gap-2.5 text-left transition-colors ${imageGenerationEnabled ? 'bg-fuchsia-50 dark:bg-fuchsia-950/30' : 'hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937]'}`}
                   >
-                    <span className="flex h-10 sm:h-11 w-10 sm:w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-violet-600 text-white shrink-0">
-                      <ImagePlus size={18} />
+                    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-fuchsia-500 to-violet-600 text-white shrink-0">
+                      <ImagePlus size={15} />
                     </span>
                     <div className="min-w-0">
-                      <div className="font-medium text-xs sm:text-sm text-[#111827] dark:text-[#F8FAFC]">{imageGenerationEnabled ? 'Disable image creation' : 'Create image'}</div>
-                      <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Generate with PRE Image 2.1</p>
+                      <div className="font-medium text-xs text-[#111827] dark:text-[#F8FAFC]">{imageGenerationEnabled ? 'Disable image creation' : 'Create image'}</div>
+                      <p className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF]">Generate with PRE Image 2.1</p>
                     </div>
                   </button>
                   <button type="button" onClick={toggleCanvas} className={`w-full px-3 sm:px-4 py-3 sm:py-4 flex items-start gap-3 text-left transition-colors ${canvasEnabled ? 'bg-slate-100 dark:bg-slate-800' : 'hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937] active:bg-[#F0F0F0] dark:active:bg-[#2D3748]'}`}><span className="flex h-10 sm:h-11 w-10 sm:w-11 items-center justify-center rounded-2xl bg-slate-800 text-white shrink-0"><PanelTop size={18} /></span><div className="min-w-0"><div className="font-medium text-xs sm:text-sm text-[#111827] dark:text-[#F8FAFC]">{canvasEnabled ? 'Disable canvas' : 'Canvas'}</div><p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Write emails, essays, and longer drafts</p></div></button>
@@ -426,21 +408,16 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
           <div className="relative flex items-center gap-1">
             <button
               type="button"
-              onClick={toggleAttachmentMenu}
+              onClick={toggleMenu}
               className="w-10 h-10 flex items-center justify-center rounded-full border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#0F172A] text-[#6B7280] hover:text-[#111827] dark:hover:text-[#F9FAFB] shadow-sm transition-all duration-200"
               aria-label="Open attachment menu"
               title="Add attachment"
             >
               <Plus size={20} />
             </button>
-            {attachmentMenuOpen && (
-              <div className="absolute bottom-full left-0 mb-2 w-72 overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white shadow-xl dark:border-[#374151] dark:bg-[#111827] z-50">
-                <button type="button" onClick={handleAddAttachment} className="flex w-full items-start gap-3 px-4 py-4 text-left hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937]"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#EEF2FF] text-[#1E40AF] dark:bg-[#4338CA] dark:text-[#E0E7FF]"><UploadCloud size={18} /></span><span><span className="block text-sm font-medium text-[#111827] dark:text-[#F8FAFC]">Add files and photos</span><span className="mt-0.5 block text-xs text-[#6B7280] dark:text-[#9CA3AF]">Upload documents, images, video, or audio</span></span></button>
-              </div>
-            )}
-            <button type="button" onClick={toggleMenu} className="ml-1 flex h-10 w-10 items-center justify-center rounded-full border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#0F172A] text-[#6B7280] hover:text-[#111827] dark:hover:text-[#F9FAFB] shadow-sm transition-all duration-200" aria-label="More tools" title="More tools"><MoreHorizontal size={19} /></button>
             {menuOpen && (
-              <div ref={menuRef} className="absolute bottom-full left-0 mb-2 w-72 overflow-hidden rounded-[28px] border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#111827] shadow-xl z-50">
+                <div ref={menuRef} className="absolute bottom-full left-0 mb-2 w-72 overflow-hidden rounded-[28px] border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#111827] shadow-xl z-50">
+                <button type="button" onClick={handleAddAttachment} className="w-full px-4 py-3 flex items-center gap-3 text-left hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937]"><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#EEF2FF] text-[#1E40AF] dark:bg-[#4338CA] dark:text-[#E0E7FF]"><UploadCloud size={16} /></span><span><span className="block text-sm font-medium text-[#111827] dark:text-[#F8FAFC]">Add photos &amp; files</span><span className="block text-[11px] text-[#6B7280] dark:text-[#9CA3AF]">Upload from your computer</span></span></button>
                 <button
                   type="button"
                   onClick={toggleImageGeneration}
