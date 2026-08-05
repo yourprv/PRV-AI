@@ -156,6 +156,14 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
 
   const canSend = text.trim().length > 0 || attachments.length > 0;
 
+  const focusComposer = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
+    // The controls share this overlay, so a click in its open space should still
+    // behave exactly like clicking the text field.
+    if (!(event.target as HTMLElement).closest('button')) {
+      textareaRef.current?.focus();
+    }
+  }, []);
+
   if (isEmptyState) {
     // Centered empty state input
     return (
@@ -239,7 +247,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
           />
 
           {/* Bottom controls */}
-          <div ref={menuRootRef} className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
+          <div ref={menuRootRef} onMouseDown={focusComposer} className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
             <div className="relative flex items-center gap-1">
               <button
                 type="button"
@@ -404,7 +412,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
           accept=".pdf,.txt,.csv,.json,.html,.md,.png,.jpeg,.webp,.heic,.gif,.mp3,.wav,.aac,.flac,.m4a,.opus,.mp4,.mov,.webm,.avi,.mpeg,.wmv,.3gpp"
         />
 
-        <div ref={menuRootRef} className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
+        <div ref={menuRootRef} onMouseDown={focusComposer} className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
           <div className="relative flex items-center gap-1">
             <button
               type="button"

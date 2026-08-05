@@ -725,7 +725,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   }, [sidebarExpanded]);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-white dark:bg-[#0F172A]">
+    <div className="flex h-screen w-full max-w-full overflow-hidden bg-white dark:bg-[#0F172A]">
       {/* Sidebar - Hidden on mobile, visible on desktop */}
       <div className="hidden lg:block">
         <Sidebar
