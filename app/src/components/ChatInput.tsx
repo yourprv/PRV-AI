@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { ArrowUp, Plus, Sparkles, X, UploadCloud, Globe } from 'lucide-react';
+import { ArrowUp, Plus, Sparkles, X, UploadCloud, Globe, ImagePlus } from 'lucide-react';
 import { toast } from 'sonner';
 import { ModeSelector } from './ModeSelector';
 import type { ModeType } from '@/types/chat';
 
 interface ChatInputProps {
-  onSend: (message: string, attachments?: File[]) => void;
+  onSend: (message: string, attachments?: File[], createImage?: boolean) => void;
   guestMode?: boolean;
   onGuestFeatureRequest?: () => void;
   isLoading: boolean;
@@ -24,6 +24,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
   const [attachments, setAttachments] = useState<File[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
+  const [imageGenerationEnabled, setImageGenerationEnabled] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const menuRootRef = useRef<HTMLDivElement>(null);
@@ -76,14 +77,18 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
     const trimmed = text.trim();
     const hasContent = trimmed.length > 0 || attachments.length > 0;
     if (!hasContent || isLoading) return;
+    if (imageGenerationEnabled && !trimmed) {
+      toast.error('Describe the image you want to create first.');
+      return;
+    }
     setMenuOpen(false);
-    onSend(trimmed, attachments.length > 0 ? attachments : undefined);
+    onSend(trimmed, attachments.length > 0 ? attachments : undefined, imageGenerationEnabled);
     setText('');
     setAttachments([]);
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
     }
-  }, [text, isLoading, onSend, attachments]);
+  }, [text, isLoading, onSend, attachments, imageGenerationEnabled]);
 
   const handleEnhance = useCallback(async () => {
     if (!onEnhancePrompt || !text.trim() || isLoading || isEnhancing) return;
@@ -101,6 +106,11 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
     if (isLoading) return;
     setMenuOpen((prev) => !prev);
   }, [isLoading]);
+
+  const toggleImageGeneration = useCallback(() => {
+    setImageGenerationEnabled((previous) => !previous);
+    setMenuOpen(false);
+  }, []);
 
   const handleAddAttachment = useCallback(() => {
     setMenuOpen(false);
@@ -140,7 +150,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
       <div className="w-full max-w-[720px] mx-auto px-3 sm:px-0">
         <div className="relative rounded-2xl sm:rounded-[32px] border border-[#E5E7EB] dark:border-[#374151] bg-white/95 dark:bg-[#111827]/95 shadow-[0_20px_70px_-35px_rgba(15,23,42,0.8)] transition-all duration-300 pb-12 sm:pb-12">
           {/* Attachments display */}
-          {(attachments.length > 0 || webSearchEnabled || isSearchingWeb) && (
+          {(attachments.length > 0 || webSearchEnabled || isSearchingWeb || imageGenerationEnabled) && (
             <div className="px-3 sm:px-4 pt-3 pb-2 space-y-2">
               <div className="flex flex-wrap gap-2">
                 {attachments.map((file, idx) => (
@@ -176,6 +186,18 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
                   <X size={12} />
                 </button>
               ) : null}
+              {imageGenerationEnabled && (
+                <button
+                  type="button"
+                  onClick={toggleImageGeneration}
+                  className="inline-flex items-center gap-2 rounded-full border border-fuchsia-200 bg-fuchsia-50 px-3 py-1.5 text-[11px] text-fuchsia-700 dark:border-fuchsia-500/40 dark:bg-fuchsia-950/40 dark:text-fuchsia-200"
+                  aria-label="Disable image creation"
+                >
+                  <ImagePlus size={14} />
+                  <span>Image creation enabled</span>
+                  <X size={12} />
+                </button>
+              )}
             </div>
           )}
 
@@ -185,7 +207,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="How can I help you today?"
+            placeholder={imageGenerationEnabled ? 'Describe the image you want to create...' : 'How can I help you today?'}
             rows={1}
             className="w-full min-h-11 sm:min-h-[42px] rounded-xl sm:rounded-[24px] border border-transparent bg-[#F8FAFC] dark:bg-[#111827] px-3 sm:px-4 py-2 sm:py-2 text-sm sm:text-[15px] text-[#111827] dark:text-[#E5E7EB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:border-[#D1D5DB] dark:focus:border-[#4B5563] focus:ring-0 focus:bg-white dark:focus:bg-[#111827] focus:outline-none resize-none leading-relaxed"
             aria-label="Chat input"
@@ -226,6 +248,19 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
                     <div className="min-w-0">
                       <div className="font-medium text-xs sm:text-sm text-[#111827] dark:text-[#F8FAFC]">Upload attachment</div>
                       <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Files, images, video, or audio</p>
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={toggleImageGeneration}
+                    className={`w-full px-3 sm:px-4 py-3 sm:py-4 flex items-start gap-3 text-left transition-colors ${imageGenerationEnabled ? 'bg-fuchsia-50 dark:bg-fuchsia-950/30' : 'hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937] active:bg-[#F0F0F0] dark:active:bg-[#2D3748]'}`}
+                  >
+                    <span className="flex h-10 sm:h-11 w-10 sm:w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-violet-600 text-white shrink-0">
+                      <ImagePlus size={18} />
+                    </span>
+                    <div className="min-w-0">
+                      <div className="font-medium text-xs sm:text-sm text-[#111827] dark:text-[#F8FAFC]">{imageGenerationEnabled ? 'Disable image creation' : 'Create image'}</div>
+                      <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Generate with Flux 1 Schnell</p>
                     </div>
                   </button>
                   <button
@@ -290,7 +325,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
     <div className="w-full max-w-[720px] mx-auto px-1 sm:px-0">
       <div className="relative rounded-2xl sm:rounded-[32px] border border-[#E5E7EB] dark:border-[#374151] bg-white/95 dark:bg-[#111827]/95 shadow-[0_12px_35px_-24px_rgba(15,23,42,0.8)] sm:shadow-[0_20px_70px_-35px_rgba(15,23,42,0.8)] transition-all duration-300 pb-11 sm:pb-12">
         {/* Attachments display */}
-        {(attachments.length > 0 || webSearchEnabled || isSearchingWeb) && (
+          {(attachments.length > 0 || webSearchEnabled || isSearchingWeb || imageGenerationEnabled) && (
           <div className="px-3 sm:px-4 pt-3 pb-2 space-y-2">
             <div className="flex flex-wrap gap-2">
               {attachments.map((file, idx) => (
@@ -314,7 +349,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
                   <span className="inline-flex h-2 w-2 rounded-full bg-[#1D4ED8] dark:bg-[#BFDBFE] animate-pulse" />
                 </span>
               </div>
-            ) : webSearchEnabled ? (
+              ) : webSearchEnabled ? (
               <button
                 type="button"
                 onClick={onToggleWebSearch}
@@ -326,6 +361,18 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
                 <X size={12} />
               </button>
             ) : null}
+            {imageGenerationEnabled && (
+              <button
+                type="button"
+                onClick={toggleImageGeneration}
+                className="inline-flex items-center gap-2 rounded-full border border-fuchsia-200 bg-fuchsia-50 px-3 py-1.5 text-[11px] text-fuchsia-700 dark:border-fuchsia-500/40 dark:bg-fuchsia-950/40 dark:text-fuchsia-200"
+                aria-label="Disable image creation"
+              >
+                <ImagePlus size={14} />
+                <span>Image creation enabled</span>
+                <X size={12} />
+              </button>
+            )}
           </div>
         )}
 
@@ -334,7 +381,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="How can I help you today?"
+          placeholder={imageGenerationEnabled ? 'Describe the image you want to create...' : 'How can I help you today?'}
           rows={1}
           className="w-full min-h-11 sm:min-h-[58px] rounded-xl sm:rounded-[24px] border border-transparent bg-[#F8FAFC] dark:bg-[#111827] px-3 sm:px-4 py-2 sm:py-3.5 text-[15px] text-[#111827] dark:text-[#E5E7EB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:border-[#6366F1] dark:focus:border-[#8B5CF6] focus:bg-white dark:focus:bg-[#111827] focus:outline-none resize-none leading-relaxed"
           aria-label="Chat input"
@@ -374,6 +421,19 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
                   <div>
                     <div className="font-medium text-sm text-[#111827] dark:text-[#F8FAFC]">Upload attachment</div>
                     <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Files, images, video, or audio</p>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={toggleImageGeneration}
+                  className={`w-full px-4 py-4 flex items-start gap-3 text-left transition-colors ${imageGenerationEnabled ? 'bg-fuchsia-50 dark:bg-fuchsia-950/30' : 'hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937]'}`}
+                >
+                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-violet-600 text-white shrink-0">
+                    <ImagePlus size={18} />
+                  </span>
+                  <div>
+                    <div className="font-medium text-sm text-[#111827] dark:text-[#F8FAFC]">{imageGenerationEnabled ? 'Disable image creation' : 'Create image'}</div>
+                    <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Generate with Flux 1 Schnell</p>
                   </div>
                 </button>
                 <button

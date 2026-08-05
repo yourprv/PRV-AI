@@ -27,7 +27,7 @@ interface ChatAreaProps {
   onEnhancePrompt: (prompt: string) => Promise<string>;
   mode: ModeType;
   onModeChange: (mode: ModeType) => void;
-  onSend: (message: string, attachments?: File[]) => void;
+  onSend: (message: string, attachments?: File[], createImage?: boolean) => void;
   onRegenerate: (messageId: string) => void;
   customPrv?: CustomPRV | null;
   sidebarExpanded: boolean;

@@ -22,6 +22,8 @@ This Express + TypeScript backend hosts the API routes that were previously exec
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `TURNSTILE_SECRET_KEY`
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_API_TOKEN` (Workers AI token with Workers AI Read and Edit permissions)
 
 The backend reads these environment variables directly. Do not use `VITE_` prefixes in `backend/.env`.
 

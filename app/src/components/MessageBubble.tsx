@@ -142,11 +142,12 @@ export function MessageBubble({ message, onRegenerate, isLatest, isLoading }: Me
                 />
               </div>
             ) : (
-              <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5 prose-pre:my-2 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:bg-black/5 dark:prose-code:bg-white/10">
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm, remarkMath]}
-                  rehypePlugins={[rehypeKatex]}
-                  components={{
+              <>
+                <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5 prose-pre:my-2 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:bg-black/5 dark:prose-code:bg-white/10">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm, remarkMath]}
+                    rehypePlugins={[rehypeKatex]}
+                    components={{
                     pre({ children }) {
                       const codeElement = Children.toArray(children)[0];
                       if (isValidElement(codeElement)) {
@@ -168,11 +169,19 @@ export function MessageBubble({ message, onRegenerate, isLatest, isLoading }: Me
                         </code>
                       );
                     },
-                  }}
-                >
-                  {message.content}
-                </ReactMarkdown>
-              </div>
+                    }}
+                  >
+                    {message.content}
+                  </ReactMarkdown>
+                </div>
+                {message.imageUrl && (
+                  <img
+                    src={message.imageUrl}
+                    alt="AI generated image"
+                    className="mt-3 max-h-[min(70vh,40rem)] w-full rounded-xl border border-slate-700/80 object-contain shadow-lg"
+                  />
+                )}
+              </>
             )}
           </div>
 

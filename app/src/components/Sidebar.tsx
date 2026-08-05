@@ -8,6 +8,7 @@ import {
   MessageSquare,
   Pencil,
   Trash2,
+  Code2,
 } from 'lucide-react';
 import { LoginSection } from './LoginSection';
 import type { Chat } from '@/types/chat';
@@ -215,6 +216,23 @@ export function Sidebar({
             <span>Custom PRV</span>
             <span className="ml-auto rounded-full border border-violet-300/70 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-violet-600 dark:border-violet-400/30 dark:text-violet-300">Experimental</span>
           </button>
+        </div>
+        <div className="group relative">
+          <button
+            type="button"
+            disabled
+            aria-disabled="true"
+            className="flex w-full cursor-not-allowed items-center gap-2.5 rounded-lg px-2 py-2 text-left text-[14px] text-slate-500 opacity-80 transition-colors dark:text-slate-400"
+          >
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-fuchsia-500 via-violet-600 to-sky-500 text-white shadow-sm shadow-violet-500/25">
+              <Code2 size={14} strokeWidth={2.5} />
+            </span>
+            <span className="font-medium">Poder</span>
+            <span className="ml-auto rounded-full border border-slate-300 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:border-slate-600 dark:text-slate-400">Coming soon</span>
+          </button>
+          <div className="pointer-events-none absolute left-2 top-full z-50 mt-2 hidden w-72 rounded-xl border border-slate-200 bg-slate-950 px-3 py-2.5 text-xs leading-5 text-slate-100 shadow-xl group-hover:block group-focus-within:block dark:border-slate-700">
+            The same powerful coding agent—now in PRV. The frontier-level No Code AI Builder and AI code editor inside your browser.
+          </div>
         </div>
       </div>
 

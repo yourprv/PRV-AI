@@ -13,7 +13,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import type { Chat, CustomPRV, Message, ModelId, ModeType } from '@/types/chat';
-import { enhancePrompt, listChats, removeChat, saveChat } from '@/lib/api';
+import { enhancePrompt, generateImage as generateImageFromPrompt, listChats, removeChat, saveChat } from '@/lib/api';
 
 // Generate unique IDs
 function generateId(): string {
@@ -270,7 +270,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
 
   // Handle send message
   const handleSend = useCallback(
-    async (content: string, attachmentFiles?: File[]) => {
+    async (content: string, attachmentFiles?: File[], createImage = false) => {
       // Create or update chat
       let chatId = activeChatId;
       const conversationHistory = activeChatId
@@ -336,6 +336,51 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
             : c
         )
       );
+
+      if (createImage) {
+        setIsLoading(true);
+        const imageController = new AbortController();
+        setRequestController(imageController);
+        const assistantMessageId = generateId();
+        const imagePlaceholder: Message = {
+          id: assistantMessageId,
+          role: 'assistant',
+          content: 'Creating your image…',
+          timestamp: Date.now(),
+          mode,
+        };
+
+        setChats((prev) => prev.map((c) => c.id === chatId
+          ? { ...c, messages: [...c.messages, imagePlaceholder], updatedAt: Date.now() }
+          : c));
+
+        try {
+          const { imageUrl } = await generateImageFromPrompt({
+            prompt: content,
+            turnstileToken,
+            signal: imageController.signal,
+          });
+          const generatedImageMessage: Message = {
+            ...imagePlaceholder,
+            content: `Generated image for: ${content}`,
+            imageUrl,
+          };
+          setChats((prev) => prev.map((c) => c.id === chatId
+            ? { ...c, messages: c.messages.map((message) => message.id === assistantMessageId ? generatedImageMessage : message), updatedAt: Date.now() }
+            : c));
+        } catch (error) {
+          const message = imageController.signal.aborted
+            ? 'Image creation cancelled.'
+            : error instanceof Error ? error.message : 'I could not create that image right now.';
+          setChats((prev) => prev.map((c) => c.id === chatId
+            ? { ...c, messages: c.messages.map((item) => item.id === assistantMessageId ? { ...imagePlaceholder, content: message } : item), updatedAt: Date.now() }
+            : c));
+        } finally {
+          setRequestController(null);
+          setIsLoading(false);
+        }
+        return;
+      }
 
       // Send the message to Gemini through the selected mode and model
       const willSearchWeb = webSearchEnabled && content.trim().length > 0;

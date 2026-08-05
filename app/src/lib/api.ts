@@ -51,6 +51,29 @@ export function setStoredAuthToken(token: string | null): void {
   }
 }
 
+export async function generateImage({ prompt, turnstileToken, signal }: {
+  prompt: string;
+  turnstileToken?: string;
+  signal?: AbortSignal;
+}): Promise<{ imageUrl: string }> {
+  const response = await fetch(`${getApiBaseUrl()}/api/images/generate`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(turnstileToken ? { 'X-Turnstile-Token': turnstileToken } : {}),
+    },
+    body: JSON.stringify({ prompt, turnstileToken }),
+    signal,
+  });
+
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new Error(detail || `Image generation failed with status ${response.status}`);
+  }
+
+  return response.json() as Promise<{ imageUrl: string }>;
+}
+
 export async function refreshAuthSession(): Promise<StoredAuthSession | null> {
   const session = getStoredAuthSession();
   if (!session?.refreshToken) {

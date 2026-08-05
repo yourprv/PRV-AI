@@ -12,6 +12,7 @@ export interface Message {
   thinking?: string;
   mode?: ModeType;
   attachments?: Attachment[];
+  imageUrl?: string;
 }
 
 export type ModeType = 'auto' | 'thinking' | 'fast';

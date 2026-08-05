@@ -20,6 +20,8 @@ const TAVILY_API_KEY = process.env.TAVILY_API_KEY || '';
 const SUPABASE_URL = process.env.SUPABASE_URL || '';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY || '';
+const CLOUDFLARE_ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID || '';
+const CLOUDFLARE_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN || '';
 
 const GEMINI_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 const ALLOWED_ORIGINS = [
@@ -444,6 +446,49 @@ app.post('/api/turnstile/verify', async (req: Request, res: ExpressResponse) => 
   } catch (error) {
     console.error('Turnstile verification error:', error);
     res.status(500).json({ message: 'Unable to verify Turnstile token.' });
+  }
+});
+
+app.post('/api/images/generate', async (req: Request, res: ExpressResponse) => {
+  const { prompt, turnstileToken } = req.body as { prompt?: string; turnstileToken?: string };
+  const trimmedPrompt = prompt?.trim().slice(0, 2048) || '';
+
+  if (!trimmedPrompt) {
+    res.status(400).json({ error: 'A prompt is required to create an image.' });
+    return;
+  }
+  if (!turnstileToken || !(hasValidTurnstileSession(turnstileToken) || await verifyTurnstileToken(turnstileToken))) {
+    res.status(403).json({ error: 'Turnstile verification failed.' });
+    return;
+  }
+  if (!CLOUDFLARE_ACCOUNT_ID || !CLOUDFLARE_API_TOKEN) {
+    res.status(500).json({ error: 'Image generation is not configured on the server.' });
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${encodeURIComponent(CLOUDFLARE_ACCOUNT_ID)}/ai/run/@cf/black-forest-labs/flux-1-schnell`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${CLOUDFLARE_API_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: trimmedPrompt, steps: 4 }),
+      },
+    );
+    const data = await response.json() as { result?: { image?: string }; errors?: Array<{ message?: string }> };
+    if (!response.ok || !data.result?.image) {
+      const providerError = data.errors?.map((error) => error.message).filter(Boolean).join(', ');
+      res.status(502).json({ error: providerError || `Cloudflare image generation failed with status ${response.status}.` });
+      return;
+    }
+
+    res.json({ imageUrl: `data:image/jpeg;base64,${data.result.image}` });
+  } catch (error) {
+    console.error('Cloudflare image generation error:', error);
+    res.status(502).json({ error: error instanceof Error ? error.message : 'Image generation failed.' });
   }
 });
 
