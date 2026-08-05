@@ -725,7 +725,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   }, [sidebarExpanded]);
 
   return (
-    <div className="flex h-screen w-full max-w-full overflow-hidden bg-white dark:bg-[#0F172A]">
+    <div className="flex h-[100dvh] w-full max-w-full overflow-hidden bg-white dark:bg-[#0F172A]">
       {/* Sidebar - Hidden on mobile, visible on desktop */}
       <div className="hidden lg:block">
         <Sidebar
@@ -745,7 +745,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
 
       {/* Mobile Sidebar Drawer */}
       {sidebarExpanded && <div className="fixed inset-0 lg:hidden z-40 bg-black/50" onClick={toggleSidebar} aria-hidden="true" />}
-      <div className={`fixed left-0 top-0 h-screen lg:hidden z-50 transition-transform duration-300 ${sidebarExpanded ? 'translate-x-0' : '-translate-x-full'}`} aria-hidden={!sidebarExpanded}>
+      <div className={`fixed left-0 top-0 h-[100dvh] lg:hidden z-50 transition-transform duration-300 ${sidebarExpanded ? 'translate-x-0' : '-translate-x-full'}`} aria-hidden={!sidebarExpanded}>
           <Sidebar
             isExpanded={true}
             onToggle={toggleSidebar}
@@ -762,7 +762,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
       </div>
 
       {/* Main chat area */}
-      <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
+      <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         <ChatArea
           user={user}
           onOpenAuthModal={() => setShowLoginModal(true)}

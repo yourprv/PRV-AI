@@ -81,9 +81,9 @@ export function ChatArea({
     messages[messages.length - 1].content.trim() === '';
 
   return (
-    <div className={`relative flex h-[100dvh] min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden ${isIncognitoMode ? 'bg-[#090b14] text-white' : ''}`}>
+    <div className={`relative flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden ${isIncognitoMode ? 'bg-[#090b14] text-white' : ''}`}>
       {/* Top bar */}
-      <header className={`min-h-14 sm:h-16 flex items-center justify-between px-2.5 sm:px-5 py-1.5 sm:py-0 border-b backdrop-blur-xl shrink-0 z-20 gap-1.5 ${isIncognitoMode ? 'border-white/10 bg-[#0d1020]/95' : 'border-violet-100/80 bg-white/90 dark:border-slate-800 dark:bg-[#111426]/90'}`}>
+      <header className={`relative z-20 min-h-14 shrink-0 flex items-center justify-between gap-1.5 border-b px-2.5 py-1.5 backdrop-blur-xl sm:h-16 sm:px-5 sm:py-0 ${isIncognitoMode ? 'border-white/10 bg-[#0d1020]/95' : 'border-violet-100/80 bg-white/90 dark:border-slate-800 dark:bg-[#111426]/90'}`}>
         <div className="flex items-center flex-1 min-w-0">
           <button
             type="button"

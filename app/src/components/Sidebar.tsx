@@ -166,7 +166,7 @@ export function Sidebar({
 
   // Expanded sidebar
   return (
-    <aside className="h-screen w-[260px] sm:w-[280px] bg-white dark:bg-[#1F2937] border-r border-[#E5E7EB] dark:border-[#374151] flex flex-col shrink-0 transition-all duration-300 z-30">
+    <aside className="h-[100dvh] w-[260px] sm:w-[280px] bg-white dark:bg-[#1F2937] border-r border-[#E5E7EB] dark:border-[#374151] flex flex-col shrink-0 transition-all duration-300 z-30">
       {/* Top section */}
       <div className="px-3 pt-3 pb-2">
         <div className="flex items-center gap-2 mb-3">
