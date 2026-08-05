@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useAuth } from '@/hooks/useAuth';
+import { usePlan } from '@/hooks/usePlan';
 import { Sidebar } from '@/components/Sidebar';
 import { ChatArea } from '@/components/ChatArea';
 import { SearchOverlay } from '@/components/SearchOverlay';
@@ -799,7 +800,6 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
           onToggleIncognitoMode={handleToggleIncognitoMode}
           onGuestFeatureRequest={() => setShowBenefitsModal(true)}
           onOpenPlans={handleOpenPlans}
-          planTier={planTier}
         />
       </main>
 

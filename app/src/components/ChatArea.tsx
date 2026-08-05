@@ -5,7 +5,7 @@ import { MessageBubble } from './MessageBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { ChatInput } from './ChatInput';
 import { ModelSelector } from './ModelSelector';
-import type { CustomPRV, Message, ModelId, ModeType, PlanTier, User } from '@/types/chat';
+import type { CustomPRV, Message, ModelId, ModeType, User } from '@/types/chat';
 
 interface ChatAreaProps {
   user?: User | null;
@@ -34,7 +34,6 @@ interface ChatAreaProps {
   onToggleSidebar: () => void;
   onSettingsClick: () => void;
   onOpenPlans: () => void;
-  planTier?: PlanTier;
 }
 
 export function ChatArea({
@@ -63,7 +62,6 @@ export function ChatArea({
   onToggleSidebar,
   onSettingsClick,
   onOpenPlans,
-  planTier = 'free',
 }: ChatAreaProps) {
   // Private mode temporarily forces the UI dark without changing the saved preference.
   // This means light mode returns when private mode ends, while an existing dark
