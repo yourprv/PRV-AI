@@ -160,7 +160,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
     // Centered empty state input
     return (
       <div className="w-full max-w-[720px] mx-auto px-3 sm:px-0">
-        <div className="relative rounded-2xl border border-[#E5E7EB] dark:border-[#374151] bg-white/95 dark:bg-[#111827]/95 shadow-[0_16px_45px_-28px_rgba(15,23,42,0.8)] transition-all duration-300 pb-11">
+        <div className="relative rounded-2xl border border-[#E5E7EB] dark:border-[#374151] bg-white/95 dark:bg-[#111827]/95 shadow-[0_16px_45px_-28px_rgba(15,23,42,0.8)] transition-all duration-300">
           {/* Attachments display */}
           {(attachments.length > 0 || webSearchEnabled || isSearchingWeb || imageGenerationEnabled || canvasEnabled) && (
             <div className="px-3 sm:px-4 pt-3 pb-2 space-y-2">
@@ -224,7 +224,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
             onKeyDown={handleKeyDown}
             placeholder={imageGenerationEnabled ? 'Describe the image you want to create...' : 'How can I help you today?'}
             rows={1}
-            className="w-full min-h-11 rounded-xl border border-transparent bg-[#F8FAFC] dark:bg-[#111827] px-3 pl-14 pr-40 py-2 text-sm text-[#111827] dark:text-[#E5E7EB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:border-[#D1D5DB] dark:focus:border-[#4B5563] focus:ring-0 focus:bg-white dark:focus:bg-[#111827] focus:outline-none resize-none leading-5"
+            className="w-full min-h-[52px] rounded-2xl border border-transparent bg-[#F8FAFC] dark:bg-[#111827] px-3 pl-14 pr-40 py-4 text-sm text-[#111827] dark:text-[#E5E7EB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:border-[#D1D5DB] dark:focus:border-[#4B5563] focus:ring-0 focus:bg-white dark:focus:bg-[#111827] focus:outline-none resize-none leading-5"
             aria-label="Chat input"
           />
 
@@ -239,7 +239,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
           />
 
           {/* Bottom controls */}
-          <div ref={menuRootRef} className="absolute bottom-1.5 left-2 right-2 flex items-center justify-between">
+          <div ref={menuRootRef} className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
             <div className="relative flex items-center gap-1">
               <button
                 type="button"
@@ -327,7 +327,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
   // Bottom-fixed input for active chat
   return (
     <div className="w-full max-w-[720px] mx-auto px-1 sm:px-0">
-      <div className="relative rounded-2xl border border-[#E5E7EB] dark:border-[#374151] bg-white/95 dark:bg-[#111827]/95 shadow-[0_12px_35px_-24px_rgba(15,23,42,0.8)] transition-all duration-300 pb-11">
+      <div className="relative rounded-2xl border border-[#E5E7EB] dark:border-[#374151] bg-white/95 dark:bg-[#111827]/95 shadow-[0_12px_35px_-24px_rgba(15,23,42,0.8)] transition-all duration-300">
         {/* Attachments display */}
           {(attachments.length > 0 || webSearchEnabled || isSearchingWeb || imageGenerationEnabled || canvasEnabled) && (
           <div className="px-3 sm:px-4 pt-3 pb-2 space-y-2">
@@ -390,7 +390,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
           onKeyDown={handleKeyDown}
           placeholder={imageGenerationEnabled ? 'Describe the image you want to create...' : 'How can I help you today?'}
           rows={1}
-          className="w-full min-h-11 rounded-xl border border-transparent bg-[#F8FAFC] dark:bg-[#111827] px-3 pl-14 pr-40 py-2 text-sm text-[#111827] dark:text-[#E5E7EB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:border-[#6366F1] dark:focus:border-[#8B5CF6] focus:bg-white dark:focus:bg-[#111827] focus:outline-none resize-none leading-5"
+          className="w-full min-h-[52px] rounded-2xl border border-transparent bg-[#F8FAFC] dark:bg-[#111827] px-3 pl-14 pr-40 py-4 text-sm text-[#111827] dark:text-[#E5E7EB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:border-[#6366F1] dark:focus:border-[#8B5CF6] focus:bg-white dark:focus:bg-[#111827] focus:outline-none resize-none leading-5"
           aria-label="Chat input"
         />
 
@@ -404,7 +404,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
           accept=".pdf,.txt,.csv,.json,.html,.md,.png,.jpeg,.webp,.heic,.gif,.mp3,.wav,.aac,.flac,.m4a,.opus,.mp4,.mov,.webm,.avi,.mpeg,.wmv,.3gpp"
         />
 
-        <div ref={menuRootRef} className="absolute bottom-1.5 left-2 right-2 flex items-center justify-between">
+        <div ref={menuRootRef} className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
           <div className="relative flex items-center gap-1">
             <button
               type="button"
