@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { ArrowUp, Plus, Sparkles, X, UploadCloud, Globe, ImagePlus } from 'lucide-react';
+import { ArrowUp, Plus, MoreHorizontal, Sparkles, X, UploadCloud, Globe, ImagePlus, PanelTop } from 'lucide-react';
 import { toast } from 'sonner';
 import { ModeSelector } from './ModeSelector';
 import type { ModeType } from '@/types/chat';
 
 interface ChatInputProps {
-  onSend: (message: string, attachments?: File[], createImage?: boolean) => void;
+  onSend: (message: string, attachments?: File[], createImage?: boolean, canvas?: boolean) => void;
   guestMode?: boolean;
   onGuestFeatureRequest?: () => void;
   isLoading: boolean;
@@ -25,6 +25,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
   const [menuOpen, setMenuOpen] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [imageGenerationEnabled, setImageGenerationEnabled] = useState(false);
+  const [canvasEnabled, setCanvasEnabled] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const menuRootRef = useRef<HTMLDivElement>(null);
@@ -82,13 +83,13 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
       return;
     }
     setMenuOpen(false);
-    onSend(trimmed, attachments.length > 0 ? attachments : undefined, imageGenerationEnabled);
+    onSend(trimmed, attachments.length > 0 ? attachments : undefined, imageGenerationEnabled, canvasEnabled);
     setText('');
     setAttachments([]);
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
     }
-  }, [text, isLoading, onSend, attachments, imageGenerationEnabled]);
+  }, [text, isLoading, onSend, attachments, imageGenerationEnabled, canvasEnabled]);
 
   const handleEnhance = useCallback(async () => {
     if (!onEnhancePrompt || !text.trim() || isLoading || isEnhancing) return;
@@ -108,7 +109,18 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
   }, [isLoading]);
 
   const toggleImageGeneration = useCallback(() => {
+    if (guestMode) {
+      onGuestFeatureRequest?.();
+      setMenuOpen(false);
+      toast('Sign in is required to create images.', { icon: '🔐' });
+      return;
+    }
     setImageGenerationEnabled((previous) => !previous);
+    setMenuOpen(false);
+  }, [guestMode, onGuestFeatureRequest]);
+
+  const toggleCanvas = useCallback(() => {
+    setCanvasEnabled((previous) => !previous);
     setMenuOpen(false);
   }, []);
 
@@ -150,7 +162,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
       <div className="w-full max-w-[720px] mx-auto px-3 sm:px-0">
         <div className="relative rounded-2xl sm:rounded-[32px] border border-[#E5E7EB] dark:border-[#374151] bg-white/95 dark:bg-[#111827]/95 shadow-[0_20px_70px_-35px_rgba(15,23,42,0.8)] transition-all duration-300 pb-12 sm:pb-12">
           {/* Attachments display */}
-          {(attachments.length > 0 || webSearchEnabled || isSearchingWeb || imageGenerationEnabled) && (
+          {(attachments.length > 0 || webSearchEnabled || isSearchingWeb || imageGenerationEnabled || canvasEnabled) && (
             <div className="px-3 sm:px-4 pt-3 pb-2 space-y-2">
               <div className="flex flex-wrap gap-2">
                 {attachments.map((file, idx) => (
@@ -198,6 +210,9 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
                   <X size={12} />
                 </button>
               )}
+              {canvasEnabled && (
+                <button type="button" onClick={toggleCanvas} className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-slate-100 px-3 py-1.5 text-[11px] text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200" aria-label="Disable canvas"><PanelTop size={14} /><span>Canvas enabled</span><X size={12} /></button>
+              )}
             </div>
           )}
 
@@ -228,13 +243,14 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
             <div className="relative">
               <button
                 type="button"
-                onClick={toggleMenu}
+                onClick={handleAddAttachment}
                 className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#0F172A] text-[#6B7280] hover:text-[#111827] dark:hover:text-[#F9FAFB] shadow-sm transition-all duration-200 active:scale-95"
                 aria-label="Open attachment menu"
-                title="Add attachments or enable web search"
+                title="Add attachment"
               >
                 <Plus size={20} />
               </button>
+              <button type="button" onClick={toggleMenu} className="ml-1 flex h-9 w-9 items-center justify-center rounded-full border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#0F172A] text-[#6B7280] hover:text-[#111827] dark:hover:text-[#F9FAFB] shadow-sm transition-all duration-200" aria-label="More tools" title="More tools"><MoreHorizontal size={19} /></button>
               {menuOpen && (
                 <div ref={menuRef} className="absolute bottom-full left-0 mb-2 w-64 sm:w-72 overflow-hidden rounded-2xl sm:rounded-[28px] border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#111827] shadow-xl z-50">
                   <button
@@ -260,9 +276,10 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
                     </span>
                     <div className="min-w-0">
                       <div className="font-medium text-xs sm:text-sm text-[#111827] dark:text-[#F8FAFC]">{imageGenerationEnabled ? 'Disable image creation' : 'Create image'}</div>
-                      <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Generate with Flux 1 Schnell</p>
+                      <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Generate with PRE Image 2.1</p>
                     </div>
                   </button>
+                  <button type="button" onClick={toggleCanvas} className={`w-full px-3 sm:px-4 py-3 sm:py-4 flex items-start gap-3 text-left transition-colors ${canvasEnabled ? 'bg-slate-100 dark:bg-slate-800' : 'hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937] active:bg-[#F0F0F0] dark:active:bg-[#2D3748]'}`}><span className="flex h-10 sm:h-11 w-10 sm:w-11 items-center justify-center rounded-2xl bg-slate-800 text-white shrink-0"><PanelTop size={18} /></span><div className="min-w-0"><div className="font-medium text-xs sm:text-sm text-[#111827] dark:text-[#F8FAFC]">{canvasEnabled ? 'Disable canvas' : 'Canvas'}</div><p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Write emails, essays, and longer drafts</p></div></button>
                   <button
                     type="button"
                     onClick={handleToggleSearch}
@@ -325,7 +342,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
     <div className="w-full max-w-[720px] mx-auto px-1 sm:px-0">
       <div className="relative rounded-2xl sm:rounded-[32px] border border-[#E5E7EB] dark:border-[#374151] bg-white/95 dark:bg-[#111827]/95 shadow-[0_12px_35px_-24px_rgba(15,23,42,0.8)] sm:shadow-[0_20px_70px_-35px_rgba(15,23,42,0.8)] transition-all duration-300 pb-11 sm:pb-12">
         {/* Attachments display */}
-          {(attachments.length > 0 || webSearchEnabled || isSearchingWeb || imageGenerationEnabled) && (
+          {(attachments.length > 0 || webSearchEnabled || isSearchingWeb || imageGenerationEnabled || canvasEnabled) && (
           <div className="px-3 sm:px-4 pt-3 pb-2 space-y-2">
             <div className="flex flex-wrap gap-2">
               {attachments.map((file, idx) => (
@@ -373,6 +390,9 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
                 <X size={12} />
               </button>
             )}
+            {canvasEnabled && (
+              <button type="button" onClick={toggleCanvas} className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-slate-100 px-3 py-1.5 text-[11px] text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200" aria-label="Disable canvas"><PanelTop size={14} /><span>Canvas enabled</span><X size={12} /></button>
+            )}
           </div>
         )}
 
@@ -401,13 +421,14 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
           <div className="relative">
             <button
               type="button"
-              onClick={toggleMenu}
+              onClick={handleAddAttachment}
               className="w-10 h-10 flex items-center justify-center rounded-full border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#0F172A] text-[#6B7280] hover:text-[#111827] dark:hover:text-[#F9FAFB] shadow-sm transition-all duration-200"
               aria-label="Open attachment menu"
-              title="Add attachments or enable web search"
+              title="Add attachment"
             >
               <Plus size={20} />
             </button>
+            <button type="button" onClick={toggleMenu} className="ml-1 flex h-10 w-10 items-center justify-center rounded-full border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#0F172A] text-[#6B7280] hover:text-[#111827] dark:hover:text-[#F9FAFB] shadow-sm transition-all duration-200" aria-label="More tools" title="More tools"><MoreHorizontal size={19} /></button>
             {menuOpen && (
               <div ref={menuRef} className="absolute bottom-full left-0 mb-2 w-72 overflow-hidden rounded-[28px] border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#111827] shadow-xl z-50">
                 <button
@@ -433,9 +454,10 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
                   </span>
                   <div>
                     <div className="font-medium text-sm text-[#111827] dark:text-[#F8FAFC]">{imageGenerationEnabled ? 'Disable image creation' : 'Create image'}</div>
-                    <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Generate with Flux 1 Schnell</p>
+                    <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Generate with PRE Image 2.1</p>
                   </div>
-                </button>
+                  </button>
+                  <button type="button" onClick={toggleCanvas} className={`w-full px-3 sm:px-4 py-3 sm:py-4 flex items-start gap-3 text-left transition-colors ${canvasEnabled ? 'bg-slate-100 dark:bg-slate-800' : 'hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937]'}`}><span className="flex h-10 sm:h-11 w-10 sm:w-11 items-center justify-center rounded-2xl bg-slate-800 text-white shrink-0"><PanelTop size={18} /></span><div className="min-w-0"><div className="font-medium text-xs sm:text-sm text-[#111827] dark:text-[#F8FAFC]">{canvasEnabled ? 'Disable canvas' : 'Canvas'}</div><p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Write emails, essays, and longer drafts</p></div></button>
                 <button
                   type="button"
                   onClick={handleToggleSearch}

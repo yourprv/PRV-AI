@@ -42,6 +42,24 @@ function CodeBlock({ code, language }: { code: string; language?: string }) {
   );
 }
 
+function CanvasBlock({ content }: { content: string }) {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    await navigator.clipboard.writeText(content);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <div className="not-prose my-1 overflow-hidden rounded-xl border border-slate-700/80 bg-[#0B1020] text-slate-100 shadow-lg">
+      <div className="flex items-center justify-between border-b border-white/10 bg-[#111827] px-3 py-2">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400">Canvas</span>
+        <button type="button" onClick={copy} className="rounded-md px-2 py-1 text-[11px] text-slate-300 hover:bg-white/10 hover:text-white">{copied ? 'Copied' : 'Copy'}</button>
+      </div>
+      <div className="whitespace-pre-wrap break-words p-4 text-[14px] leading-6">{content || ' '}</div>
+    </div>
+  );
+}
+
 interface MessageBubbleProps {
   message: Message;
   onRegenerate?: (messageId: string) => void;
@@ -143,7 +161,7 @@ export function MessageBubble({ message, onRegenerate, isLatest, isLoading }: Me
               </div>
             ) : (
               <>
-                <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5 prose-pre:my-2 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:bg-black/5 dark:prose-code:bg-white/10">
+                {message.canvas ? <CanvasBlock content={message.content} /> : <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5 prose-pre:my-2 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:bg-black/5 dark:prose-code:bg-white/10">
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm, remarkMath]}
                     rehypePlugins={[rehypeKatex]}
@@ -173,7 +191,7 @@ export function MessageBubble({ message, onRegenerate, isLatest, isLoading }: Me
                   >
                     {message.content}
                   </ReactMarkdown>
-                </div>
+                </div>}
                 {message.imageUrl && (
                   <img
                     src={message.imageUrl}

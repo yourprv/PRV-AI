@@ -270,7 +270,11 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
 
   // Handle send message
   const handleSend = useCallback(
-    async (content: string, attachmentFiles?: File[], createImage = false) => {
+    async (content: string, attachmentFiles?: File[], createImage = false, canvas = false) => {
+      if (createImage && !user) {
+        setShowBenefitsModal(true);
+        return;
+      }
       // Create or update chat
       let chatId = activeChatId;
       const conversationHistory = activeChatId
@@ -348,6 +352,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
           content: 'Creating your image…',
           timestamp: Date.now(),
           mode,
+          canvas,
         };
 
         setChats((prev) => prev.map((c) => c.id === chatId
@@ -399,6 +404,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
         timestamp: Date.now(),
         thinking: '',
         mode,
+        canvas,
       };
 
       setChats((prev) =>
@@ -530,6 +536,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
         timestamp: Date.now(),
         thinking: thinkingText || thinkingStream || undefined,
         mode,
+        canvas,
       };
 
       const usedWebSearch = webSearchEnabled;
@@ -557,7 +564,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
 
       setIsLoading(false);
     },
-    [activeChatId, chats, currentModel, customPrv, mode, navigate, setChats, turnstileToken, webSearchEnabled]
+    [activeChatId, chats, currentModel, customPrv, mode, navigate, setChats, turnstileToken, webSearchEnabled, user]
   );
 
   // Handle regenerate
@@ -575,6 +582,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
       // Get the user message that prompted this
       const userMessage = chat.messages[msgIndex - 1];
       if (userMessage.role !== 'user') return;
+      const wasCanvas = Boolean(chat.messages[msgIndex].canvas);
 
       // Remove the assistant message and re-send
       setChats((prev) =>
@@ -597,6 +605,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
         timestamp: Date.now(),
         thinking: '',
         mode,
+        canvas: wasCanvas,
       };
 
       setChats((prev) =>
@@ -673,6 +682,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
           timestamp: Date.now(),
           thinking: reply.thinking || thinkingStream || undefined,
           mode,
+          canvas: wasCanvas,
         };
 
         setChats((prev) =>
@@ -732,14 +742,9 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
         />
       </div>
 
-      {/* Mobile Sidebar Drawer Overlay */}
-      {sidebarExpanded && (
-        <div className="fixed inset-0 lg:hidden z-40 bg-black/50" onClick={toggleSidebar} />
-      )}
-
-      {/* Mobile Sidebar */}
-      {sidebarExpanded && (
-        <div className="fixed left-0 top-0 h-screen lg:hidden z-50">
+      {/* Mobile Sidebar Drawer */}
+      {sidebarExpanded && <div className="fixed inset-0 lg:hidden z-40 bg-black/50" onClick={toggleSidebar} aria-hidden="true" />}
+      <div className={`fixed left-0 top-0 h-screen lg:hidden z-50 transition-transform duration-300 ${sidebarExpanded ? 'translate-x-0' : '-translate-x-full'}`} aria-hidden={!sidebarExpanded}>
           <Sidebar
             isExpanded={true}
             onToggle={toggleSidebar}
@@ -752,8 +757,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
             onDeleteChat={handleDeleteChat}
             onCustomPRV={() => setShowCustomPRV(true)}
           />
-        </div>
-      )}
+      </div>
 
       {/* Main chat area */}
       <main className="flex min-w-0 flex-1 flex-col overflow-hidden">

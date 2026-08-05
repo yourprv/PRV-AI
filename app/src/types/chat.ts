@@ -13,6 +13,7 @@ export interface Message {
   mode?: ModeType;
   attachments?: Attachment[];
   imageUrl?: string;
+  canvas?: boolean;
 }
 
 export type ModeType = 'auto' | 'thinking' | 'fast';
