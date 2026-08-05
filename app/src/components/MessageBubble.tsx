@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { Children, isValidElement, useState, useCallback, useEffect, type ReactNode } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeKatex from 'rehype-katex';
@@ -6,6 +6,41 @@ import remarkMath from 'remark-math';
 import 'katex/dist/katex.min.css';
 import { Copy, Check, RotateCcw, User, ChevronDown } from 'lucide-react';
 import type { Message } from '@/types/chat';
+
+function CodeBlock({ code, language }: { code: string; language?: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyCode = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.warn('Failed to copy code:', err);
+    }
+  }, [code]);
+
+  return (
+    <div className="not-prose my-3 overflow-hidden rounded-xl border border-slate-700/80 bg-[#0B1020] text-slate-100 shadow-lg">
+      <div className="flex items-center justify-between border-b border-white/10 bg-[#111827] px-3 py-2">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+          {language || 'code'}
+        </span>
+        <button
+          type="button"
+          onClick={handleCopyCode}
+          className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white"
+          aria-label="Copy code"
+          title="Copy code"
+        >
+          {copied ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+          {copied ? 'Copied' : 'Copy'}
+        </button>
+      </div>
+      <pre className="max-w-full overflow-x-hidden whitespace-pre-wrap break-words p-4 text-[13px] leading-6"><code className="break-all">{code}</code></pre>
+    </div>
+  );
+}
 
 interface MessageBubbleProps {
   message: Message;
@@ -49,7 +84,7 @@ export function MessageBubble({ message, onRegenerate, isLatest, isLoading }: Me
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
     >
-      <div className={`flex gap-1.5 sm:gap-3 max-w-[calc(100vw-2.5rem)] sm:max-w-[92%] md:max-w-[80ch] min-w-0 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+      <div className={`flex min-w-0 max-w-full gap-1.5 overflow-hidden sm:gap-3 sm:max-w-[92%] md:max-w-[80ch] ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
         {/* Avatar */}
 <div className="w-5 h-5 sm:w-7 sm:h-7 rounded-full shrink-0 overflow-hidden">
             {isUser ? (
@@ -60,7 +95,7 @@ export function MessageBubble({ message, onRegenerate, isLatest, isLoading }: Me
         </div>
 
         {/* Message content */}
-        <div className="flex flex-col gap-1 min-w-0">
+        <div className="flex min-w-0 max-w-full flex-col gap-1 overflow-hidden">
           <div
             className={`px-3 sm:px-4 py-2 sm:py-3 rounded-2xl break-words text-sm sm:text-[15px] leading-relaxed ${
               isUser
@@ -111,6 +146,29 @@ export function MessageBubble({ message, onRegenerate, isLatest, isLoading }: Me
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm, remarkMath]}
                   rehypePlugins={[rehypeKatex]}
+                  components={{
+                    pre({ children }) {
+                      const codeElement = Children.toArray(children)[0];
+                      if (isValidElement(codeElement)) {
+                        const props = codeElement.props as { children?: ReactNode; className?: string };
+                        const language = props.className?.match(/language-([\w-]+)/)?.[1];
+                        const code = Children.toArray(props.children)
+                          .map((child) => (typeof child === 'string' ? child : String(child)))
+                          .join('')
+                          .replace(/\n$/, '');
+
+                        return <CodeBlock code={code} language={language} />;
+                      }
+                      return <pre>{children}</pre>;
+                    },
+                    code({ children, className, ...props }) {
+                      return (
+                        <code className={`rounded bg-black/5 px-1 py-0.5 dark:bg-white/10 ${className ?? ''}`} {...props}>
+                          {children}
+                        </code>
+                      );
+                    },
+                  }}
                 >
                   {message.content}
                 </ReactMarkdown>

@@ -61,7 +61,10 @@ export function ChatArea({
   onToggleSidebar,
   onSettingsClick,
 }: ChatAreaProps) {
-  const { isDark, toggleTheme } = useTheme();
+  // Private mode temporarily forces the UI dark without changing the saved preference.
+  // This means light mode returns when private mode ends, while an existing dark
+  // preference remains dark throughout.
+  const { isDark, toggleTheme } = useTheme(isIncognitoMode);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isEmpty = messages.length === 0;
@@ -78,7 +81,7 @@ export function ChatArea({
     messages[messages.length - 1].content.trim() === '';
 
   return (
-    <div className={`flex-1 flex min-h-0 min-w-0 flex-col h-[100dvh] relative ${isIncognitoMode ? 'bg-[#090b14] text-white' : ''}`}>
+    <div className={`relative flex h-[100dvh] min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden ${isIncognitoMode ? 'bg-[#090b14] text-white' : ''}`}>
       {/* Top bar */}
       <header className={`min-h-14 sm:h-16 flex items-center justify-between px-2.5 sm:px-5 py-1.5 sm:py-0 border-b backdrop-blur-xl shrink-0 z-20 gap-1.5 ${isIncognitoMode ? 'border-white/10 bg-[#0d1020]/95' : 'border-violet-100/80 bg-white/90 dark:border-slate-800 dark:bg-[#111426]/90'}`}>
         <div className="flex items-center flex-1 min-w-0">
@@ -119,7 +122,8 @@ export function ChatArea({
           <button
             onClick={toggleTheme}
             className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-lg text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] hover:bg-[#F5F5F7] dark:hover:bg-[#374151] transition-colors duration-200"
-            aria-label="Toggle theme"
+            aria-label={isIncognitoMode ? 'Dark mode is enabled in private mode' : 'Toggle theme'}
+            disabled={isIncognitoMode}
           >
             {isDark ? <Sun size={18} /> : <Moon size={18} />}
           </button>
@@ -216,7 +220,7 @@ export function ChatArea({
           {/* Messages area */}
           <div
             ref={scrollContainerRef}
-            className={`min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 py-3 sm:px-4 sm:py-6 space-y-4 sm:space-y-6 ${isIncognitoMode ? 'bg-[#090b14]' : 'bg-white dark:bg-[#111827]'}`}
+            className={`min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain px-2 py-3 sm:px-4 sm:py-6 space-y-4 sm:space-y-6 ${isIncognitoMode ? 'bg-[#090b14]' : 'bg-white dark:bg-[#111827]'}`}
           >
             <div className="w-full max-w-5xl mx-auto space-y-4 sm:space-y-6">
               {messages.map((message, index) => (

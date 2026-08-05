@@ -711,7 +711,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
       )}
 
       {/* Main chat area */}
-      <main className="flex-1 flex flex-col min-w-0">
+      <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <ChatArea
           user={user}
           onOpenAuthModal={() => setShowLoginModal(true)}

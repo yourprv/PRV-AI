@@ -212,7 +212,8 @@ export function Sidebar({
             title="Open Custom PRV"
           >
             <span className="text-[16px]">⚙️</span>
-            Custom PRV
+            <span>Custom PRV</span>
+            <span className="ml-auto rounded-full border border-violet-300/70 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-violet-600 dark:border-violet-400/30 dark:text-violet-300">Experimental</span>
           </button>
         </div>
       </div>

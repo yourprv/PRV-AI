@@ -15,16 +15,21 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [statusType, setStatusType] = useState<'success' | 'error' | null>(null);
   const [policyView, setPolicyView] = useState<PolicyView>(null);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
 
   useEffect(() => {
     if (!isOpen) {
       setEmail('');
       setStatusMessage(null);
       setStatusType(null);
+      setTermsAccepted(false);
+      setAgeConfirmed(false);
     }
   }, [isOpen]);
 
   const handleGoogleSignIn = async () => {
+    if (!termsAccepted || !ageConfirmed) return;
     setStatusMessage(null);
     setStatusType(null);
 
@@ -44,6 +49,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
   const handleEmailSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!termsAccepted || !ageConfirmed) return;
     setStatusMessage(null);
     setStatusType(null);
 
@@ -114,7 +120,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         <button
           type="button"
           onClick={handleGoogleSignIn}
-          disabled={isLoading}
+          disabled={isLoading || !termsAccepted || !ageConfirmed}
           className="w-full flex items-center justify-center gap-2 sm:gap-2.5 px-3 sm:px-4 py-2.5 sm:py-3 bg-white dark:bg-[#2D3748] border border-[#E5E7EB] dark:border-[#374151] rounded-xl hover:bg-[#F9F9FB] dark:hover:bg-[#374151] hover:border-[#D1D5DB] dark:hover:border-[#4B5563] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-xs sm:text-[14px] text-[#374151] dark:text-[#D1D5DB] font-medium mb-3"
         >
           <svg width="18" height="18" viewBox="0 0 24 24">
@@ -163,7 +169,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             />
             <button
               type="submit"
-              disabled={isLoading || !email.trim()}
+              disabled={isLoading || !email.trim() || !termsAccepted || !ageConfirmed}
               className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-[#4F46E5] hover:bg-[#4338CA] disabled:bg-[#9CA3AF] text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-xs sm:text-[14px] font-medium"
             >
               {isLoading ? 'Signing in...' : 'Continue with Email'}
@@ -171,25 +177,31 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
           </div>
         </form>
 
-        {/* Footer text */}
-        <p className="text-center text-[11px] sm:text-[12px] text-[#9CA3AF] dark:text-[#6B7280] mt-4">
-          By continuing, you agree to our{' '}
-          <button
-            type="button"
-            onClick={() => setPolicyView('terms')}
-            className="font-semibold text-[#4F46E5] dark:text-[#8B9BFF] hover:underline"
-          >
-            Terms and Conditions
-          </button>{' '}
-          and{' '}
-          <button
-            type="button"
-            onClick={() => setPolicyView('privacy')}
-            className="font-semibold text-[#4F46E5] dark:text-[#8B9BFF] hover:underline"
-          >
-            Privacy Policy
-          </button>.
-        </p>
+        <div className="mt-4 space-y-3 rounded-xl border border-[#E5E7EB] bg-[#F9F9FB] p-3 dark:border-[#374151] dark:bg-[#2D3748]/60">
+          <label className="flex items-start gap-2 text-[11px] leading-4 text-[#6B7280] dark:text-[#D1D5DB]">
+            <input
+              type="checkbox"
+              checked={termsAccepted}
+              onChange={(event) => setTermsAccepted(event.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-[#4F46E5]"
+            />
+            <span>
+              By continuing, you agree to PRV AI{' '}
+              <button type="button" onClick={() => setPolicyView('terms')} className="font-semibold text-[#4F46E5] dark:text-[#8B9BFF] hover:underline">Terms and Conditions</button>{' '}
+              and{' '}
+              <button type="button" onClick={() => setPolicyView('privacy')} className="font-semibold text-[#4F46E5] dark:text-[#8B9BFF] hover:underline">Privacy Policy</button>.
+            </span>
+          </label>
+          <label className="flex items-start gap-2 text-[11px] leading-4 text-[#6B7280] dark:text-[#D1D5DB]">
+            <input
+              type="checkbox"
+              checked={ageConfirmed}
+              onChange={(event) => setAgeConfirmed(event.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-[#4F46E5]"
+            />
+            <span>I’m 13 years or older.</span>
+          </label>
+        </div>
       </div>
 
       {policyView && (
