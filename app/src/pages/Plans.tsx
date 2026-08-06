@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
 import { usePlan } from '@/hooks/usePlan';
 import type { PlanTier } from '@/types/chat';
 import { Button } from '@/components/ui/button';
