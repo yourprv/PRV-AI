@@ -3,288 +3,264 @@ import { useNavigate } from 'react-router';
 import { usePlan } from '@/hooks/usePlan';
 import type { PlanTier } from '@/types/chat';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft } from 'lucide-react';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Spinner } from '@/components/ui/spinner';
 
-const PLAN_DETAILS: Record<PlanTier, { title: string; price: string; subtitle: string; features: string[]; highlight?: string; label?: string }> = {
+const PLAN_DETAILS: Record<PlanTier, { title: string; price: string; subtitle: string; features: string[]; label?: string }> = {
   free: {
     title: 'Free',
-    price: '$0/month',
-    subtitle: 'Everything you need to get started with AI.',
-    highlight: 'Perfect for everyday conversations, quick research, document analysis, and creative tasks.',
+    price: '$0/mo',
+    subtitle: 'Access core AI features and light usage for everyday needs.',
     features: [
-      'Access to PRV 3.2 Fire — fast AI for everyday use',
-      'Real-time Web Search with clickable citations',
-      'Upload up to 25 PDFs, Word documents, and images per day',
-      'Basic image understanding and visual analysis',
-      'Temporary Chats, cloud chat history, and cross-device sync',
-      'Generate 3 AI images per day with PRE Image 2.1',
-      'Explore the Public Custom PRV Gallery',
-      'Create 1 Custom PRV with your own instructions',
+      'PRV 3.2 Fire access',
+      'Basic web search and document handling',
+      '3 AI images per day',
+      'Saved chats and cross-device sync',
     ],
   },
   education: {
-    title: 'Education',
-    price: '$6.99/month',
-    subtitle: 'Learn faster. Study smarter.',
-    highlight: 'Designed for students, teachers, and lifelong learners who need more capable AI and higher limits.',
+    title: 'Go',
+    price: '$5/mo',
+    subtitle: 'Learn faster and get more work done with extra power.',
     features: [
-      'Everything in Free, plus:',
-      'Access to PRV 3.5 Earth (50 messages/day)',
-      'Access to PRV 4.0 Lightning (20 messages/day)',
-      'Canvas Workspace for essays, homework, notes, and research',
-      'Upload up to 50 documents/images per day',
-      'Upload up to 15 audio or video files per day',
-      'Analyze lecture recordings and long study materials',
-      'Create up to 5 Custom PRVs',
-      'Add personal knowledge files to your Custom PRVs',
-      'Generate 15 AI images per day',
+      'PRV 3.5 Earth access',
+      'Higher document and image limits',
+      'Canvas workspace for study and notes',
+      'More custom PRVs and knowledge files',
     ],
   },
   pro: {
-    title: 'Pro',
-    price: '$11/month',
-    subtitle: 'Built for creators, developers, professionals, and power users.',
-    highlight: 'Unlock advanced AI, professional creative tools, and significantly higher usage limits.',
+    title: 'Plus',
+    price: '$20/mo',
+    subtitle: 'Better models, faster responses, and advanced tools.',
+    label: 'Most popular',
     features: [
-      'Everything in Education, plus:',
-      'Unlimited access to PRV 3.5 Earth',
-      'High daily limits for PRV 4.0 Lightning',
-      'Complete Canvas Suite',
-      'AI writing assistant, smart editing, document outlining, tone adjustments, version history',
-      'Generate up to 100 AI images every day',
-      'Advanced image editing: background removal, object replacement, upscaling, inpainting',
-      'Upload up to 30 audio or video files per day',
-      'Create up to 25 Custom PRVs',
-      'Store up to 5 knowledge files for each Custom PRV',
+      'Unlimited PRV 3.5 Earth',
+      'High limits for PRV 4.0 Lightning',
+      'Advanced image editing tools',
+      '25 custom PRVs and richer uploads',
     ],
-    label: 'Most Popular',
   },
   legend: {
-    title: 'Legend',
-    price: '$24/month',
-    subtitle: 'The complete PRV AI experience.',
-    highlight: 'Maximum performance, highest limits, and instant access to every premium capability.',
+    title: 'Pro',
+    price: '$113/mo',
+    subtitle: 'The full premium experience with top-tier performance.',
     features: [
-      'Everything in Pro, plus:',
-      'Unlimited access to PRV 4.0 Lightning',
-      'Priority compute for the fastest responses',
-      'Expanded 256K+ context window for books, codebases, research papers, and long conversations',
-      'Unlimited AI image generation',
-      'Faster image generation with priority processing',
-      'High-resolution image exports',
-      'Create Unlimited Custom PRVs',
-      'Large multi-file knowledge bases for every Custom PRV',
-      'Early access to upcoming models and experimental features',
-      'Priority customer support',
+      'Unlimited PRV 4.0 Lightning',
+      'Priority compute and speed',
+      'Expanded context for long content',
+      'Unlimited custom PRVs and exports',
     ],
   },
 };
 
 const PLAN_ORDER: PlanTier[] = ['free', 'education', 'pro', 'legend'];
+const PLAN_DISPLAY: Record<PlanTier, string> = {
+  free: 'Free',
+  education: 'Go',
+  pro: 'Plus',
+  legend: 'Pro',
+};
 
 export default function Plans() {
   const navigate = useNavigate();
   const { planTier, activateInviteCode, setPlanTier } = usePlan();
+  const [selectedPlan, setSelectedPlan] = useState<PlanTier | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
+  const [showInviteInput, setShowInviteInput] = useState(false);
   const [inviteCode, setInviteCode] = useState('');
   const [message, setMessage] = useState('');
-  const [pendingPlan, setPendingPlan] = useState<PlanTier | null>(null);
-  const [isPaying, setIsPaying] = useState(false);
-  const [purchaseStatus, setPurchaseStatus] = useState('');
 
   const activeDetails = useMemo(() => PLAN_DETAILS[planTier], [planTier]);
+  const selectedDetails = selectedPlan ? PLAN_DETAILS[selectedPlan] : null;
 
-  const handleSelectPlan = (tier: PlanTier) => {
-    setMessage('');
-    setPurchaseStatus('');
-    setIsPaying(false);
-
+  const openPlanModal = (tier: PlanTier) => {
     if (tier === 'free') {
       if (planTier !== 'free') {
         setPlanTier('free');
-        setMessage('Free plan is now active.');
+        setMessage('You are now back on the Free plan.');
       } else {
         setMessage('You are already on the Free plan.');
       }
-      setPendingPlan(null);
       return;
     }
 
-    setPendingPlan(tier);
-    setMessage(`To activate ${PLAN_DETAILS[tier].title}, click Pay now or enter an invite code.`);
+    setSelectedPlan(tier);
+    setPaymentError('');
+    setShowInviteInput(false);
+    setInviteCode('');
+    setMessage('');
+    setIsLoading(true);
+    setIsModalOpen(true);
+    window.setTimeout(() => setIsLoading(false), 700);
   };
 
   const handlePayNow = () => {
-    if (!pendingPlan) return;
-    setPurchaseStatus('');
-    setIsPaying(true);
-    setTimeout(() => {
-      setIsPaying(false);
-      setPurchaseStatus("Oops! Sorry payment method is not available in your country. It's invite code only.");
+    if (!selectedPlan) return;
+    setPaymentError('');
+    setShowInviteInput(false);
+    setIsLoading(true);
+    window.setTimeout(() => {
+      setIsLoading(false);
+      setPaymentError("Oops! Sorry payment method is not available in your country. It's invite code only.");
+      setShowInviteInput(true);
     }, 1200);
   };
 
-  const handleApplyCode = () => {
+  const handleApplyInvite = () => {
     const tier = activateInviteCode(inviteCode);
     if (!tier) {
-      setMessage('That invite code is not valid. Please check the code and try again.');
+      setPaymentError('That invite code is not valid. Please check the code and try again.');
       return;
     }
-    setPendingPlan(null);
-    setMessage(`Success! Your account is now set to ${tier.charAt(0).toUpperCase() + tier.slice(1)} tier.`);
+    setPlanTier(tier);
+    setMessage(`Success! Your account is now on the ${tier === 'free' ? 'Free' : PLAN_DETAILS[tier].title} plan.`);
+    setSelectedPlan(null);
+    setIsModalOpen(false);
+    setShowInviteInput(false);
+    setInviteCode('');
+    setPaymentError('');
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedPlan(null);
+    setIsLoading(false);
+    setPaymentError('');
+    setShowInviteInput(false);
     setInviteCode('');
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#090B14] text-slate-900 dark:text-slate-100">
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mb-8 flex items-center justify-between gap-4 rounded-3xl border border-slate-200 bg-white/95 px-4 py-4 shadow-sm backdrop-blur-sm dark:border-slate-800 dark:bg-[#111827]/95 lg:px-8">
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
-          >
-            <ChevronLeft size={16} /> Back
-          </button>
-          <div className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#4F46E5]">Subscription</p>
-            <h1 className="text-3xl font-semibold tracking-tight text-slate-950 dark:text-white sm:text-4xl">Choose the plan that fits your work.</h1>
+    <div className="min-h-screen bg-[#0B1120] text-white">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="rounded-[32px] border border-white/10 bg-gradient-to-br from-slate-950/95 to-slate-900/80 p-8 shadow-2xl shadow-cyan-500/10 backdrop-blur-xl">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-3xl">
+              <p className="text-xs uppercase tracking-[0.35em] text-cyan-300">Premium access</p>
+              <h1 className="mt-4 text-4xl font-semibold tracking-tight text-white sm:text-5xl">Choose the plan that fits your workflow.</h1>
+              <p className="mt-4 text-sm leading-7 text-slate-300">Paid plans are available by invite code only. Selecting a plan opens the checkout flow, then lets you apply an invite code to activate it.</p>
+            </div>
+            <div className="rounded-3xl border border-cyan-500/20 bg-slate-900/90 px-6 py-5 text-center shadow-lg shadow-cyan-500/10">
+              <p className="text-xs uppercase tracking-[0.28em] text-slate-400">Current plan</p>
+              <p className="mt-3 text-2xl font-semibold text-white">{planTier === 'free' ? 'Free' : activeDetails.title}</p>
+            </div>
           </div>
-          <div className="min-w-[8rem]" />
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-          <section className="space-y-6">
-            <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-[#111827]">
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#4F46E5]">Your active plan</p>
-                  <h2 className="mt-3 text-2xl font-semibold text-slate-950 dark:text-white">{activeDetails.title} plan</h2>
-                  <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">{activeDetails.highlight}</p>
-                </div>
-                <div className="rounded-3xl bg-slate-50 px-4 py-3 text-center text-sm font-semibold text-slate-900 dark:bg-slate-900 dark:text-slate-100">
-                  {activeDetails.price}
-                </div>
-              </div>
-            </div>
+        {message ? (
+          <div className="mt-6 rounded-[28px] border border-white/10 bg-slate-950/80 px-6 py-4 text-sm text-slate-200 shadow-sm shadow-white/5">
+            {message}
+          </div>
+        ) : null}
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              {PLAN_ORDER.map((tier) => {
-                const details = PLAN_DETAILS[tier];
-                const selected = tier === planTier;
-                return (
-                  <article key={tier} className={`rounded-[28px] border p-5 shadow-sm transition-all ${selected ? 'border-[#4F46E5] bg-[#EEF2FF]/90 shadow-[#C7D2FE]/40 dark:border-[#4338CA] dark:bg-[#1E293B]' : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-[#111827]'}`}>
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">{details.title}</p>
-                        <p className="mt-3 text-2xl font-semibold text-slate-950 dark:text-white">{details.price}</p>
-                      </div>
-                      {details.label ? (
-                        <div className="rounded-full bg-[#C7D2FE] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[#3730A3] dark:bg-[#312E81] dark:text-[#C7D2FE]">{details.label}</div>
-                      ) : null}
-                    </div>
-                    <p className="mt-4 text-sm leading-6 text-slate-600 dark:text-slate-400">{details.subtitle}</p>
-                    <ul className="mt-5 space-y-3 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                      {details.features.map((feature) => (
-                        <li key={feature} className="flex items-start gap-3">
-                          <span className="mt-1 h-2.5 w-2.5 rounded-full bg-[#4F46E5]" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <button
-                      type="button"
-                      onClick={() => handleSelectPlan(tier)}
-                      className={`mt-6 w-full rounded-2xl px-4 py-3 text-sm font-semibold transition duration-200 ${selected ? 'bg-[#4338CA] text-white hover:bg-[#3730A3]' : 'bg-[#E0E7FF] text-[#3730A3] hover:bg-[#C7D2FE] dark:bg-[#1F2937] dark:text-slate-100 dark:hover:bg-[#334155]'}`}
-                    >
-                      {selected ? 'Current plan' : 'Select'}
-                    </button>
-                  </article>
-                );
-              })}
-            </div>
-
-            <div className="rounded-[28px] border border-dashed border-slate-300 bg-white p-6 text-slate-700 shadow-sm dark:border-slate-700 dark:bg-[#111827] dark:text-slate-300">
-              <p className="font-semibold text-slate-900 dark:text-white">Invite code?</p>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Paste your invite code to activate Education, Pro, or Legend plans instantly.</p>
-              <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-                <input
-                  value={inviteCode}
-                  onChange={(event) => setInviteCode(event.target.value)}
-                  placeholder="Enter invite code"
-                  className="min-w-0 flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/20 dark:border-slate-700 dark:bg-[#0F172A] dark:text-slate-100"
-                />
-                <Button onClick={handleApplyCode} className="min-w-[11rem] rounded-2xl bg-[#4F46E5] text-white hover:bg-[#4338CA]">Apply invite code</Button>
-              </div>
-              {message ? <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">{message}</p> : null}
-            </div>
-          </section>
-
-          <aside className="space-y-6">
-            <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-[#111827]">
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#4F46E5]">Checkout</p>
-              <div className="mt-4 rounded-[28px] border border-slate-200 bg-slate-50 p-5 dark:border-slate-700 dark:bg-[#0F172A]">
-                <h3 className="text-xl font-semibold text-slate-950 dark:text-white">{pendingPlan ? `Activate ${PLAN_DETAILS[pendingPlan].title}` : 'Paid plans require invite code'}</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                  {pendingPlan
-                    ? `This plan is locked until you complete payment or enter a valid invite code.`
-                    : 'Choose Education, Pro, or Legend and then pay or use an invite code to activate it.'}
-                </p>
-
-                {pendingPlan ? (
-                  <div className="mt-5 space-y-4">
-                    <div className="rounded-3xl border border-slate-200 bg-white p-4 text-slate-900 dark:border-slate-700 dark:bg-[#111827] dark:text-slate-100">
-                      <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Selected plan</p>
-                      <p className="mt-1 text-xl font-semibold">{PLAN_DETAILS[pendingPlan].title}</p>
-                      <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{PLAN_DETAILS[pendingPlan].price}</p>
-                    </div>
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <button
-                        type="button"
-                        onClick={handlePayNow}
-                        className="inline-flex items-center justify-center rounded-2xl bg-[#4F46E5] px-4 py-3 text-sm font-semibold text-white hover:bg-[#4338CA] transition-colors disabled:cursor-not-allowed disabled:bg-slate-400"
-                        disabled={isPaying}
-                      >
-                        {isPaying ? 'Checking payment...' : 'Pay now'}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setMessage('Enter your invite code below to activate this plan instantly.')}
-                        className="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-100 transition-colors dark:border-slate-700 dark:bg-[#111827] dark:text-slate-100 dark:hover:bg-slate-900"
-                      >
-                        Invite code instead
-                      </button>
-                    </div>
+        <div className="mt-10 grid gap-6 xl:grid-cols-4">
+          {PLAN_ORDER.map((tier) => {
+            const details = PLAN_DETAILS[tier];
+            const active = tier === planTier;
+            return (
+              <div key={tier} className={`rounded-[32px] border p-6 shadow-xl transition-all ${active ? 'border-cyan-400/30 bg-slate-900/95 shadow-cyan-500/20' : 'border-white/10 bg-slate-900/80 hover:border-white/20 hover:bg-slate-900/95'}`}>
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.32em] text-cyan-300">{PLAN_DISPLAY[tier]}</p>
+                    <p className="mt-5 text-4xl font-semibold tracking-tight text-white">{details.price}</p>
                   </div>
-                ) : (
-                  <div className="mt-5 rounded-3xl border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-700 dark:border-slate-700 dark:bg-[#111827] dark:text-slate-300">
-                    <p className="font-semibold">No plan selected yet.</p>
-                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Click a paid plan card to start the activation flow.</p>
-                  </div>
-                )}
-
-                {purchaseStatus ? (
-                  <div className="mt-4 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/30 dark:text-red-300">
-                    {purchaseStatus}
-                  </div>
-                ) : null}
-              </div>
-            </div>
-
-            <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-[#111827]">
-              <div className="rounded-3xl bg-gradient-to-br from-[#3730A3] via-[#4F46E5] to-[#A855F7] p-6 text-white shadow-xl">
-                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#C7D2FE]">Why upgrade?</p>
-                <h2 className="mt-4 text-2xl font-semibold">Get more from PRV AI.</h2>
-                <p className="mt-3 text-sm leading-6 text-slate-100/90">Higher limits, better models, and priority processing designed to power your most ambitious work.</p>
-                <div className="mt-6 space-y-3 text-sm">
-                  <p className="flex items-start gap-3"><span className="mt-1 inline-flex h-2.5 w-2.5 rounded-full bg-white" />Unlimited PRV 3.5 Earth access</p>
-                  <p className="flex items-start gap-3"><span className="mt-1 inline-flex h-2.5 w-2.5 rounded-full bg-white" />Advanced image tools and priority rendering</p>
-                  <p className="flex items-start gap-3"><span className="mt-1 inline-flex h-2.5 w-2.5 rounded-full bg-white" />Expanded context for long documents and research</p>
+                  {details.label ? (
+                    <span className="rounded-full bg-cyan-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-200">{details.label}</span>
+                  ) : null}
                 </div>
+                <p className="mt-5 text-sm leading-6 text-slate-400">{details.subtitle}</p>
+                <ul className="mt-6 space-y-3 text-sm text-slate-300">
+                  {details.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-3">
+                      <span className="mt-1 h-2.5 w-2.5 rounded-full bg-cyan-400" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Button
+                  type="button"
+                  onClick={() => openPlanModal(tier)}
+                  className={`mt-8 w-full rounded-full px-5 py-3 text-sm font-semibold transition ${active ? 'bg-white text-slate-950 hover:bg-slate-200' : 'bg-cyan-400 text-slate-950 hover:bg-cyan-300'}`}
+                >
+                  {active ? 'Current plan' : tier === 'free' ? 'Select free' : 'Upgrade'}
+                </Button>
               </div>
-            </div>
-          </aside>
+            );
+          })}
         </div>
       </div>
+
+      <Dialog open={isModalOpen} onOpenChange={(open) => { if (!open) closeModal(); }}>
+        <DialogContent className="max-w-xl rounded-[32px] border border-white/10 bg-slate-950/95 p-6 shadow-2xl shadow-cyan-500/20">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-semibold text-white">Checkout</DialogTitle>
+            <DialogDescription className="mt-2 text-sm text-slate-400">
+              {selectedDetails
+                ? `Prepare to upgrade to ${selectedDetails.title}. Payments are unavailable in your country — invite code only.`
+                : 'Select a paid plan to continue.'}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="mt-6 space-y-6">
+            {isLoading ? (
+              <div className="flex items-center justify-center rounded-[28px] border border-white/10 bg-slate-900/90 p-8">
+                <Spinner className="h-6 w-6 text-cyan-300" />
+                <span className="ml-4 text-sm text-slate-300">Loading checkout details…</span>
+              </div>
+            ) : (
+              <div className="rounded-[28px] border border-white/10 bg-slate-900/90 p-6">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.32em] text-cyan-300">Selected plan</p>
+                    <p className="mt-2 text-xl font-semibold text-white">{selectedDetails?.title || 'None'}</p>
+                  </div>
+                  <span className="rounded-full bg-white/5 px-3 py-1 text-sm text-slate-200">{selectedDetails?.price || '--'}</span>
+                </div>
+                <p className="mt-4 text-sm leading-6 text-slate-400">{selectedDetails?.subtitle}</p>
+              </div>
+            )}
+
+            {paymentError ? (
+              <div className="rounded-[28px] border border-rose-500/20 bg-rose-500/10 p-4 text-sm text-rose-100">
+                {paymentError}
+              </div>
+            ) : null}
+
+            {showInviteInput ? (
+              <div className="space-y-4">
+                <div className="rounded-[28px] border border-white/10 bg-slate-900/90 p-4">
+                  <label className="block text-sm font-medium text-slate-200">Invite code</label>
+                  <input
+                    value={inviteCode}
+                    onChange={(event) => setInviteCode(event.target.value)}
+                    placeholder="Enter your invite code"
+                    className="mt-3 w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 text-sm text-white outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20"
+                  />
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Button onClick={handleApplyInvite} className="w-full rounded-full bg-cyan-400 text-slate-950 hover:bg-cyan-300">Apply invite code</Button>
+                  <Button variant="outline" onClick={closeModal} className="w-full rounded-full border-white/10 text-white hover:border-white/20 hover:bg-white/5">Cancel</Button>
+                </div>
+              </div>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Button onClick={handlePayNow} className="w-full rounded-full bg-cyan-400 text-slate-950 hover:bg-cyan-300">Pay now</Button>
+                <Button variant="outline" onClick={() => setShowInviteInput(true)} className="w-full rounded-full border-white/10 text-white hover:border-white/20 hover:bg-white/5">Use invite code instead</Button>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="mt-6 justify-between">
+            <span className="text-xs text-slate-500">Invite code is required because payment is unavailable.</span>
+            <DialogClose asChild>
+              <button className="rounded-full bg-white/10 px-4 py-2 text-sm text-white hover:bg-white/20">Close</button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
