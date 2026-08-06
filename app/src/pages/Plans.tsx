@@ -62,7 +62,6 @@ const PLAN_DISPLAY: Record<PlanTier, string> = {
 };
 
 export default function Plans() {
-  const navigate = useNavigate();
   const { planTier, activateInviteCode, setPlanTier } = usePlan();
   const [selectedPlan, setSelectedPlan] = useState<PlanTier | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
