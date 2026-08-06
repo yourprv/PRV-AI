@@ -87,13 +87,40 @@ export default function Plans() {
   const { planTier, activateInviteCode, setPlanTier } = usePlan();
   const [inviteCode, setInviteCode] = useState('');
   const [message, setMessage] = useState('');
+  const [pendingPlan, setPendingPlan] = useState<PlanTier | null>(null);
+  const [isPaying, setIsPaying] = useState(false);
+  const [purchaseStatus, setPurchaseStatus] = useState('');
 
   const activeDetails = useMemo(() => PLAN_DETAILS[planTier], [planTier]);
 
   const handleSelectPlan = (tier: PlanTier) => {
     setMessage('');
-    setPlanTier(tier);
-    setMessage('Sorry, payment in your country is not available currently. Please enter your invite code here.');
+    setPurchaseStatus('');
+    setIsPaying(false);
+
+    if (tier === 'free') {
+      if (planTier !== 'free') {
+        setPlanTier('free');
+        setMessage('Free plan is now active.');
+      } else {
+        setMessage('You are already on the Free plan.');
+      }
+      setPendingPlan(null);
+      return;
+    }
+
+    setPendingPlan(tier);
+    setMessage(`To activate ${PLAN_DETAILS[tier].title}, click Pay now or enter an invite code.`);
+  };
+
+  const handlePayNow = () => {
+    if (!pendingPlan) return;
+    setPurchaseStatus('');
+    setIsPaying(true);
+    setTimeout(() => {
+      setIsPaying(false);
+      setPurchaseStatus("Oops! Sorry payment method is not available in your country. It's invite code only.");
+    }, 1200);
   };
 
   const handleApplyCode = () => {
@@ -102,6 +129,7 @@ export default function Plans() {
       setMessage('That invite code is not valid. Please check the code and try again.');
       return;
     }
+    setPendingPlan(null);
     setMessage(`Success! Your account is now set to ${tier.charAt(0).toUpperCase() + tier.slice(1)} tier.`);
     setInviteCode('');
   };
@@ -191,15 +219,67 @@ export default function Plans() {
             </div>
           </section>
 
-          <aside className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-[#111827]">
-            <div className="rounded-3xl bg-gradient-to-br from-[#3730A3] via-[#4F46E5] to-[#A855F7] p-6 text-white shadow-xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#C7D2FE]">Why upgrade?</p>
-              <h2 className="mt-4 text-2xl font-semibold">Get more from PRV AI.</h2>
-              <p className="mt-3 text-sm leading-6 text-slate-100/90">Higher limits, better models, and priority processing designed to power your most ambitious work.</p>
-              <div className="mt-6 space-y-3 text-sm">
-                <p className="flex items-start gap-3"><span className="mt-1 inline-flex h-2.5 w-2.5 rounded-full bg-white" />Unlimited PRV 3.5 Earth access</p>
-                <p className="flex items-start gap-3"><span className="mt-1 inline-flex h-2.5 w-2.5 rounded-full bg-white" />Advanced image tools and priority rendering</p>
-                <p className="flex items-start gap-3"><span className="mt-1 inline-flex h-2.5 w-2.5 rounded-full bg-white" />Expanded context for long documents and research</p>
+          <aside className="space-y-6">
+            <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-[#111827]">
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#4F46E5]">Checkout</p>
+              <div className="mt-4 rounded-[28px] border border-slate-200 bg-slate-50 p-5 dark:border-slate-700 dark:bg-[#0F172A]">
+                <h3 className="text-xl font-semibold text-slate-950 dark:text-white">{pendingPlan ? `Activate ${PLAN_DETAILS[pendingPlan].title}` : 'Paid plans require invite code'}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                  {pendingPlan
+                    ? `This plan is locked until you complete payment or enter a valid invite code.`
+                    : 'Choose Education, Pro, or Legend and then pay or use an invite code to activate it.'}
+                </p>
+
+                {pendingPlan ? (
+                  <div className="mt-5 space-y-4">
+                    <div className="rounded-3xl border border-slate-200 bg-white p-4 text-slate-900 dark:border-slate-700 dark:bg-[#111827] dark:text-slate-100">
+                      <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Selected plan</p>
+                      <p className="mt-1 text-xl font-semibold">{PLAN_DETAILS[pendingPlan].title}</p>
+                      <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{PLAN_DETAILS[pendingPlan].price}</p>
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <button
+                        type="button"
+                        onClick={handlePayNow}
+                        className="inline-flex items-center justify-center rounded-2xl bg-[#4F46E5] px-4 py-3 text-sm font-semibold text-white hover:bg-[#4338CA] transition-colors disabled:cursor-not-allowed disabled:bg-slate-400"
+                        disabled={isPaying}
+                      >
+                        {isPaying ? 'Checking payment...' : 'Pay now'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setMessage('Enter your invite code below to activate this plan instantly.')}
+                        className="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-100 transition-colors dark:border-slate-700 dark:bg-[#111827] dark:text-slate-100 dark:hover:bg-slate-900"
+                      >
+                        Invite code instead
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-5 rounded-3xl border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-700 dark:border-slate-700 dark:bg-[#111827] dark:text-slate-300">
+                    <p className="font-semibold">No plan selected yet.</p>
+                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Click a paid plan card to start the activation flow.</p>
+                  </div>
+                )}
+
+                {purchaseStatus ? (
+                  <div className="mt-4 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/30 dark:text-red-300">
+                    {purchaseStatus}
+                  </div>
+                ) : null}
+              </div>
+            </div>
+
+            <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-[#111827]">
+              <div className="rounded-3xl bg-gradient-to-br from-[#3730A3] via-[#4F46E5] to-[#A855F7] p-6 text-white shadow-xl">
+                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#C7D2FE]">Why upgrade?</p>
+                <h2 className="mt-4 text-2xl font-semibold">Get more from PRV AI.</h2>
+                <p className="mt-3 text-sm leading-6 text-slate-100/90">Higher limits, better models, and priority processing designed to power your most ambitious work.</p>
+                <div className="mt-6 space-y-3 text-sm">
+                  <p className="flex items-start gap-3"><span className="mt-1 inline-flex h-2.5 w-2.5 rounded-full bg-white" />Unlimited PRV 3.5 Earth access</p>
+                  <p className="flex items-start gap-3"><span className="mt-1 inline-flex h-2.5 w-2.5 rounded-full bg-white" />Advanced image tools and priority rendering</p>
+                  <p className="flex items-start gap-3"><span className="mt-1 inline-flex h-2.5 w-2.5 rounded-full bg-white" />Expanded context for long documents and research</p>
+                </div>
               </div>
             </div>
           </aside>

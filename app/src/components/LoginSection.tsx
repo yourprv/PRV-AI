@@ -100,6 +100,7 @@ export function LoginSection({ isExpanded = true, planTier = 'free', onOpenPlans
                 <span className="text-[13px] text-[#374151] dark:text-[#D1D5DB] group-hover:text-[#111827] dark:group-hover:text-[#F3F4F6] truncate block">
                   {user.name || user.email}
                 </span>
+                <p className="mt-1 text-[12px] text-slate-500 dark:text-slate-400">{planTier ? `${planTier.charAt(0).toUpperCase() + planTier.slice(1)} plan` : 'Free plan'}</p>
               </div>
             </div>
             <ChevronDown size={16} className={`text-[#6B7280] dark:text-[#9CA3AF] transition-transform ${isMenuOpen ? 'rotate-180' : ''}`} />
