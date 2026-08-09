@@ -139,7 +139,6 @@ export default function Plans() {
             <div className="max-w-3xl">
               <p className="text-xs uppercase tracking-[0.35em] text-cyan-300">Premium access</p>
               <h1 className="mt-4 text-4xl font-semibold tracking-tight text-white sm:text-5xl">Choose the plan that fits your workflow.</h1>
-              <p className="mt-4 text-sm leading-7 text-slate-300">Paid plans are available by invite code only. Selecting a plan opens the checkout flow, then lets you apply an invite code to activate it.</p>
             </div>
             <div className="rounded-3xl border border-cyan-500/20 bg-slate-900/90 px-6 py-5 text-center shadow-lg shadow-cyan-500/10">
               <p className="text-xs uppercase tracking-[0.28em] text-slate-400">Current plan</p>
@@ -252,7 +251,10 @@ export default function Plans() {
           </div>
 
           <DialogFooter className="mt-6 justify-between">
-            <span className="text-xs text-slate-500">Invite code is required because payment is unavailable.</span>
+            <div className="flex items-center gap-3">
+              <Button variant="outline" onClick={closeModal} className="rounded-full border-white/10 text-white hover:border-white/20 hover:bg-white/5">Go back</Button>
+              <span className="text-xs text-slate-500">Invite code is required because payment is unavailable in your country.</span>
+            </div>
             <DialogClose asChild>
               <button className="rounded-full bg-white/10 px-4 py-2 text-sm text-white hover:bg-white/20">Close</button>
             </DialogClose>

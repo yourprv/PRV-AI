@@ -323,7 +323,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
         {/* Subtle hint */}
         <div className="mt-3 text-center text-xs sm:text-[12px] text-[#6B7280] dark:text-[#9CA3AF]">
           <p>PRV AI can make mistakes. Consider checking important information.</p>
-          <p className="mt-1">Powered by Google</p>
+          
           {guestMode && <p className="mt-1 max-w-md mx-auto text-[10px] leading-4">By using PRV AI you agree to PRV AI Privacy Policy and Terms and Conditions.</p>}
         </div>
       </div>
