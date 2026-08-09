@@ -252,8 +252,13 @@ export default function Plans() {
 
           <DialogFooter className="mt-6 justify-between">
             <div className="flex items-center gap-3">
-              <Button variant="outline" onClick={closeModal} className="rounded-full border-white/10 text-white hover:border-white/20 hover:bg-white/5">Go back</Button>
-              <span className="text-xs text-slate-500">Invite code is required because payment is unavailable in your country.</span>
+              <Button
+                onClick={() => { window.location.href = '/'; }}
+                className="rounded-full bg-white text-slate-950 hover:bg-slate-200"
+              >
+                Go back
+              </Button>
+              <span className="text-xs text-slate-400">Invite code is required because payment is unavailable in your country.</span>
             </div>
             <DialogClose asChild>
               <button className="rounded-full bg-white/10 px-4 py-2 text-sm text-white hover:bg-white/20">Close</button>
