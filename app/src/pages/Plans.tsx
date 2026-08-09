@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
 import { usePlan } from '@/hooks/usePlan';
 import type { PlanTier } from '@/types/chat';
 import { Button } from '@/components/ui/button';
@@ -134,15 +135,25 @@ export default function Plans() {
   return (
     <div className="min-h-screen bg-[#0B1120] text-white">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="rounded-[32px] border border-white/10 bg-gradient-to-br from-slate-950/95 to-slate-900/80 p-8 shadow-2xl shadow-cyan-500/10 backdrop-blur-xl">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div className="max-w-3xl">
-              <p className="text-xs uppercase tracking-[0.35em] text-cyan-300">Premium access</p>
-              <h1 className="mt-4 text-4xl font-semibold tracking-tight text-white sm:text-5xl">Choose the plan that fits your workflow.</h1>
-            </div>
-            <div className="rounded-3xl border border-cyan-500/20 bg-slate-900/90 px-6 py-5 text-center shadow-lg shadow-cyan-500/10">
-              <p className="text-xs uppercase tracking-[0.28em] text-slate-400">Current plan</p>
-              <p className="mt-3 text-2xl font-semibold text-white">{planTier === 'free' ? 'Free' : activeDetails.title}</p>
+        <div className="flex items-center justify-between gap-4 mb-8">
+          <Button
+            type="button"
+            onClick={() => { window.location.href = 'https://prv-ai.vercel.app'; }}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-slate-900/90 text-white hover:bg-slate-800"
+            aria-label="Go back to PRV AI"
+          >
+            <ArrowLeft size={18} />
+          </Button>
+          <div className="rounded-[32px] border border-white/10 bg-gradient-to-br from-slate-950/95 to-slate-900/80 p-8 shadow-2xl shadow-cyan-500/10 backdrop-blur-xl flex-1">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div className="max-w-3xl">
+                <p className="text-xs uppercase tracking-[0.35em] text-cyan-300">Premium access</p>
+                <h1 className="mt-4 text-4xl font-semibold tracking-tight text-white sm:text-5xl">Choose the plan that fits your workflow.</h1>
+              </div>
+              <div className="rounded-3xl border border-cyan-500/20 bg-slate-900/90 px-6 py-5 text-center shadow-lg shadow-cyan-500/10">
+                <p className="text-xs uppercase tracking-[0.28em] text-slate-400">Current plan</p>
+                <p className="mt-3 text-2xl font-semibold text-white">{planTier === 'free' ? 'Free' : activeDetails.title}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -238,14 +249,22 @@ export default function Plans() {
                   />
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <Button onClick={handleApplyInvite} className="w-full rounded-full bg-cyan-400 text-slate-950 hover:bg-cyan-300">Apply invite code</Button>
-                  <Button variant="outline" onClick={closeModal} className="w-full rounded-full border-white/10 text-white hover:border-white/20 hover:bg-white/5">Cancel</Button>
+                  <button type="button" onClick={handleApplyInvite} className="w-full rounded-full bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
+                    Apply invite code
+                  </button>
+                  <button type="button" onClick={closeModal} className="w-full rounded-full border border-white/10 bg-transparent px-5 py-3 text-sm font-semibold text-white transition hover:border-white/20 hover:bg-white/5">
+                    Cancel
+                  </button>
                 </div>
               </div>
             ) : (
               <div className="grid gap-3 sm:grid-cols-2">
-                <Button onClick={handlePayNow} className="w-full rounded-full bg-cyan-400 text-slate-950 hover:bg-cyan-300">Pay now</Button>
-                <Button variant="outline" onClick={() => setShowInviteInput(true)} className="w-full rounded-full border-white/10 text-white hover:border-white/20 hover:bg-white/5">Use invite code instead</Button>
+                <button type="button" onClick={handlePayNow} className="w-full rounded-full bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
+                  Pay now
+                </button>
+                <button type="button" onClick={() => setShowInviteInput(true)} className="w-full rounded-full border border-white/10 bg-transparent px-5 py-3 text-sm font-semibold text-white transition hover:border-white/20 hover:bg-white/5">
+                  Use invite code instead
+                </button>
               </div>
             )}
           </div>
