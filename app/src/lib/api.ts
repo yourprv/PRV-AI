@@ -1,3 +1,5 @@
+import { toast } from 'sonner';
+
 const DEFAULT_API_BASE_URL = 'http://localhost:5000';
 const AUTH_SESSION_STORAGE_KEY = 'prv_auth_session';
 
@@ -51,6 +53,22 @@ export function setStoredAuthToken(token: string | null): void {
   }
 }
 
+export async function responseError(response: Response, fallback: string): Promise<Error> {
+  let message = fallback;
+  try {
+    const data = await response.json() as { error?: string; message?: string };
+    message = data.error || data.message || fallback;
+  } catch {
+    const detail = await response.text().catch(() => '');
+    if (detail) message = detail;
+  }
+  if (response.status === 429) {
+    message = 'Rate limit reached. Upgrade with an invite code or wait until your limit resets.';
+    toast.error(message, { duration: 6000 });
+  }
+  return new Error(message);
+}
+
 export async function generateImage({ prompt, turnstileToken, signal }: {
   prompt: string;
   turnstileToken?: string;
@@ -60,6 +78,7 @@ export async function generateImage({ prompt, turnstileToken, signal }: {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      ...(getStoredAuthToken() ? { Authorization: `Bearer ${getStoredAuthToken()}` } : {}),
       ...(turnstileToken ? { 'X-Turnstile-Token': turnstileToken } : {}),
     },
     body: JSON.stringify({ prompt, turnstileToken }),
@@ -67,8 +86,7 @@ export async function generateImage({ prompt, turnstileToken, signal }: {
   });
 
   if (!response.ok) {
-    const detail = await response.text();
-    throw new Error(detail || `Image generation failed with status ${response.status}`);
+    throw await responseError(response, `Image generation failed with status ${response.status}`);
   }
 
   return response.json() as Promise<{ imageUrl: string }>;
@@ -104,42 +122,44 @@ export async function refreshAuthSession(): Promise<StoredAuthSession | null> {
 }
 
 export async function apiRequest<T>(path: string, init: RequestInit = {}, signal?: AbortSignal): Promise<T> {
+  const token = getStoredAuthToken();
   const response = await fetch(`${getApiBaseUrl()}${path}`, {
     ...init,
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(init.headers || {}),
     },
     signal,
   });
 
   if (!response.ok) {
-    const detail = await response.text();
-    throw new Error(detail || `Request failed with status ${response.status}`);
+    throw await responseError(response, `Request failed with status ${response.status}`);
   }
 
   return response.json() as Promise<T>;
 }
 
 export async function apiRequestText(path: string, init: RequestInit = {}, signal?: AbortSignal): Promise<string> {
+  const token = getStoredAuthToken();
   const response = await fetch(`${getApiBaseUrl()}${path}`, {
     ...init,
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(init.headers || {}),
     },
     signal,
   });
 
   if (!response.ok) {
-    const detail = await response.text();
-    throw new Error(detail || `Request failed with status ${response.status}`);
+    throw await responseError(response, `Request failed with status ${response.status}`);
   }
 
   return response.text();
 }
 
-export async function getAuthSession(signal?: AbortSignal): Promise<{ user: { id: string; email: string; name?: string } | null }> {
+export async function getAuthSession(signal?: AbortSignal): Promise<{ user: { id: string; email: string; name?: string; tier?: 'free' | 'go' | 'plus' | 'pro' } | null }> {
   let session = getStoredAuthSession();
   if (!session?.accessToken) {
     return { user: null };
@@ -176,7 +196,7 @@ export async function getAuthSession(signal?: AbortSignal): Promise<{ user: { id
         });
 
         if (retryResponse.ok) {
-          const retryData = await retryResponse.json() as { user?: { id: string; email: string; name?: string } | null };
+          const retryData = await retryResponse.json() as { user?: { id: string; email: string; name?: string; tier?: 'free' | 'go' | 'plus' | 'pro' } | null };
           return { user: retryData.user ?? null };
         }
       }
@@ -193,7 +213,7 @@ export async function getAuthSession(signal?: AbortSignal): Promise<{ user: { id
     throw new Error(detail || 'Failed to load auth session');
   }
 
-  const data = await response.json() as { user?: { id: string; email: string; name?: string } | null };
+  const data = await response.json() as { user?: { id: string; email: string; name?: string; tier?: 'free' | 'go' | 'plus' | 'pro' } | null };
   return { user: data.user ?? null };
 }
 
@@ -214,6 +234,13 @@ export async function signInWithOtpBackend(email: string, redirectTo: string): P
 export async function signOutBackend(): Promise<void> {
   await apiRequest('/api/auth/logout', {
     method: 'POST',
+  });
+}
+
+export async function redeemInviteCode(code: string): Promise<{ tier: 'go' | 'plus' | 'pro' }> {
+  return apiRequest<{ tier: 'go' | 'plus' | 'pro' }>('/api/redeem-invite', {
+    method: 'POST',
+    body: JSON.stringify({ code }),
   });
 }
 

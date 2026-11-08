@@ -3,16 +3,17 @@ import { ChevronLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { AVAILABLE_MODELS } from '@/types/chat';
+import { PlansUpgrade } from '@/components/PlansUpgrade';
 
 interface SettingsProps {
   onBack: () => void;
 }
 
 export function Settings({ onBack }: SettingsProps) {
-  const [activeTab, setActiveTab] = useState<'about' | 'models' | 'data'>('about');
+  const [activeTab, setActiveTab] = useState<'about' | 'models' | 'data' | 'plans'>('about');
   const [allowDataSharing, setAllowDataSharing] = useLocalStorage('prv_allow_data_sharing', true);
   const [showChatHistoryInfo, setShowChatHistoryInfo] = useState(false);
-  const { user, logout } = useAuth();
+  const { user, logout, refreshUser } = useAuth();
 
   const handleLogout = async () => {
     await logout();
@@ -49,6 +50,16 @@ export function Settings({ onBack }: SettingsProps) {
               <span className="sm:hidden">About</span>
             </button>
             <button
+              onClick={() => setActiveTab('plans')}
+              className={`flex-1 md:flex-none whitespace-nowrap md:whitespace-normal flex items-center justify-center md:justify-start gap-0 md:gap-3 px-2 md:px-3 py-2 md:py-2.5 rounded-lg text-xs md:text-[14px] font-medium transition-colors duration-200 ${
+                activeTab === 'plans'
+                  ? 'bg-[#F5F5F7] dark:bg-[#374151] text-[#111827] dark:text-[#F3F4F6]'
+                  : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] hover:bg-[#F9F9FB] dark:hover:bg-[#2D3748]'
+              }`}
+            >
+              Plans
+            </button>
+            <button
               onClick={() => setActiveTab('models')}
               className={`flex-1 md:flex-none whitespace-nowrap md:whitespace-normal flex items-center justify-center md:justify-start gap-0 md:gap-3 px-2 md:px-3 py-2 md:py-2.5 rounded-lg text-xs md:text-[14px] font-medium transition-colors duration-200 ${
                 activeTab === 'models'
@@ -74,7 +85,9 @@ export function Settings({ onBack }: SettingsProps) {
 
         {/* Right content pane */}
         <div className="flex-1 overflow-y-auto">
-          {activeTab === 'about' ? (
+          {activeTab === 'plans' ? (
+            <PlansUpgrade user={user} refreshUser={refreshUser} />
+          ) : activeTab === 'about' ? (
             // About Me View
             <div className="max-w-2xl mx-auto px-4 sm:px-6 md:px-8 py-6 md:py-8">
               <h1 className="text-lg sm:text-xl md:text-[28px] font-semibold text-[#111827] dark:text-[#F3F4F6] mb-6 md:mb-8">

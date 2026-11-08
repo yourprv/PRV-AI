@@ -45,7 +45,7 @@ Cloudflare site key; the secret key belongs only on the backend.
    npm run invite:create -- --tier pro --max-uses 1 --expires-at 2027-01-01T00:00:00Z
    ```
 
-   `--max-uses` defaults to 1 and `--expires-at` is optional. The plaintext
+   `--tier` accepts `go`, `plus`, or `pro`; `--max-uses` defaults to 1 and `--expires-at` is optional. The plaintext
    code is printed only after its SHA-256 digest is stored; share it securely.
 4. Send `POST /api/redeem-invite` with `{ "code": "ABCD-1234-EFGH-5678" }`
    and the signed-in user's bearer token. The backend derives the user ID from
@@ -57,3 +57,11 @@ Cloudflare site key; the secret key belongs only on the backend.
 Codes contain 16 uppercase alphanumeric symbols, displayed as four groups of
 four with three hyphens (19 visible characters). The database stores only a
 hash, while the CLI displays the plaintext once.
+
+Core AI features remain available on Free. Server-side limits are shared
+across chat, web search, image generation, and prompt enhancement: Free 30,
+Go 100, Plus 300, and Pro 900 requests per 15-minute window. The current
+limiter stores counters in backend process memory, so it is appropriate for a
+single backend instance; use a shared Redis store before scaling to multiple
+instances. Every limited response includes `X-RateLimit-Limit`,
+`X-RateLimit-Remaining`, and `X-RateLimit-Reset` headers.

@@ -95,8 +95,13 @@ async function getAuthenticatedUser(req: Request, res: ExpressResponse) {
   return user;
 }
 
-type Tier = 'plus' | 'pro';
-const tierRank: Record<Tier, number> = { plus: 1, pro: 2 };
+type Tier = 'free' | 'go' | 'plus' | 'pro';
+const tierRank: Record<Tier, number> = { free: 0, go: 1, plus: 2, pro: 3 };
+// Shared AI generation budget per account for a fixed 15-minute window.
+const TIER_REQUEST_LIMITS: Record<Tier, number> = { free: 30, go: 100, plus: 300, pro: 900 };
+const RATE_WINDOW_MS = 15 * 60 * 1000;
+const rateLimitBuckets = new Map<string, { windowStart: number; count: number }>();
+let rateLimitCalls = 0;
 
 // Use a keyed digest so raw IP addresses and account IDs are not stored in the
 // rate-limit table. Configure a long, random secret in production.
@@ -105,29 +110,107 @@ function rateLimitKey(kind: 'ip' | 'user', value: string): string {
 }
 
 // Add this middleware to any server route that serves Plus or Pro features.
-function requireTier(minimumTier: Tier): RequestHandler {
+function requireTier(minimumTier: Exclude<Tier, 'free'>): RequestHandler {
   return async (req, res, next) => {
-    const user = await getAuthenticatedUser(req, res);
-    if (!user || !supabaseAdmin) return;
+    try {
+      const user = await getAuthenticatedUser(req, res);
+      if (!user || !supabaseAdmin) return;
 
-    const { data, error } = await supabaseAdmin
-      .from('user_entitlements')
-      .select('tier')
-      .eq('user_id', user.id)
-      .maybeSingle();
-    if (error) {
-      console.error('Failed to check user tier:', error);
-      res.status(500).json({ error: 'Unable to verify your account access.' });
-      return;
+      const { data, error } = await supabaseAdmin
+        .from('user_entitlements')
+        .select('tier')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (error) {
+        console.error('Failed to check user tier:', error);
+        res.status(503).json({ error: 'Unable to verify your account access.' });
+        return;
+      }
+      const currentTier = data?.tier as Tier | undefined;
+      if (!currentTier || tierRank[currentTier] < tierRank[minimumTier]) {
+        const label = `${minimumTier[0].toUpperCase()}${minimumTier.slice(1)}`;
+        res.status(403).json({ error: `${label} access is required.` });
+        return;
+      }
+      next();
+    } catch (error) {
+      console.error('Tier access check failed:', error);
+      res.status(503).json({ error: 'Unable to verify your account access.' });
     }
-    const currentTier = data?.tier as Tier | undefined;
-    if (!currentTier || tierRank[currentTier] < tierRank[minimumTier]) {
-      res.status(403).json({ error: `${minimumTier === 'pro' ? 'Pro' : 'Plus'} access is required.` });
-      return;
-    }
-    next();
   };
 }
+
+function takeRateLimit(key: string, limit: number, windowStart: number) {
+  const current = rateLimitBuckets.get(key);
+  const bucket = !current || current.windowStart !== windowStart
+    ? { windowStart, count: 0 }
+    : current;
+  bucket.count += 1;
+  rateLimitBuckets.set(key, bucket);
+  return { remaining: Math.max(0, limit - bucket.count), exceeded: bucket.count > limit };
+}
+
+// The fallback is an in-process fixed-window limiter (suitable for one backend
+// instance); all expensive routes use it before doing external provider work.
+const tierRateLimit: RequestHandler = async (req, res, next) => {
+  try {
+  const now = Date.now();
+  const windowStart = Math.floor(now / RATE_WINDOW_MS) * RATE_WINDOW_MS;
+  const token = req.headers.authorization?.replace(/^Bearer\s+/i, '').trim();
+  let userId: string | null = null;
+  let tier: Tier = 'free';
+
+  if (token && supabaseAdmin) {
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
+    if (!authError && user) {
+      userId = user.id;
+      const { data, error } = await supabaseAdmin
+        .from('user_entitlements')
+        .select('tier')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (error) {
+        console.error('Unable to load tier for request limit:', error);
+        res.status(503).json({ error: 'Usage limits are temporarily unavailable.' });
+        return;
+      }
+      const activeTier = data?.tier as Tier | undefined;
+      if (activeTier && activeTier in tierRank) tier = activeTier;
+    }
+  }
+
+  const tierLimit = TIER_REQUEST_LIMITS[tier];
+  const tierKey = userId ? `user:${userId}` : `guest:${req.ip || req.socket.remoteAddress || 'unknown'}`;
+  const account = takeRateLimit(tierKey, tierLimit, windowStart);
+  // A high shared IP ceiling prevents easy account rotation without applying
+  // the small guest allowance to every signed-in person behind one network.
+  const ipKey = `ip:${req.ip || req.socket.remoteAddress || 'unknown'}`;
+  const ip = userId ? takeRateLimit(ipKey, TIER_REQUEST_LIMITS.pro, windowStart) : account;
+  const remaining = Math.min(account.remaining, ip.remaining);
+  const resetAt = Math.ceil((windowStart + RATE_WINDOW_MS) / 1000);
+  res.setHeader('X-RateLimit-Limit', String(tierLimit));
+  res.setHeader('X-RateLimit-Remaining', String(remaining));
+  res.setHeader('X-RateLimit-Reset', String(resetAt));
+
+  // Periodically clear expired keys so an active server stays memory-bounded.
+  rateLimitCalls += 1;
+  if (rateLimitCalls % 500 === 0) {
+    for (const [key, bucket] of rateLimitBuckets) {
+      if (bucket.windowStart < windowStart) rateLimitBuckets.delete(key);
+    }
+  }
+
+  if (account.exceeded || ip.exceeded) {
+    res.setHeader('Retry-After', String(Math.max(1, resetAt - Math.floor(now / 1000))));
+    res.status(429).json({ error: 'Rate limit reached. Upgrade with an invite code or wait until your limit resets.' });
+    return;
+  }
+  next();
+  } catch (error) {
+    console.error('Tier rate-limit middleware failed:', error);
+    res.status(503).json({ error: 'Usage limits are temporarily unavailable.' });
+  }
+};
 
 function serializeChatMessages(value: unknown): StoredChatMessage[] {
   if (!Array.isArray(value)) return [];
@@ -487,7 +570,7 @@ app.post('/api/turnstile/verify', async (req: Request, res: ExpressResponse) => 
   }
 });
 
-app.post('/api/images/generate', async (req: Request, res: ExpressResponse) => {
+app.post('/api/images/generate', tierRateLimit, async (req: Request, res: ExpressResponse) => {
   const { prompt, turnstileToken } = req.body as { prompt?: string; turnstileToken?: string };
   const trimmedPrompt = prompt?.trim().slice(0, 2048) || '';
 
@@ -692,7 +775,8 @@ app.get('/api/custom-prvs', async (_req: Request, res: ExpressResponse) => {
   res.json({ customPrvs: (data || []).map((row) => formatCustomPrv(row)) });
 });
 
-app.post('/api/custom-prvs', async (req: Request, res: ExpressResponse) => {
+// Publishing a Custom PRV is a Go+ feature; public catalog browsing stays free.
+app.post('/api/custom-prvs', tierRateLimit, requireTier('go'), async (req: Request, res: ExpressResponse) => {
   const user = await getAuthenticatedUser(req, res);
   if (!user || !supabaseAdmin) return;
   const name = typeof req.body?.name === 'string' ? req.body.name.trim().slice(0, 80) : '';
@@ -713,7 +797,7 @@ app.post('/api/custom-prvs', async (req: Request, res: ExpressResponse) => {
   res.status(201).json(formatCustomPrv(data));
 });
 
-app.post('/api/custom-prv/enhance', async (req: Request, res: ExpressResponse) => {
+app.post('/api/custom-prv/enhance', tierRateLimit, async (req: Request, res: ExpressResponse) => {
   const { prompt, kind, turnstileToken } = req.body as { prompt?: string; kind?: 'chat' | 'custom'; turnstileToken?: string };
   if (!prompt?.trim()) {
     res.status(400).json({ error: 'A custom PRV description is required.' });
@@ -760,7 +844,7 @@ app.post('/api/custom-prv/enhance', async (req: Request, res: ExpressResponse) =
   }
 });
 
-app.post('/api/chat/stream', async (req: Request, res: ExpressResponse) => {
+app.post('/api/chat/stream', tierRateLimit, async (req: Request, res: ExpressResponse) => {
   const payload = normalizeChatRequestPayload(req.body, req.headers as Record<string, string | undefined>);
   const { content, model, mode, history, attachments, customInstructions, turnstileToken } = payload;
 
@@ -872,7 +956,7 @@ app.post('/api/chat/stream', async (req: Request, res: ExpressResponse) => {
   }
 });
 
-app.post('/api/search/tavily', async (req: Request, res: ExpressResponse) => {
+app.post('/api/search/tavily', tierRateLimit, async (req: Request, res: ExpressResponse) => {
   const { query } = req.body as { query?: string };
 
   if (!query) {
@@ -983,12 +1067,22 @@ app.get('/api/auth/session', async (req: Request, res: ExpressResponse) => {
   }
 
   const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
-  if (error) {
-    res.status(401).json({ user: null, error: error.message });
+  if (error || !user) {
+    res.status(401).json({ user: null, error: error?.message || 'Your session is no longer valid.' });
     return;
   }
 
-  res.json({ user });
+  const { data: entitlement, error: entitlementError } = await supabaseAdmin
+    .from('user_entitlements')
+    .select('tier')
+    .eq('user_id', user.id)
+    .maybeSingle();
+  if (entitlementError) {
+    console.error('Failed to load account tier:', entitlementError);
+    res.status(500).json({ error: 'Unable to load your account.' });
+    return;
+  }
+  res.json({ user: { ...user, tier: entitlement?.tier || 'free' } });
 });
 
 app.post('/api/auth/sign-in/oauth', async (req: Request, res: ExpressResponse) => {

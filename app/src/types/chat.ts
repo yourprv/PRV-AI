@@ -33,6 +33,7 @@ export interface User {
   email: string;
   name: string;
   avatar?: string;
+  tier?: 'free' | 'go' | 'plus' | 'pro';
 }
 
 export type ModelId =

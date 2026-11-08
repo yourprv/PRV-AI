@@ -7,6 +7,13 @@ export function useAuth() {
   const [isInitializing, setIsInitializing] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
+  const toAppUser = useCallback((sessionUser: { id: string; email: string; name?: string; tier?: User['tier'] } | null): User | null => sessionUser ? {
+    id: sessionUser.id,
+    email: sessionUser.email,
+    name: sessionUser.name || sessionUser.email.split('@')[0],
+    tier: sessionUser.tier || 'free',
+  } : null, []);
+
   useEffect(() => {
     let mounted = true;
 
@@ -14,11 +21,7 @@ export function useAuth() {
       try {
         const session = await getAuthSession();
         if (!mounted) return;
-        setUser(session.user ? {
-          id: session.user.id,
-          email: session.user.email,
-          name: session.user.name || session.user.email.split('@')[0],
-        } : null);
+        setUser(toAppUser(session.user));
       } finally {
         if (mounted) {
           setIsInitializing(false);
@@ -31,7 +34,14 @@ export function useAuth() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [toAppUser]);
+
+  const refreshUser = useCallback(async () => {
+    const session = await getAuthSession();
+    const refreshedUser = toAppUser(session.user);
+    setUser(refreshedUser);
+    return refreshedUser;
+  }, [toAppUser]);
 
   const loginWithGoogle = useCallback(async () => {
     setIsLoading(true);
@@ -71,6 +81,7 @@ export function useAuth() {
 
   return {
     user,
+    refreshUser,
     isLoading,
     isAuthReady: !isInitializing,
     isAuthenticated: !!user,

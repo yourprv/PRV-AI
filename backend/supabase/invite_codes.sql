@@ -3,22 +3,26 @@
 create table if not exists public.invite_codes (
   id uuid primary key default gen_random_uuid(),
   code_hash text not null unique,
-  tier text not null check (tier in ('plus', 'pro')),
+  tier text not null check (tier in ('go', 'plus', 'pro')),
   max_uses integer not null check (max_uses > 0),
   times_used integer not null default 0 check (times_used >= 0 and times_used <= max_uses),
   expires_at timestamptz,
   is_active boolean not null default true,
   created_at timestamptz not null default now()
 );
+alter table public.invite_codes drop constraint if exists invite_codes_tier_check;
+alter table public.invite_codes add constraint invite_codes_tier_check check (tier in ('go', 'plus', 'pro'));
 create index if not exists invite_codes_active_expiry_idx
   on public.invite_codes (expires_at) where is_active;
 
 -- Paid access is stored server-side, separate from user-editable auth metadata.
 create table if not exists public.user_entitlements (
   user_id uuid primary key references auth.users(id) on delete cascade,
-  tier text not null check (tier in ('plus', 'pro')),
+  tier text not null check (tier in ('go', 'plus', 'pro')),
   updated_at timestamptz not null default now()
 );
+alter table public.user_entitlements drop constraint if exists user_entitlements_tier_check;
+alter table public.user_entitlements add constraint user_entitlements_tier_check check (tier in ('go', 'plus', 'pro'));
 
 -- A durable fixed-window limiter works across multiple backend instances.
 create table if not exists public.invite_rate_limits (
@@ -100,7 +104,8 @@ begin
   on conflict (user_id) do update
     set tier = case
       when public.user_entitlements.tier = 'pro' or excluded.tier = 'pro' then 'pro'
-      else 'plus'
+      when public.user_entitlements.tier = 'plus' or excluded.tier = 'plus' then 'plus'
+      else 'go'
     end,
     updated_at = now()
   returning tier into v_tier;

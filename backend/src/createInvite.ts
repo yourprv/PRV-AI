@@ -34,7 +34,7 @@ function readOptions(args: string[]) {
   }
 
   const tier = values.get('tier');
-  if (tier !== 'plus' && tier !== 'pro') throw new Error('--tier must be plus or pro.');
+  if (tier !== 'go' && tier !== 'plus' && tier !== 'pro') throw new Error('--tier must be go, plus, or pro.');
   const maxUses = Number(values.get('max-uses') || '1');
   if (!Number.isSafeInteger(maxUses) || maxUses < 1) throw new Error('--max-uses must be a positive integer.');
 
@@ -74,7 +74,7 @@ async function main() {
     console.log(code);
   } catch (error) {
     console.error(error instanceof Error ? error.message : error);
-    console.error('Usage: npm run invite:create -- --tier plus|pro [--max-uses 1] [--expires-at ISO_DATE]');
+    console.error('Usage: npm run invite:create -- --tier go|plus|pro [--max-uses 1] [--expires-at ISO_DATE]');
     process.exitCode = 1;
   }
 }

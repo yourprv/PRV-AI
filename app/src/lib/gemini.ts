@@ -1,5 +1,5 @@
 import type { Message, ModeType, Attachment, ModelId } from '@/types/chat';
-import { getApiBaseUrl, getStoredAuthToken } from '@/lib/api';
+import { getApiBaseUrl, getStoredAuthToken, responseError } from '@/lib/api';
 
 export interface GeminiStreamChunk {
   text?: string;
@@ -56,8 +56,7 @@ export async function streamGeminiReply({
   });
 
   if (!response.ok) {
-    const detail = await response.text();
-    throw new Error(detail || `Failed to reach backend chat endpoint: ${response.status}`);
+    throw await responseError(response, `Failed to reach backend chat endpoint: ${response.status}`);
   }
 
   const reader = response.body?.getReader();
