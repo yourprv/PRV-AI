@@ -4,7 +4,7 @@ interface PolicyDocumentProps {
   type: 'terms' | 'privacy';
 }
 
-const headingClass = 'text-[16px] font-semibold text-[#111827] dark:text-[#F3F4F6]';
+const headingClass = 'text-[16px] font-semibold text-[#111827] dark:text-[#f3eddf]';
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return <section className="space-y-2"><h3 className={headingClass}>{title}</h3><div className="space-y-2">{children}</div></section>;
@@ -13,8 +13,8 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 export function PolicyDocument({ type }: PolicyDocumentProps) {
   const isTerms = type === 'terms';
   return (
-    <div className="space-y-5 text-sm leading-7 text-[#374151] dark:text-[#D1D5DB]">
-      <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Last updated: November 8, 2026</p>
+    <div className="space-y-5 text-sm leading-7 text-[#374151] dark:text-[#e0d9c8]">
+      <p className="text-xs font-medium text-slate-500 dark:text-[#bcb39d]">Last updated: November 8, 2026</p>
       {isTerms ? (
         <>
           <p>These Terms and Conditions explain the rules for accessing PRV AI, including its chat, search, image, account, and customization features. By using PRV AI, you agree to these terms. If you do not agree, do not use the service.</p>

@@ -85,11 +85,11 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
       />
 
       {/* Modal */}
-      <div className="relative z-10 w-full max-w-sm mx-auto bg-white dark:bg-[#1F2937] rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.3)] p-6 sm:p-8 animate-fade-in max-h-[90vh] overflow-y-auto">
+      <div className="relative z-10 w-full max-w-sm mx-auto bg-white dark:bg-[#2b2921] rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.3)] p-6 sm:p-8 animate-fade-in max-h-[90vh] overflow-y-auto">
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-3 sm:top-4 right-3 sm:right-4 w-8 h-8 flex items-center justify-center rounded-lg text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] hover:bg-[#F5F5F7] dark:hover:bg-[#374151] transition-colors duration-200"
+          className="absolute top-3 sm:top-4 right-3 sm:right-4 w-8 h-8 flex items-center justify-center rounded-lg text-[#6B7280] dark:text-[#bcb39d] hover:text-[#111827] dark:hover:text-[#f3eddf] hover:bg-[#F5F5F7] dark:hover:bg-[#38362a] transition-colors duration-200"
           aria-label="Close modal"
         >
           <X size={18} />
@@ -97,10 +97,10 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
         {/* Header */}
         <div className="mb-4 sm:mb-6">
-          <h2 className="premium-heading text-base sm:text-[20px] text-[#20231f] dark:text-[#F3F4F6] mb-1">
+          <h2 className="premium-heading text-base sm:text-[20px] text-[#20231f] dark:text-[#f3eddf] mb-1">
             Continue to PRV
           </h2>
-          <p className="text-xs sm:text-[14px] text-[#6B7280] dark:text-[#D1D5DB]">
+          <p className="text-xs sm:text-[14px] text-[#6B7280] dark:text-[#e0d9c8]">
             Sign in to save your conversations and access the full model lineup.
           </p>
         </div>
@@ -122,7 +122,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
           type="button"
           onClick={handleGoogleSignIn}
           disabled={isLoading || !termsAccepted || !ageConfirmed}
-          className="w-full flex items-center justify-center gap-2 sm:gap-2.5 px-3 sm:px-4 py-2.5 sm:py-3 bg-white dark:bg-[#2D3748] border border-[#E5E7EB] dark:border-[#374151] rounded-xl hover:bg-[#F9F9FB] dark:hover:bg-[#374151] hover:border-[#D1D5DB] dark:hover:border-[#4B5563] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-xs sm:text-[14px] text-[#374151] dark:text-[#D1D5DB] font-medium mb-3"
+          className="w-full flex items-center justify-center gap-2 sm:gap-2.5 px-3 sm:px-4 py-2.5 sm:py-3 bg-white dark:bg-[#37352b] border border-[#E5E7EB] dark:border-[#454235] rounded-xl hover:bg-[#F9F9FB] dark:hover:bg-[#38362a] hover:border-[#D1D5DB] dark:hover:border-[#514d3e] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-xs sm:text-[14px] text-[#374151] dark:text-[#e0d9c8] font-medium mb-3"
         >
           <svg width="18" height="18" viewBox="0 0 24 24">
             <path
@@ -149,10 +149,10 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         {/* Divider */}
         <div className="relative mb-3">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-[#E5E7EB] dark:border-[#374151]" />
+            <div className="w-full border-t border-[#E5E7EB] dark:border-[#454235]" />
           </div>
           <div className="relative flex justify-center text-xs sm:text-[12px]">
-            <span className="bg-white dark:bg-[#1F2937] px-2 text-[#9CA3AF] dark:text-[#6B7280]">or</span>
+            <span className="bg-white dark:bg-[#2b2921] px-2 text-[#9CA3AF] dark:text-[#a49b83]">or</span>
           </div>
         </div>
 
@@ -165,7 +165,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
-              className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-[#f8f7f3] dark:bg-[#2D3748] border border-[#E5E7EB] dark:border-[#374151] rounded-xl text-xs sm:text-[14px] text-[#374151] dark:text-[#D1D5DB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:outline-none focus:border-[#879584] dark:focus:border-[#6366F1] focus:shadow-[0_0_0_3px_rgba(104,124,104,0.14)] dark:focus:shadow-[0_0_0_3px_rgba(99,102,241,0.15)] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-[#f8f7f3] dark:bg-[#37352b] border border-[#E5E7EB] dark:border-[#454235] rounded-xl text-xs sm:text-[14px] text-[#374151] dark:text-[#e0d9c8] placeholder:text-[#9CA3AF] dark:placeholder:text-[#a49b83] focus:outline-none focus:border-[#879584] dark:focus:border-[#9b8b65] focus:shadow-[0_0_0_3px_rgba(104,124,104,0.14)] dark:focus:shadow-[0_0_0_3px_rgba(190,166,111,0.15)] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150"
               required
             />
             <button
@@ -178,8 +178,8 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
           </div>
         </form>
 
-        <div className="mt-4 space-y-3 rounded-xl border border-[#E5E7EB] bg-[#F9F9FB] p-3 dark:border-[#374151] dark:bg-[#2D3748]/60">
-          <label className="flex items-start gap-2 text-[11px] leading-4 text-[#6B7280] dark:text-[#D1D5DB]">
+        <div className="mt-4 space-y-3 rounded-xl border border-[#E5E7EB] bg-[#F9F9FB] p-3 dark:border-[#454235] dark:bg-[#37352b]/60">
+          <label className="flex items-start gap-2 text-[11px] leading-4 text-[#6B7280] dark:text-[#e0d9c8]">
             <input
               type="checkbox"
               checked={termsAccepted}
@@ -188,12 +188,12 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             />
             <span>
               By continuing, you agree to PRV AI{' '}
-              <button type="button" onClick={() => setPolicyView('terms')} className="font-semibold text-[#536653] dark:text-[#8B9BFF] hover:underline">Terms and Conditions</button>{' '}
+              <button type="button" onClick={() => setPolicyView('terms')} className="font-semibold text-[#536653] dark:text-[#d5c49d] hover:underline">Terms and Conditions</button>{' '}
               and{' '}
-              <button type="button" onClick={() => setPolicyView('privacy')} className="font-semibold text-[#536653] dark:text-[#8B9BFF] hover:underline">Privacy Policy</button>.
+              <button type="button" onClick={() => setPolicyView('privacy')} className="font-semibold text-[#536653] dark:text-[#d5c49d] hover:underline">Privacy Policy</button>.
             </span>
           </label>
-          <label className="flex items-start gap-2 text-[11px] leading-4 text-[#6B7280] dark:text-[#D1D5DB]">
+          <label className="flex items-start gap-2 text-[11px] leading-4 text-[#6B7280] dark:text-[#e0d9c8]">
             <input
               type="checkbox"
               checked={ageConfirmed}
@@ -211,11 +211,11 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setPolicyView(null)}
           />
-          <div className="relative z-10 w-full max-w-4xl mx-auto bg-white dark:bg-[#111827] rounded-[32px] shadow-[0_30px_90px_rgba(15,23,42,0.35)] p-8 overflow-hidden animate-fade-in">
+          <div className="relative z-10 w-full max-w-4xl mx-auto bg-white dark:bg-[#24231d] rounded-[32px] shadow-[0_30px_90px_rgba(15,23,42,0.35)] p-8 overflow-hidden animate-fade-in">
             <button
               type="button"
               onClick={() => setPolicyView(null)}
-              className="absolute right-5 top-5 w-10 h-10 rounded-xl bg-[#F3F4F6] dark:bg-[#1F2937] text-[#374151] dark:text-[#D1D5DB] hover:bg-[#E5E7EB] dark:hover:bg-[#2D3748] flex items-center justify-center transition-colors duration-200"
+              className="absolute right-5 top-5 w-10 h-10 rounded-xl bg-[#F3F4F6] dark:bg-[#2b2921] text-[#374151] dark:text-[#e0d9c8] hover:bg-[#E5E7EB] dark:hover:bg-[#37352b] flex items-center justify-center transition-colors duration-200"
               aria-label="Close policy"
             >
               <X size={18} />
@@ -223,10 +223,10 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
             <div className="max-h-[75vh] overflow-y-auto pr-1">
               <div className="mb-6">
-                <p className="text-[12px] text-[#6B7280] dark:text-[#9CA3AF] uppercase tracking-[0.24em] font-semibold">
+                <p className="text-[12px] text-[#6B7280] dark:text-[#bcb39d] uppercase tracking-[0.24em] font-semibold">
                   {policyView === 'terms' ? 'Terms and Conditions' : 'Privacy Policy'}
                 </p>
-                <h2 className="text-[24px] font-semibold text-[#111827] dark:text-[#F3F4F6] mt-3">
+                <h2 className="text-[24px] font-semibold text-[#111827] dark:text-[#f3eddf] mt-3">
                   {policyView === 'terms' ? 'Terms and Conditions' : 'Privacy Policy'}
                 </h2>
               </div>

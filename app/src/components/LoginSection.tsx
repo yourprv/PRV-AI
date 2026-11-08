@@ -69,7 +69,7 @@ export function LoginSection({ isExpanded = true }: LoginSectionProps) {
       <>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="w-8 h-8 rounded-lg text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] hover:bg-[#F5F5F7] dark:hover:bg-[#374151] flex items-center justify-center transition-colors duration-200"
+          className="w-8 h-8 rounded-lg text-[#6B7280] dark:text-[#bcb39d] hover:text-[#111827] dark:hover:text-[#f3eddf] hover:bg-[#F5F5F7] dark:hover:bg-[#38362a] flex items-center justify-center transition-colors duration-200"
           aria-label="Sign in"
           title="Sign in"
         >
@@ -87,27 +87,27 @@ export function LoginSection({ isExpanded = true }: LoginSectionProps) {
         <div className="relative">
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[#F5F5F7] dark:hover:bg-[#374151] transition-colors duration-200 group justify-between"
+            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[#F5F5F7] dark:hover:bg-[#38362a] transition-colors duration-200 group justify-between"
           >
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="w-8 h-8 rounded-full bg-[#35483a] flex items-center justify-center text-white text-[13px] font-semibold shrink-0">
                 {getInitials(user.name || user.email)}
               </div>
               <div className="flex-1 min-w-0 text-left">
-                <span className="text-[13px] text-[#374151] dark:text-[#D1D5DB] group-hover:text-[#111827] dark:group-hover:text-[#F3F4F6] truncate block">
+                <span className="text-[13px] text-[#374151] dark:text-[#e0d9c8] group-hover:text-[#111827] dark:group-hover:text-[#f3eddf] truncate block">
                   {user.name || user.email}
                 </span>
-                <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.12em] text-[#687c68] dark:text-violet-300">
+                <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.12em] text-[#687c68] dark:text-[#d5c49d]">
                   {(user.tier || 'free')} plan
                 </span>
               </div>
             </div>
-            <ChevronDown size={16} className={`text-[#6B7280] dark:text-[#9CA3AF] transition-transform ${isMenuOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown size={16} className={`text-[#6B7280] dark:text-[#bcb39d] transition-transform ${isMenuOpen ? 'rotate-180' : ''}`} />
           </button>
 
           {/* Dropdown menu */}
           {isMenuOpen && (
-            <div className="absolute bottom-full mb-2 left-0 right-0 bg-white dark:bg-[#374151] rounded-lg shadow-lg border border-[#E5E7EB] dark:border-[#4B5563] overflow-hidden z-50">
+            <div className="absolute bottom-full mb-2 left-0 right-0 bg-white dark:bg-[#38362a] rounded-lg shadow-lg border border-[#E5E7EB] dark:border-[#4B5563] overflow-hidden z-50">
               <button
                 onClick={handleLogoutClick}
                 className="w-full px-3 py-2.5 text-[13px] text-left flex items-center gap-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
@@ -144,9 +144,9 @@ export function LoginSection({ isExpanded = true }: LoginSectionProps) {
     <>
       <button
         onClick={() => setIsModalOpen(true)}
-        className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[14px] text-[#374151] dark:text-[#D1D5DB] hover:bg-[#F5F5F7] dark:hover:bg-[#374151] hover:text-[#111827] dark:hover:text-[#F3F4F6] transition-colors duration-200 group"
+        className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[14px] text-[#374151] dark:text-[#e0d9c8] hover:bg-[#F5F5F7] dark:hover:bg-[#38362a] hover:text-[#111827] dark:hover:text-[#f3eddf] transition-colors duration-200 group"
       >
-        <LogIn size={16} className="text-[#6B7280] dark:text-[#9CA3AF]" />
+        <LogIn size={16} className="text-[#6B7280] dark:text-[#bcb39d]" />
         <span className="font-medium">Log In</span>
       </button>
       <AuthModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />

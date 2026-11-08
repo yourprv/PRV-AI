@@ -85,14 +85,14 @@ export function ChatArea({
     messages[messages.length - 1].content.trim() === '';
 
   return (
-    <div className={`relative flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden ${isIncognitoMode ? 'bg-[#090b14] text-white' : ''}`}>
+    <div className={`relative flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden ${isIncognitoMode ? 'bg-[#191812] text-[#f3eddf]' : ''}`}>
       {/* Top bar */}
-      <header className={`workspace-header relative z-20 min-h-14 shrink-0 flex items-center justify-between gap-1.5 border-b px-2.5 py-1.5 sm:h-[62px] sm:px-6 sm:py-0 ${isIncognitoMode ? 'private-workspace border-white/10' : 'dark:border-slate-800 dark:bg-[#111426]/90'}`}>
+      <header className={`workspace-header relative z-20 min-h-14 shrink-0 flex items-center justify-between gap-1.5 border-b px-2.5 py-1.5 sm:h-[62px] sm:px-6 sm:py-0 ${isIncognitoMode ? 'private-workspace border-white/10' : 'dark:border-[#39372c] dark:bg-[#1f1e18]/95'}`}>
         <div className="flex items-center flex-1 min-w-0">
           <button
             type="button"
             onClick={onToggleSidebar}
-            className="mr-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#e5e2d9] bg-white text-[#35483a] transition-colors hover:bg-[#f1f0ea] dark:border-slate-700 dark:bg-slate-800 dark:text-violet-300 dark:hover:bg-slate-700 lg:hidden"
+            className="mr-1.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#e5dac3] bg-[#fffdf8] text-[#35483a] transition-colors hover:bg-[#f1eadb] dark:border-[#494638] dark:bg-[#29281f] dark:text-[#d5c49d] dark:hover:bg-[#363429] sm:mr-2 lg:hidden"
             aria-label="Open chat history"
             title="Open chat history"
           >
@@ -112,7 +112,7 @@ export function ChatArea({
           <button
             type="button"
             onClick={onUpgradeClick}
-            className="inline-flex h-8 items-center justify-center gap-1 rounded-lg px-2 text-[11px] font-semibold text-[#59685a] transition-colors hover:bg-[#eeeee8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#879584] sm:h-9 sm:gap-1.5 sm:px-3 sm:text-xs dark:text-violet-200 dark:hover:bg-violet-400/20"
+            className="inline-flex h-8 items-center justify-center gap-1 rounded-lg px-2 text-[11px] font-semibold text-[#59685a] transition-colors hover:bg-[#f0eadc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#879584] sm:h-9 sm:gap-1.5 sm:px-3 sm:text-xs dark:text-[#ddc995] dark:hover:bg-[#c6ad70]/10"
             aria-label={user?.tier === 'pro' ? 'View Pro plan' : 'Upgrade to Pro'}
           >
             <span className="hidden min-[380px]:inline">{user?.tier === 'pro' ? 'Pro plan' : 'Upgrade to Pro'}</span>
@@ -122,7 +122,7 @@ export function ChatArea({
             <button
               type="button"
               onClick={onExportChat}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-[#68766a] transition-colors hover:bg-[#eeeee8] hover:text-[#35483a] dark:text-slate-300 dark:hover:bg-slate-800"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-[#68766a] transition-colors hover:bg-[#f0eadc] hover:text-[#35483a] dark:text-[#c7bfa9] dark:hover:bg-[#302f25]"
               aria-label="Export this chat as Markdown"
               title="Export this chat"
             >
@@ -132,7 +132,7 @@ export function ChatArea({
           <button
             type="button"
             onClick={onSettingsClick}
-            className="hidden h-9 w-9 items-center justify-center rounded-lg text-[#6B7280] transition-colors hover:bg-[#F5F5F7] hover:text-[#111827] dark:text-[#9CA3AF] dark:hover:bg-[#374151] dark:hover:text-[#F3F4F6] lg:flex"
+            className="hidden h-9 w-9 items-center justify-center rounded-lg text-[#746f62] transition-colors hover:bg-[#f1eadb] hover:text-[#29271f] dark:text-[#c3bba5] dark:hover:bg-[#38362a] dark:hover:text-[#f3eddf] lg:flex"
             aria-label="Settings"
           >
             <Settings size={18} />
@@ -140,7 +140,7 @@ export function ChatArea({
           <button
             type="button"
             onClick={onToggleIncognitoMode}
-            className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-2 text-xs sm:text-sm font-medium transition-colors duration-150 ${isIncognitoMode ? 'bg-[#35483a] text-white shadow-sm' : 'text-[#6B7280] hover:text-[#111827] hover:bg-[#F5F5F7] dark:text-[#9CA3AF] dark:hover:text-[#F3F4F6] dark:hover:bg-[#374151]'}`}
+            className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-2 text-xs sm:text-sm font-medium transition-colors duration-150 ${isIncognitoMode ? 'bg-[#35483a] text-white shadow-sm' : 'text-[#746f62] hover:text-[#29271f] hover:bg-[#f1eadb] dark:text-[#c3bba5] dark:hover:text-[#f3eddf] dark:hover:bg-[#38362a]'}`}
             aria-label="Toggle incognito mode"
           >
             <EyeOff size={16} />
@@ -148,7 +148,7 @@ export function ChatArea({
           </button>
           <button
             onClick={toggleTheme}
-            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-lg text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] hover:bg-[#F5F5F7] dark:hover:bg-[#374151] transition-colors duration-200"
+            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-lg text-[#746f62] dark:text-[#c3bba5] hover:text-[#29271f] dark:hover:text-[#f3eddf] hover:bg-[#f1eadb] dark:hover:bg-[#38362a] transition-colors duration-200"
             aria-label={isIncognitoMode ? 'Dark mode is enabled in private mode' : 'Toggle theme'}
             disabled={isIncognitoMode}
           >
@@ -157,22 +157,22 @@ export function ChatArea({
         </div>
       </header>
 
-      {customPrv ? <div className="border-b border-[#e7e4dc] bg-[#f3f1ea] px-3 py-2 dark:border-violet-400/20 dark:bg-slate-900">
-        <div className="mx-auto flex max-w-5xl items-center gap-2 text-xs text-[#536453] dark:text-violet-200"><span className="flex h-6 w-6 items-center justify-center rounded-lg border border-[#d8d7cc] bg-white text-[10px] font-semibold tracking-tight text-[#35483a]">PR</span><span><strong>{customPrv.name}</strong><span className="ml-1.5 rounded-full border border-[#cbd2c8] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#647463] dark:border-violet-400/30 dark:text-violet-300">Experimental</span></span></div>
+      {customPrv ? <div className="border-b border-[#e7decc] bg-[#f4eddf] px-3 py-2 dark:border-[#39372c] dark:bg-[#24231c]">
+        <div className="mx-auto flex max-w-5xl items-center gap-2 text-xs text-[#536453] dark:text-[#d4c8a9]"><span className="flex h-6 w-6 items-center justify-center rounded-lg border border-[#d8cbb2] bg-[#fffdf8] text-[10px] font-semibold tracking-tight text-[#35483a]">PR</span><span><strong>{customPrv.name}</strong><span className="ml-1.5 rounded-full border border-[#cbd2c8] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#647463] dark:border-[#62583e] dark:text-[#d5c49d]">Experimental</span></span></div>
       </div> : null}
 
       {/* Main content */}
       {isIncognitoMode ? (
-        <div className="border-b border-white/10 bg-[#101426] px-4 py-3 text-slate-200">
+        <div className="border-b border-white/10 bg-[#211f18] px-4 py-3 text-[#eee8d9]">
           <div className="mx-auto flex max-w-5xl items-center gap-3 text-left">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/10 text-[#b8c7b3]"><LockKeyhole size={17} /></span>
-            <div><p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#b8c7b3]">Private · anonymous chats</p><p className="mt-0.5 text-xs text-slate-400">This conversation is temporary and won’t be saved to your history.</p></div>
-            <ShieldCheck size={18} className="ml-auto hidden shrink-0 text-[#b8c7b3] sm:block" />
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/10 text-[#d5c49d]"><LockKeyhole size={17} /></span>
+            <div><p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#d5c49d]">Private · anonymous chats</p><p className="mt-0.5 text-xs text-[#c5bdab]">This conversation is temporary and won’t be saved to your history.</p></div>
+            <ShieldCheck size={18} className="ml-auto hidden shrink-0 text-[#d5c49d] sm:block" />
           </div>
         </div>
       ) : null}
       {guestMode ? (
-        <div className="border-b border-[#e6e4d9] bg-[#efefe8] px-3 py-1.5 text-[#525b50] sm:px-4 sm:py-2.5 dark:bg-[#92400E]/20 dark:text-[#FEF3C7]">
+        <div className="border-b border-[#e6dcc8] bg-[#f2eadb] px-3 py-1.5 text-[#525b50] sm:px-4 sm:py-2.5 dark:border-[#4a402b] dark:bg-[#302b1f] dark:text-[#e7d9b9]">
           <div className="mx-auto flex max-w-5xl flex-col gap-2 sm:gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs sm:text-sm font-medium">
               You are using the Free tier. Core chat stays available; sign in to save chats and create a Custom PRV.
@@ -189,20 +189,20 @@ export function ChatArea({
       ) : null}
       {isEmpty ? (
         // Empty state
-        <div className={`workspace-empty relative flex-1 min-h-0 overflow-y-auto flex flex-col items-center justify-center px-3 py-5 sm:px-6 sm:py-8 ${isIncognitoMode ? 'private-workspace' : 'dark:bg-[#0d1020]'}`}>
+        <div className={`workspace-empty relative flex-1 min-h-0 overflow-y-auto flex flex-col items-center justify-center px-3 py-5 sm:px-6 sm:py-8 ${isIncognitoMode ? 'private-workspace' : 'dark:bg-[#1b1a15]'}`}>
           <div className="relative w-full max-w-[900px] mx-auto flex flex-col items-center gap-5 sm:gap-7">
             <div className="workspace-kicker flex items-center gap-3 text-[10px] font-semibold uppercase sm:text-[11px]">
               <span className="h-px w-7 bg-[#c6c9bd]" /> PRV · YOUR WORKSPACE <span className="h-px w-7 bg-[#c6c9bd]" />
             </div>
             {user ? (
               <div className="text-center">
-                <h1 className={`workspace-welcome-title ${isIncognitoMode ? 'text-white' : 'dark:text-white'}`}>Good work starts<br className="hidden sm:block" /> with <span className="workspace-welcome-accent">a first thought.</span></h1>
-                <p className={`mx-auto mt-4 max-w-md text-sm leading-6 sm:text-[15px] ${isIncognitoMode ? 'text-slate-400' : 'text-[#74766f] dark:text-slate-400'}`}>{isIncognitoMode ? 'A quiet space for private thinking.' : 'Bring a question, a rough idea, or a blank page. We’ll take it from there.'}</p>
+                <h1 className={`workspace-welcome-title ${isIncognitoMode ? 'text-white' : 'dark:text-[#f3eddf]'}`}>Good work starts<br className="hidden sm:block" /> with <span className="workspace-welcome-accent">a first thought.</span></h1>
+                <p className={`mx-auto mt-4 max-w-md text-sm leading-6 sm:text-[15px] ${isIncognitoMode ? 'text-slate-400' : 'text-[#74766f] dark:text-[#bcb39d]'}`}>{isIncognitoMode ? 'A quiet space for private thinking.' : 'Bring a question, a rough idea, or a blank page. We’ll take it from there.'}</p>
               </div>
             ) : (
-              <div className="w-full rounded-2xl border border-[#e7e4dc] bg-white/75 px-4 py-4 text-center sm:max-w-xl sm:px-6 sm:py-5 dark:border-violet-400/20 dark:bg-white/5">
-                <p className="text-base font-semibold text-[#20231f] sm:text-[18px] dark:text-[#EFF6FF]">A thoughtful assistant for everyday work.</p>
-                <p className="mt-2 text-xs leading-5 text-[#74766f] sm:text-[14px] dark:text-[#A5B4FC]">
+              <div className="w-full rounded-2xl border border-[#e7e4dc] bg-white/75 px-4 py-4 text-center sm:max-w-xl sm:px-6 sm:py-5 dark:border-[#62583e]/50 dark:bg-white/5">
+                <p className="text-base font-semibold text-[#20231f] sm:text-[18px] dark:text-[#f3eddf]">A thoughtful assistant for everyday work.</p>
+                <p className="mt-2 text-xs leading-5 text-[#74766f] sm:text-[14px] dark:text-[#c5b58d]">
                   Your chats stay in this session only. Sign in for saved history and to create a Custom PRV.
                 </p>
                 <button
@@ -214,14 +214,14 @@ export function ChatArea({
                 </button>
               </div>
             )}
-            {user && <div className="hidden w-full max-w-[690px] grid-cols-3 gap-3 sm:grid">
+            {user && <div className="flex w-full max-w-[690px] snap-x snap-mandatory gap-2 overflow-x-auto pb-1 no-scrollbar sm:grid sm:grid-cols-3 sm:gap-3 sm:overflow-visible">
               {[
                 { icon: <PenLine size={16} />, label: 'Write a draft', text: 'Start with a clear first version.', prompt: 'Help me write a clear first draft. Ask me only for details that are essential, then shape the result so I can edit it.' },
                 { icon: <Compass size={16} />, label: 'Explore an idea', text: 'Find a useful way into the question.', prompt: 'Help me explore this idea. Lay out the most useful angles, surface any assumptions, and suggest where to begin.' },
                 { icon: <ListChecks size={16} />, label: 'Make a plan', text: 'Turn a goal into practical next steps.', prompt: 'Help me turn my goal into a practical plan with clear steps, sensible priorities, and a realistic first action.' },
-              ].map((card) => <button type="button" key={card.label} onClick={() => onSend(card.prompt)} className="workspace-prompt-card rounded-xl border p-3.5 text-left dark:border-slate-800 dark:bg-white/[0.04]">
-                <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-[#edf0e9] text-[#536653] dark:bg-violet-400/15 dark:text-violet-300">{card.icon}</div>
-                <p className="text-[13px] font-semibold text-[#30342e] dark:text-slate-100">{card.label}</p><p className="mt-1 text-xs leading-relaxed text-[#7a7b73] dark:text-slate-400">{card.text}</p><ArrowUpRight size={14} className="mt-3 text-[#85877e]" />
+              ].map((card) => <button type="button" key={card.label} onClick={() => onSend(card.prompt)} className="workspace-prompt-card min-w-[76vw] snap-start rounded-xl border p-3.5 text-left sm:min-w-0">
+                <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-[#f0eadb] text-[#536653] dark:bg-[#c6ad70]/10 dark:text-[#d5c49d]">{card.icon}</div>
+                <p className="text-[13px] font-semibold text-[#30342e] dark:text-[#f3eddf]">{card.label}</p><p className="mt-1 text-xs leading-relaxed text-[#7a7b73] dark:text-[#bcb39d]">{card.text}</p><ArrowUpRight size={14} className="mt-3 text-[#85877e]" />
               </button>)}
             </div>}
             <ChatInput
@@ -246,7 +246,7 @@ export function ChatArea({
           {/* Messages area */}
           <div
             ref={scrollContainerRef}
-            className={`workspace-chat-canvas min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain px-2 py-3 sm:px-4 sm:py-7 space-y-4 sm:space-y-6 ${isIncognitoMode ? 'bg-[#090b14]' : 'dark:bg-[#111827]'}`}
+            className={`workspace-chat-canvas min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain px-2 py-3 sm:px-4 sm:py-7 space-y-4 sm:space-y-6 ${isIncognitoMode ? 'bg-[#191812]' : 'dark:bg-[#1e1d17]'}`}
           >
             <div className="w-full max-w-[820px] mx-auto space-y-4 sm:space-y-7">
               {messages.map((message, index) => (
@@ -268,7 +268,7 @@ export function ChatArea({
           </div>
 
           {/* Input at bottom */}
-          <div className={`shrink-0 px-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 sm:px-4 sm:py-3 backdrop-blur-sm border-t ${isIncognitoMode ? 'bg-[#0d1020]/95 border-white/10' : 'bg-white/95 dark:bg-[#1F2937]/95 border-[#E5E7EB] dark:border-[#374151]'}`}>
+          <div className={`shrink-0 px-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 sm:px-4 sm:py-3 backdrop-blur-sm border-t ${isIncognitoMode ? 'bg-[#1c1b15]/95 border-white/10' : 'bg-[#fffdf8]/95 dark:bg-[#25241d]/95 border-[#e7decc] dark:border-[#403e32]'}`}>
             <ChatInput
               onSend={onSend}
               guestMode={guestMode}
@@ -282,7 +282,7 @@ export function ChatArea({
               onCancel={onCancel}
               onEnhancePrompt={onEnhancePrompt}
             />
-            <p className="mx-auto mt-1.5 max-w-[720px] px-2 text-center text-[10px] leading-4 text-[#92938c] dark:text-slate-500">
+            <p className="mx-auto mt-1.5 max-w-[720px] px-2 text-center text-[10px] leading-4 text-[#858174] dark:text-[#aaa28e]">
               Earlier turns in this chat are included as context.
             </p>
           </div>

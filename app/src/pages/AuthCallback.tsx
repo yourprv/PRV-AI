@@ -62,10 +62,10 @@ export default function AuthCallback() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-[#111827] px-4">
-      <div className="w-full max-w-md rounded-3xl border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#1F2937] p-10 shadow-[0_25px_80px_rgba(15,23,42,0.12)] text-center">
-        <h1 className="text-[22px] font-semibold text-[#111827] dark:text-[#F3F4F6] mb-4">Signing you in</h1>
-        <p className={`text-[15px] ${isError ? 'text-[#991B1B]' : 'text-[#4B5563] dark:text-[#D1D5DB]'}`}>
+    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-[#24231d] px-4">
+      <div className="w-full max-w-md rounded-3xl border border-[#E5E7EB] dark:border-[#454235] bg-white dark:bg-[#2b2921] p-10 shadow-[0_25px_80px_rgba(15,23,42,0.12)] text-center">
+        <h1 className="text-[22px] font-semibold text-[#111827] dark:text-[#f3eddf] mb-4">Signing you in</h1>
+        <p className={`text-[15px] ${isError ? 'text-[#991B1B]' : 'text-[#4B5563] dark:text-[#e0d9c8]'}`}>
           {message}
         </p>
       </div>

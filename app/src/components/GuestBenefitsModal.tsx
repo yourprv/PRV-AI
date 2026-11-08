@@ -11,47 +11,47 @@ export function GuestBenefitsModal({ isOpen, onClose, onSignIn }: GuestBenefitsM
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/55 px-4 py-6 backdrop-blur-sm">
-      <div className="relative w-full max-w-md rounded-[28px] border border-[#E5E7EB] bg-white p-6 shadow-[0_20px_70px_rgba(15,23,42,0.25)] dark:border-[#374151] dark:bg-[#111827]">
+      <div className="relative w-full max-w-md rounded-[28px] border border-[#E5E7EB] bg-white p-6 shadow-[0_20px_70px_rgba(15,23,42,0.25)] dark:border-[#454235] dark:bg-[#24231d]">
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full text-[#6B7280] transition-colors hover:bg-[#F3F4F6] hover:text-[#111827] dark:text-[#9CA3AF] dark:hover:bg-[#1F2937] dark:hover:text-[#F3F4F6]"
+          className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full text-[#6B7280] transition-colors hover:bg-[#F3F4F6] hover:text-[#111827] dark:text-[#bcb39d] dark:hover:bg-[#302f25] dark:hover:text-[#f3eddf]"
           aria-label="Close benefits dialog"
         >
           <X size={18} />
         </button>
 
-        <div className="flex items-center gap-2 text-[#687c68] dark:text-[#818CF8]">
+        <div className="flex items-center gap-2 text-[#687c68] dark:text-[#d5c49d]">
           <span className="text-[11px] font-semibold uppercase tracking-[0.18em]">Guest mode</span>
         </div>
 
-        <h2 className="mt-4 text-xl font-semibold text-[#20231f] dark:text-[#F3F4F6]">
+        <h2 className="mt-4 text-xl font-semibold text-[#20231f] dark:text-[#f3eddf]">
           Make PRV yours.
         </h2>
-        <p className="mt-2 text-sm leading-6 text-[#4B5563] dark:text-[#D1D5DB]">
+        <p className="mt-2 text-sm leading-6 text-[#4B5563] dark:text-[#e0d9c8]">
           Sign in to use every model, search the web, and keep your conversations in PRV Cloud.
         </p>
 
-        <div className="mt-5 space-y-3 text-sm text-[#374151] dark:text-[#E5E7EB]">
-          <div className="flex items-start gap-3 rounded-2xl border border-[#E5E7EB] bg-[#F9FAFB] p-3 dark:border-[#374151] dark:bg-[#1F2937]">
-            <ShieldCheck className="mt-0.5 shrink-0 text-[#687c68] dark:text-[#818CF8]" size={18} />
+        <div className="mt-5 space-y-3 text-sm text-[#374151] dark:text-[#eee8d9]">
+          <div className="flex items-start gap-3 rounded-2xl border border-[#E5E7EB] bg-[#F9FAFB] p-3 dark:border-[#454235] dark:bg-[#2b2921]">
+            <ShieldCheck className="mt-0.5 shrink-0 text-[#687c68] dark:text-[#d5c49d]" size={18} />
             <div>
               <div className="font-medium">Unlock every PRV engine</div>
-              <p className="mt-1 text-xs text-[#6B7280] dark:text-[#9CA3AF]">Access PRV V3.5 Earth, PRV 4.0 Light, PRV V1 Pro Max, and the full lineup after signing in.</p>
+              <p className="mt-1 text-xs text-[#6B7280] dark:text-[#bcb39d]">Access PRV V3.5 Earth, PRV 4.0 Light, PRV V1 Pro Max, and the full lineup after signing in.</p>
             </div>
           </div>
-          <div className="flex items-start gap-3 rounded-2xl border border-[#E5E7EB] bg-[#F9FAFB] p-3 dark:border-[#374151] dark:bg-[#1F2937]">
-            <Search className="mt-0.5 shrink-0 text-[#687c68] dark:text-[#818CF8]" size={18} />
+          <div className="flex items-start gap-3 rounded-2xl border border-[#E5E7EB] bg-[#F9FAFB] p-3 dark:border-[#454235] dark:bg-[#2b2921]">
+            <Search className="mt-0.5 shrink-0 text-[#687c68] dark:text-[#d5c49d]" size={18} />
             <div>
               <div className="font-medium">Web search</div>
-              <p className="mt-1 text-xs text-[#6B7280] dark:text-[#9CA3AF]">Bring live web results into your next prompt.</p>
+              <p className="mt-1 text-xs text-[#6B7280] dark:text-[#bcb39d]">Bring live web results into your next prompt.</p>
             </div>
           </div>
-          <div className="flex items-start gap-3 rounded-2xl border border-[#E5E7EB] bg-[#F9FAFB] p-3 dark:border-[#374151] dark:bg-[#1F2937]">
-            <MessagesSquare className="mt-0.5 shrink-0 text-[#687c68] dark:text-[#818CF8]" size={18} />
+          <div className="flex items-start gap-3 rounded-2xl border border-[#E5E7EB] bg-[#F9FAFB] p-3 dark:border-[#454235] dark:bg-[#2b2921]">
+            <MessagesSquare className="mt-0.5 shrink-0 text-[#687c68] dark:text-[#d5c49d]" size={18} />
             <div>
               <div className="font-medium">PRV Cloud chat history</div>
-              <p className="mt-1 text-xs text-[#6B7280] dark:text-[#9CA3AF]">Keep text-only conversations in PRV Cloud and reopen their unique chat links anywhere.</p>
+              <p className="mt-1 text-xs text-[#6B7280] dark:text-[#bcb39d]">Keep text-only conversations in PRV Cloud and reopen their unique chat links anywhere.</p>
             </div>
           </div>
         </div>
@@ -60,7 +60,7 @@ export function GuestBenefitsModal({ isOpen, onClose, onSignIn }: GuestBenefitsM
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex items-center justify-center rounded-full border border-[#D1D5DB] px-4 py-2.5 text-sm font-medium text-[#374151] transition-colors hover:bg-[#F5F5F7] dark:border-[#4B5563] dark:text-[#D1D5DB] dark:hover:bg-[#1F2937]"
+            className="inline-flex items-center justify-center rounded-full border border-[#D1D5DB] px-4 py-2.5 text-sm font-medium text-[#374151] transition-colors hover:bg-[#F5F5F7] dark:border-[#4B5563] dark:text-[#e0d9c8] dark:hover:bg-[#302f25]"
           >
             Continue as guest
           </button>

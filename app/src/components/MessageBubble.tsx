@@ -22,15 +22,15 @@ function CodeBlock({ code, language }: { code: string; language?: string }) {
   }, [code]);
 
   return (
-    <div className="not-prose my-3 overflow-hidden rounded-xl border border-[#e3e1d9] bg-[#f4f3ee] text-[#343831]">
-      <div className="flex items-center justify-between border-b border-[#e3e1d9] bg-white/70 px-3 py-2">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#81847b]">
+    <div className="not-prose my-3 overflow-hidden rounded-xl border border-[#e3dac7] bg-[#f4eddf] text-[#343831] dark:border-[#423f31] dark:bg-[#28271f] dark:text-[#eee8d9]">
+      <div className="flex items-center justify-between border-b border-[#e3dac7] bg-[#fffdf8]/75 px-3 py-2 dark:border-[#423f31] dark:bg-[#302f25]">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#746f62] dark:text-[#bcb39d]">
           {language || 'code'}
         </span>
         <button
           type="button"
           onClick={handleCopyCode}
-          className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-medium text-[#6d7268] transition-colors hover:bg-[#efeee8] hover:text-[#252a24]"
+          className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-medium text-[#6d7268] transition-colors hover:bg-[#efeadc] hover:text-[#252a24] dark:text-[#c3bba5] dark:hover:bg-[#3a382c] dark:hover:text-[#f3eddf]"
           aria-label="Copy code"
           title="Copy code"
         >
@@ -38,7 +38,7 @@ function CodeBlock({ code, language }: { code: string; language?: string }) {
           {copied ? 'Copied' : 'Copy'}
         </button>
       </div>
-      <pre className="max-w-full overflow-x-hidden whitespace-pre-wrap break-words p-4 text-[13px] leading-6"><code className="break-all">{code}</code></pre>
+      <pre className="max-w-full overflow-x-auto whitespace-pre-wrap break-words p-4 text-[13px] leading-6"><code className="break-all">{code}</code></pre>
     </div>
   );
 }
@@ -51,10 +51,10 @@ function CanvasBlock({ content }: { content: string }) {
     window.setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <div className="not-prose my-1 overflow-hidden rounded-xl border border-[#e3e1d9] bg-[#f4f3ee] text-[#343831]">
-      <div className="flex items-center justify-between border-b border-[#e3e1d9] bg-white/70 px-3 py-2">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#81847b]">Canvas</span>
-        <button type="button" onClick={copy} className="rounded-md px-2 py-1 text-[11px] text-[#6d7268] hover:bg-[#efeee8] hover:text-[#252a24]">{copied ? 'Copied' : 'Copy'}</button>
+    <div className="not-prose my-1 overflow-hidden rounded-xl border border-[#e3dac7] bg-[#f4eddf] text-[#343831] dark:border-[#423f31] dark:bg-[#28271f] dark:text-[#eee8d9]">
+      <div className="flex items-center justify-between border-b border-[#e3dac7] bg-[#fffdf8]/75 px-3 py-2 dark:border-[#423f31] dark:bg-[#302f25]">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#746f62] dark:text-[#bcb39d]">Canvas</span>
+        <button type="button" onClick={copy} className="rounded-md px-2 py-1 text-[11px] text-[#6d7268] hover:bg-[#efeadc] hover:text-[#252a24] dark:text-[#c3bba5] dark:hover:bg-[#3a382c] dark:hover:text-[#f3eddf]">{copied ? 'Copied' : 'Copy'}</button>
       </div>
       <div className="whitespace-pre-wrap break-words p-4 text-[14px] leading-6">{content || ' '}</div>
     </div>
@@ -118,8 +118,8 @@ export function MessageBubble({ message, onRegenerate, isLatest, isLoading }: Me
           <div
             className={`px-3 sm:px-4 py-2 sm:py-3 rounded-2xl break-words text-sm sm:text-[15px] leading-relaxed ${
               isUser
-                ? 'bg-[#35483a] dark:bg-[#6366F1] text-white rounded-tr-md shadow-sm'
-                : 'bg-transparent text-[#343831] dark:bg-[#2D3748] dark:text-[#D1D5DB] rounded-tl-md'
+                ? 'bg-[#35483a] dark:bg-[#657758] text-white rounded-tr-md shadow-sm'
+                : 'bg-transparent text-[#343831] dark:bg-[#37352b] dark:text-[#e0d9c8] rounded-tl-md'
             }`}
           >
             {isUser ? (
@@ -132,12 +132,12 @@ export function MessageBubble({ message, onRegenerate, isLatest, isLoading }: Me
                     {message.attachments.map((attachment, idx) => (
                       <div
                         key={idx}
-                        className="rounded-lg sm:rounded-2xl border border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-[#111827] p-2 sm:p-3 text-[12px] sm:text-[13px] text-[#374151] dark:text-[#D1D5DB]"
+                        className="rounded-lg sm:rounded-2xl border border-[#E5E7EB] dark:border-[#454235] bg-[#FFFFFF] dark:bg-[#24231d] p-2 sm:p-3 text-[12px] sm:text-[13px] text-[#374151] dark:text-[#e0d9c8]"
                       >
-                        <div className="font-medium text-[#111827] dark:text-[#F3F4F6] truncate text-xs sm:text-sm">
+                        <div className="font-medium text-[#111827] dark:text-[#f3eddf] truncate text-xs sm:text-sm">
                           {attachment.name}
                         </div>
-                        <div className="text-[11px] sm:text-[12px] text-[#6B7280] dark:text-[#9CA3AF]">
+                        <div className="text-[11px] sm:text-[12px] text-[#6B7280] dark:text-[#bcb39d]">
                           {attachment.mimeType || 'Attachment'}
                         </div>
                       </div>
@@ -148,15 +148,15 @@ export function MessageBubble({ message, onRegenerate, isLatest, isLoading }: Me
             ) : showTypingBubble ? (
               <div className="flex items-center gap-1.5">
                 <div
-                  className="w-2 h-2 rounded-full bg-[#9CA3AF] dark:bg-[#6B7280] animate-typing-bounce"
+                  className="w-2 h-2 rounded-full bg-[#9CA3AF] dark:bg-[#625c49] animate-typing-bounce"
                   style={{ animationDelay: '0ms' }}
                 />
                 <div
-                  className="w-2 h-2 rounded-full bg-[#9CA3AF] dark:bg-[#6B7280] animate-typing-bounce"
+                  className="w-2 h-2 rounded-full bg-[#9CA3AF] dark:bg-[#625c49] animate-typing-bounce"
                   style={{ animationDelay: '120ms' }}
                 />
                 <div
-                  className="w-2 h-2 rounded-full bg-[#9CA3AF] dark:bg-[#6B7280] animate-typing-bounce"
+                  className="w-2 h-2 rounded-full bg-[#9CA3AF] dark:bg-[#625c49] animate-typing-bounce"
                   style={{ animationDelay: '240ms' }}
                 />
               </div>
@@ -209,14 +209,14 @@ export function MessageBubble({ message, onRegenerate, isLatest, isLoading }: Me
               <button
                 type="button"
                 onClick={() => setThinkingOpen((prev) => !prev)}
-                className="flex items-center gap-1.5 self-start rounded-full border border-[#e5e4dc] bg-[#f4f3ee] px-2.5 py-1 text-[11px] font-medium text-[#73786e] transition-colors duration-150 hover:bg-[#ecebe4] dark:border-[#78350F] dark:bg-[#451A03] dark:text-[#FCD34D]"
+                className="flex items-center gap-1.5 self-start rounded-full border border-[#e5e4dc] bg-[#f4f3ee] px-2.5 py-1 text-[11px] font-medium text-[#73786e] transition-colors duration-150 hover:bg-[#ecebe4] dark:border-[#62583e] dark:bg-[#3b3526] dark:text-[#d5c49d]"
               >
                 <span>Thinking</span>
                 <ChevronDown size={12} className={`transition-transform ${thinkingOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {thinkingOpen && (
-                <div className="rounded-xl border border-[#e8e6de] bg-[#f8f7f3] p-3 text-[13px] leading-relaxed text-[#73766e] dark:border-[#78350F] dark:bg-[#2C1304] dark:text-[#FCD34D]">
+                <div className="rounded-xl border border-[#e8e6de] bg-[#f8f7f3] p-3 text-[13px] leading-relaxed text-[#73766e] dark:border-[#62583e] dark:bg-[#302b20] dark:text-[#d5c49d]">
                   {message.thinking}
                 </div>
               )}
@@ -225,7 +225,7 @@ export function MessageBubble({ message, onRegenerate, isLatest, isLoading }: Me
 
           {/* Actions row */}
           <div className={`flex items-center gap-1 ${isUser ? 'justify-end' : 'justify-start'}`}>
-            <span className="text-[11px] text-[#9CA3AF] dark:text-[#6B7280] px-1">{timeStr}</span>
+            <span className="text-[11px] text-[#9CA3AF] dark:text-[#a49b83] px-1">{timeStr}</span>
 
             {!isUser && (
               <div
@@ -235,7 +235,7 @@ export function MessageBubble({ message, onRegenerate, isLatest, isLoading }: Me
               >
                 <button
                   onClick={handleCopy}
-                  className="p-1 rounded-md hover:bg-[#F5F5F7] dark:hover:bg-[#374151] text-[#9CA3AF] dark:text-[#6B7280] hover:text-[#6B7280] dark:hover:text-[#9CA3AF] transition-colors duration-150"
+                  className="p-1 rounded-md hover:bg-[#F5F5F7] dark:hover:bg-[#38362a] text-[#9CA3AF] dark:text-[#a49b83] hover:text-[#6B7280] dark:hover:text-[#9CA3AF] transition-colors duration-150"
                   aria-label="Copy message"
                   title="Copy"
                 >
@@ -244,7 +244,7 @@ export function MessageBubble({ message, onRegenerate, isLatest, isLoading }: Me
                 {isLatest && onRegenerate && (
                   <button
                     onClick={() => onRegenerate(message.id)}
-                    className="p-1 rounded-md hover:bg-[#F5F5F7] dark:hover:bg-[#374151] text-[#9CA3AF] dark:text-[#6B7280] hover:text-[#6B7280] dark:hover:text-[#9CA3AF] transition-colors duration-150"
+                    className="p-1 rounded-md hover:bg-[#F5F5F7] dark:hover:bg-[#38362a] text-[#9CA3AF] dark:text-[#a49b83] hover:text-[#6B7280] dark:hover:text-[#9CA3AF] transition-colors duration-150"
                     aria-label="Regenerate response"
                     title="Regenerate"
                   >

@@ -1,6 +1,6 @@
 # PRV AI
 
-PRV AI is a responsive AI workspace with streamed chat, web search, image creation, account-based chat history, custom assistants, and invite-only access tiers. The production web app is available at [prv-ai.vercel.app](https://prv-ai.vercel.app).
+PRV AI is a responsive AI workspace for chat, research, image creation, and reusable assistants. It pairs a warm, low-glare interface with conversation continuity, account-based history, chat export, and invite-only access tiers. The production web app is available at [prv-ai.vercel.app](https://prv-ai.vercel.app).
 
 This repository contains the web client, API server, Supabase SQL setup, and invite-code administration utility. The browser calls the API server; private provider credentials remain on the server.
 
@@ -19,9 +19,18 @@ PRV-AI-main/
 ├── backend/                     Express + TypeScript API server
 │   ├── src/                     API routes, auth, quotas, and invite CLI
 │   └── supabase/                Database setup SQL
+├── LICENSE                      Apache License, Version 2.0
 ├── Features.md                 Product feature guide
 └── README.md                   Project setup and operator guide
 ```
+
+## Chat continuity and export
+
+Each new response includes the earlier user and assistant turns from the active conversation, so follow-up questions can build on what was already discussed. Context is limited by the selected model and provider. Signed-in users can reopen saved text conversations; guest and incognito conversations are temporary.
+
+From the chat workspace, export the current conversation as Markdown or download all available chats as JSON. Chat records saved to an account contain text conversation fields; attachments and generated image data are not included in PRV AI’s saved text-chat records.
+
+The interface adapts to phone, tablet, and desktop widths, with light and dark themes designed around warm paper and deep, low-glare tones.
 
 ## Requirements
 
@@ -130,3 +139,7 @@ Supported tiers are `go`, `plus`, and `pro`. `--max-uses` defaults to one; `--ex
 The UI’s Terms and Conditions and Privacy Policy are displayed in the sign-in flow. Chat history saves text fields to the account; attachments and generated image data are not included in PRV AI’s saved text-chat records. Requests may be processed by external service providers as described in the in-app Privacy Policy. Review that policy and the deployment’s provider terms before launch.
 
 Environment files, dependencies, and build output should not be committed. The root `.gitignore` excludes local `.env` files, `node_modules`, and build directories.
+
+## License
+
+This project is distributed under the standard [Apache License, Version 2.0](LICENSE). The repository license contains no custom commercial-use restriction.

@@ -738,7 +738,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   }, [sidebarExpanded]);
 
   return (
-    <div className="workspace-shell flex h-[100dvh] w-full max-w-full overflow-hidden dark:bg-[#0F172A]">
+    <div className="workspace-shell flex h-[100dvh] w-full max-w-full overflow-hidden dark:bg-[#201f19]">
       {/* Sidebar - Hidden on mobile, visible on desktop */}
       <div className="hidden lg:block">
         <Sidebar
@@ -840,13 +840,13 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
             <DialogDescription>Update this conversation title to make it easier to find later.</DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
-            <label className="block text-sm font-medium text-[#374151] dark:text-[#D1D5DB]">
+            <label className="block text-sm font-medium text-[#374151] dark:text-[#e0d9c8]">
               Chat title
             </label>
             <input
               value={renameTitle}
               onChange={(event) => setRenameTitle(event.target.value)}
-              className="w-full rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-sm text-[#111827] shadow-sm outline-none transition-colors duration-200 focus:border-[#6366F1] focus:ring-2 focus:ring-[#6366F1]/20 dark:border-[#374151] dark:bg-[#111827] dark:text-[#F3F4F6] dark:focus:border-[#818CF8]"
+              className="w-full rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-sm text-[#111827] shadow-sm outline-none transition-colors duration-200 focus:border-[#879584] focus:ring-2 focus:ring-[#879584]/20 dark:border-[#454235] dark:bg-[#24231d] dark:text-[#f3eddf] dark:focus:border-[#9b8b65]"
               placeholder="Enter a chat name"
               autoFocus
             />
@@ -855,7 +855,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
             <button
               type="button"
               onClick={handleCancelRename}
-              className="inline-flex h-10 items-center justify-center rounded-xl border border-[#D1D5DB] bg-white px-4 text-sm font-medium text-[#374151] transition-colors duration-200 hover:bg-[#F5F5F7] dark:border-[#4B5563] dark:bg-[#111827] dark:text-[#D1D5DB] dark:hover:bg-[#1F2937]"
+              className="inline-flex h-10 items-center justify-center rounded-xl border border-[#D1D5DB] bg-white px-4 text-sm font-medium text-[#374151] transition-colors duration-200 hover:bg-[#F5F5F7] dark:border-[#4B5563] dark:bg-[#24231d] dark:text-[#e0d9c8] dark:hover:bg-[#302f25]"
             >
               Cancel
             </button>

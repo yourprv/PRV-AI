@@ -32,7 +32,7 @@ export function ModeSelector({ selected, onSelect }: ModeSelectorProps) {
     <div ref={ref} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1 text-xs sm:text-[13px] text-[#74776e] dark:text-[#9CA3AF] hover:text-[#20231f] dark:hover:text-[#F3F4F6] transition-colors duration-150 rounded-lg px-2 py-1 hover:bg-[#f1f0ea] dark:hover:bg-[#374151] active:scale-95"
+        className="flex items-center gap-1 text-xs sm:text-[13px] text-[#74776e] dark:text-[#bcb39d] hover:text-[#20231f] dark:hover:text-[#f3eddf] transition-colors duration-150 rounded-lg px-2 py-1 hover:bg-[#f1f0ea] dark:hover:bg-[#38362a] active:scale-95"
         aria-label="Select mode"
         aria-expanded={isOpen}
       >
@@ -44,7 +44,7 @@ export function ModeSelector({ selected, onSelect }: ModeSelectorProps) {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 bottom-full mb-1.5 z-50 w-32 sm:w-[140px] bg-white dark:bg-[#2D3748] rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.4)] border border-[#E5E7EB] dark:border-[#374151] animate-fade-in overflow-hidden p-1">
+        <div className="absolute right-0 bottom-full mb-1.5 z-50 w-32 sm:w-[140px] bg-white dark:bg-[#37352b] rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.4)] border border-[#E5E7EB] dark:border-[#454235] animate-fade-in overflow-hidden p-1">
           {modes.map((mode) => (
             <button
               key={mode.id}
@@ -54,13 +54,13 @@ export function ModeSelector({ selected, onSelect }: ModeSelectorProps) {
               }}
               className={`w-full flex items-center gap-2.5 text-left rounded-lg px-2.5 py-2 text-xs sm:text-[13px] transition-colors duration-150 ${
                 selected === mode.id
-                  ? 'bg-[#F5F5F7] dark:bg-[#374151] text-[#111827] dark:text-[#F3F4F6]'
-                  : 'text-[#6B7280] dark:text-[#9CA3AF] hover:bg-[#F9F9FB] dark:hover:bg-[#374151] hover:text-[#111827] dark:hover:text-[#F3F4F6]'
+                  ? 'bg-[#F5F5F7] dark:bg-[#38362a] text-[#111827] dark:text-[#f3eddf]'
+                  : 'text-[#6B7280] dark:text-[#bcb39d] hover:bg-[#F9F9FB] dark:hover:bg-[#38362a] hover:text-[#111827] dark:hover:text-[#f3eddf]'
               }`}
             >
               <span>{mode.name}</span>
               {selected === mode.id && (
-                <Check size={14} className="text-[#526b55] dark:text-[#818CF8] ml-auto" />
+                <Check size={14} className="text-[#526b55] dark:text-[#d5c49d] ml-auto" />
               )}
             </button>
           ))}

@@ -2,16 +2,17 @@
 
 To use these features, please visit [prv-ai.vercel.app](https://prv-ai.vercel.app).
 
-PRV AI brings chat, research, image creation, and reusable assistants into one responsive workspace. Product capabilities and allowances are enforced by the server and may depend on the active plan, service availability, and daily usage.
+PRV AI brings chat, research, image creation, and reusable assistants into one mobile-ready workspace. Its warm paper surfaces, considered typography, and low-glare dark theme are designed to keep long work sessions comfortable. Product capabilities and allowances are enforced by the server and may depend on the active plan, service availability, and daily usage.
 
 ## AI workspace
 
 - **Streaming chat:** Send prompts and receive responses as they are generated. Fast and deeper response modes are available in the chat interface.
-- **Large-context workflows:** PRV AI is designed for conversations and documents of up to **1 million tokens of AI context** in supported workflows. Actual context availability depends on the selected experience and service conditions.
+- **Conversation continuity:** Earlier user and assistant turns in the active chat are included as context for follow-up replies. Context length depends on the selected model and provider; a new chat starts a separate conversation.
+- **Large-context workflows:** Supported experiences can work with long conversations and documents. Actual context availability depends on the selected model and service conditions.
 - **Model experiences:** Select from the PRV AI experiences shown in the app, including fast, reasoning-oriented, beta, and legacy options. Access and daily allowances vary by tier. This guide does not identify the underlying third-party models.
 - **Attachments:** Include supported images and files with a prompt for multimodal assistance.
 - **Web search:** Add current web results to a request. Search has a daily allowance by tier.
-- **Image creation:** Describe an image in the chat to create one. The experience is optimized for **blazing-fast generation, with images in as little as 5 seconds under favorable conditions**; actual completion time varies with prompt complexity, network, and service load.
+- **Image creation:** Describe an image in the chat to create one. Completion time varies with prompt complexity, network, and service load.
 - **Prompt enhancement:** Refine a rough prompt or assistant description into clearer instructions.
 
 ## Custom PRVs
@@ -26,8 +27,10 @@ PRV AI brings chat, research, image creation, and reusable assistants into one r
 - Sign in with an email link or supported OAuth provider.
 - Save text chat history to your account and access it across supported browsers.
 - Search, rename, and delete saved conversations.
+- Export the current conversation as Markdown or download all available chats as JSON.
 - Use guest or incognito sessions when you want temporary conversations that are not saved to account chat history.
 - Switch between light and dark appearance.
+- Use the workspace on phones, tablets, and desktop screens.
 - Review your current tier and usage in **Settings → Plans**.
 
 ## Plans and allowances

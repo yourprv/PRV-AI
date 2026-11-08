@@ -29,9 +29,9 @@ function PolicyUpdateNotice() {
 
   if (!visible) return null;
   return (
-    <div role="status" aria-live="polite" className={`fixed right-4 top-4 z-[100] flex max-w-[calc(100vw-2rem)] items-center gap-3 rounded-xl border border-violet-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-xl transition-opacity duration-300 ease-out dark:border-violet-400/20 dark:bg-slate-900 dark:text-slate-100 ${fading ? 'opacity-0' : 'opacity-100'}`}>
+    <div role="status" aria-live="polite" className={`fixed right-4 top-4 z-[100] flex max-w-[calc(100vw-2rem)] items-center gap-3 rounded-xl border border-[#e0d3b9] bg-[#fffdf8] px-4 py-3 text-sm text-[#403d32] shadow-xl transition-opacity duration-300 ease-out dark:border-[#62583e]/50 dark:bg-[#24231d] dark:text-[#f3eddf] ${fading ? 'opacity-0' : 'opacity-100'}`}>
       <span>Terms and Conditions and Privacy Policy have been updated.</span>
-      <button type="button" onClick={dismiss} aria-label="Dismiss policy update notice" className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white">
+      <button type="button" onClick={dismiss} aria-label="Dismiss policy update notice" className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[#746f62] transition hover:bg-[#f2ecdf] hover:text-[#29271f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#879584] dark:text-[#d0c7b3] dark:hover:bg-[#302f25] dark:hover:text-[#f3eddf]">
         <X size={16} />
       </button>
     </div>
