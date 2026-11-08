@@ -97,6 +97,9 @@ export function LoginSection({ isExpanded = true }: LoginSectionProps) {
                 <span className="text-[13px] text-[#374151] dark:text-[#D1D5DB] group-hover:text-[#111827] dark:group-hover:text-[#F3F4F6] truncate block">
                   {user.name || user.email}
                 </span>
+                <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.12em] text-violet-600 dark:text-violet-300">
+                  {(user.tier || 'free')} plan
+                </span>
               </div>
             </div>
             <ChevronDown size={16} className={`text-[#6B7280] dark:text-[#9CA3AF] transition-transform ${isMenuOpen ? 'rotate-180' : ''}`} />

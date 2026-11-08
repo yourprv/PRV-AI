@@ -33,6 +33,7 @@ interface ChatAreaProps {
   sidebarExpanded: boolean;
   onToggleSidebar: () => void;
   onSettingsClick: () => void;
+  onUpgradeClick: () => void;
 }
 
 export function ChatArea({
@@ -60,6 +61,7 @@ export function ChatArea({
   customPrv,
   onToggleSidebar,
   onSettingsClick,
+  onUpgradeClick,
 }: ChatAreaProps) {
   // Private mode temporarily forces the UI dark without changing the saved preference.
   // This means light mode returns when private mode ends, while an existing dark
@@ -103,6 +105,15 @@ export function ChatArea({
           />
         </div>
         <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
+          <button
+            type="button"
+            onClick={onUpgradeClick}
+            className="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-violet-200 bg-violet-50 px-2 text-[11px] font-semibold text-violet-700 transition-colors hover:border-violet-300 hover:bg-violet-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 sm:h-9 sm:gap-1.5 sm:px-3 sm:text-xs dark:border-violet-400/20 dark:bg-violet-400/10 dark:text-violet-200 dark:hover:bg-violet-400/20"
+            aria-label={user?.tier === 'pro' ? 'View Pro plan' : 'Upgrade to Pro'}
+          >
+            <Sparkles size={14} />
+            <span className="hidden min-[380px]:inline">{user?.tier === 'pro' ? 'Pro plan' : 'Upgrade to Pro'}</span>
+          </button>
           <button
             type="button"
             onClick={onSettingsClick}

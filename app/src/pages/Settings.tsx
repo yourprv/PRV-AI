@@ -10,7 +10,9 @@ interface SettingsProps {
 }
 
 export function Settings({ onBack }: SettingsProps) {
-  const [activeTab, setActiveTab] = useState<'about' | 'models' | 'data' | 'plans'>('about');
+  const [activeTab, setActiveTab] = useState<'about' | 'models' | 'data' | 'plans'>(() => (
+    new URLSearchParams(window.location.search).get('tab') === 'plans' ? 'plans' : 'about'
+  ));
   const [allowDataSharing, setAllowDataSharing] = useLocalStorage('prv_allow_data_sharing', true);
   const [showChatHistoryInfo, setShowChatHistoryInfo] = useState(false);
   const { user, logout, refreshUser } = useAuth();

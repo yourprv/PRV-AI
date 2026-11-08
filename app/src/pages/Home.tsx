@@ -151,6 +151,10 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
     navigate('/settings');
   }, [navigate]);
 
+  const handleUpgradeClick = useCallback(() => {
+    navigate('/settings?tab=plans');
+  }, [navigate]);
+
   const handleSelectCustomPRV = useCallback((nextCustomPrv: CustomPRV) => {
     setCustomPrv(nextCustomPrv);
     setCurrentModel(nextCustomPrv.model);
@@ -785,6 +789,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
           customPrv={customPrv}
           onEnhancePrompt={handleEnhanceChatPrompt}
           onSettingsClick={handleSettingsClick}
+          onUpgradeClick={handleUpgradeClick}
           guestMode={!user}
           isIncognitoMode={isIncognitoMode}
           onToggleIncognitoMode={handleToggleIncognitoMode}
