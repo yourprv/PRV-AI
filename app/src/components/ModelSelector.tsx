@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Check, Flame, Globe2, Sparkles, Zap } from 'lucide-react';
+import { ChevronDown, Check, Flame, Globe2, LockKeyhole, Sparkles, Zap } from 'lucide-react';
 import type { ModelId } from '@/types/chat';
 import { AVAILABLE_MODELS } from '@/types/chat';
 
@@ -10,6 +10,8 @@ interface ModelSelectorProps {
   disabled?: boolean;
   onDisabledClick?: () => void;
   guestMode?: boolean;
+  tier?: 'free' | 'go' | 'plus' | 'pro';
+  onUpgradeClick?: () => void;
 }
 
 const accentClasses = {
@@ -29,7 +31,7 @@ function ModelGlyph({ accent }: { accent: ModelAccent }) {
   return accent === 'violet' ? <Zap size={15} /> : <Sparkles size={15} />;
 }
 
-export function ModelSelector({ selected, onSelect, compact, disabled, onDisabledClick, guestMode = false }: ModelSelectorProps) {
+export function ModelSelector({ selected, onSelect, compact, disabled, onDisabledClick, guestMode = false, tier = 'free', onUpgradeClick }: ModelSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [legacyOpen, setLegacyOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -87,8 +89,9 @@ export function ModelSelector({ selected, onSelect, compact, disabled, onDisable
               {(group !== 'Legacy models' || legacyOpen) && AVAILABLE_MODELS.filter((model) => model.group === group).map((model) => <div key={model.id}>
                 <button
                   onClick={() => {
-                    if (guestMode && model.id !== 'prv-v3.2-fire') {
+                    if (model.id === 'prv-v4-light' && tier === 'free') {
                       setIsOpen(false);
+                      onUpgradeClick?.();
                       return;
                     }
                     onSelect(model.id);
@@ -117,7 +120,9 @@ export function ModelSelector({ selected, onSelect, compact, disabled, onDisable
                         {model.description}
                       </p>
                     </div>
-                    {selected === model.id && (
+                    {model.id === 'prv-v4-light' && tier === 'free' ? (
+                      <span className="mt-0.5 flex shrink-0 items-center gap-1 rounded-full bg-amber-50 px-2 py-1 text-[9px] font-semibold uppercase tracking-wide text-amber-700 dark:bg-amber-400/10 dark:text-amber-300"><LockKeyhole size={11} /> Go+</span>
+                    ) : selected === model.id && (
                       <Check size={14} className="text-[#4F46E5] dark:text-[#818CF8] mt-0.5 shrink-0 sm:w-4 sm:h-4" />
                     )}
                   </div>

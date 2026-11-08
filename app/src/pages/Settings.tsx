@@ -166,7 +166,7 @@ export function Settings({ onBack }: SettingsProps) {
                     <p className="mt-4 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-500 dark:border-slate-800 dark:text-slate-400">
                       {model.id === 'prv-v3.2-fire' && 'The ignition point of the V3 frontier: rapid, lively, and built to turn a blank page into momentum.'}
                       {model.id === 'prv-v3.5-earth' && 'The grounded titan of the V3 series: deliberate, durable, and engineered for demanding reasoning and creation.'}
-                      {model.id === 'prv-v4-light' && 'A bright beta glimpse at the next horizon: capable, agile, and tuned for effortless everyday intelligence.'}
+                      {model.id === 'prv-v4-light' && 'PRV 4.0 Lightning brings a bright beta glimpse of the next horizon: capable, agile, and tuned for effortless everyday intelligence.'}
                       {model.id === 'prv-v1-flash' && 'The original quick-response PRV engine for clear answers and everyday flow.'}
                       {model.id === 'prv-v1-pro' && 'The legacy powerhouse for dense reasoning and complex tasks.'}
                       {model.id === 'prv-v1.5-beta' && 'The dependable legacy baseline: efficient, balanced, and easy to reach for.'}

@@ -97,11 +97,15 @@ async function getAuthenticatedUser(req: Request, res: ExpressResponse) {
 
 type Tier = 'free' | 'go' | 'plus' | 'pro';
 const tierRank: Record<Tier, number> = { free: 0, go: 1, plus: 2, pro: 3 };
-// Shared AI generation budget per account for a fixed 15-minute window.
-const TIER_REQUEST_LIMITS: Record<Tier, number> = { free: 30, go: 100, plus: 300, pro: 900 };
-const RATE_WINDOW_MS = 15 * 60 * 1000;
-const rateLimitBuckets = new Map<string, { windowStart: number; count: number }>();
-let rateLimitCalls = 0;
+type DailyFeature = 'model_earth' | 'model_light' | 'model_v1_max' | 'images' | 'enhance' | 'search';
+const TIER_DAILY_LIMITS: Record<Tier, Record<DailyFeature, number> & { customPrvs: number | null }> = {
+  free: { model_earth: 30, model_light: 0, model_v1_max: 40, images: 10, enhance: 100, search: 30, customPrvs: 1 },
+  go: { model_earth: 300, model_light: 20, model_v1_max: 200, images: 50, enhance: 500, search: 100, customPrvs: 5 },
+  plus: { model_earth: 1000, model_light: 100, model_v1_max: 800, images: 150, enhance: 1500, search: 300, customPrvs: 25 },
+  pro: { model_earth: 5000, model_light: 500, model_v1_max: 3000, images: 500, enhance: 5000, search: 1000, customPrvs: null },
+};
+const UNLIMITED_MODELS = new Set(['prv-v3.2-fire', 'prv-v1-flash', 'prv-v1.5-beta']);
+const VALID_MODELS = new Set(['prv-v3.2-fire', 'prv-v3.5-earth', 'prv-v4-light', 'prv-v1-flash', 'prv-v1-pro', 'prv-v1.5-beta']);
 
 // Use a keyed digest so raw IP addresses and account IDs are not stored in the
 // rate-limit table. Configure a long, random secret in production.
@@ -140,77 +144,140 @@ function requireTier(minimumTier: Exclude<Tier, 'free'>): RequestHandler {
   };
 }
 
-function takeRateLimit(key: string, limit: number, windowStart: number) {
-  const current = rateLimitBuckets.get(key);
-  const bucket = !current || current.windowStart !== windowStart
-    ? { windowStart, count: 0 }
-    : current;
-  bucket.count += 1;
-  rateLimitBuckets.set(key, bucket);
-  return { remaining: Math.max(0, limit - bucket.count), exceeded: bucket.count > limit };
-}
+interface UsageContext { usageKey: string; tier: Tier; userId: string | null }
 
-// The fallback is an in-process fixed-window limiter (suitable for one backend
-// instance); all expensive routes use it before doing external provider work.
-const tierRateLimit: RequestHandler = async (req, res, next) => {
-  try {
-  const now = Date.now();
-  const windowStart = Math.floor(now / RATE_WINDOW_MS) * RATE_WINDOW_MS;
-  const token = req.headers.authorization?.replace(/^Bearer\s+/i, '').trim();
+async function getUsageContext(req: Request): Promise<UsageContext> {
   let userId: string | null = null;
   let tier: Tier = 'free';
-
+  const token = req.headers.authorization?.replace(/^Bearer\s+/i, '').trim();
   if (token && supabaseAdmin) {
     const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
     if (!authError && user) {
       userId = user.id;
-      const { data, error } = await supabaseAdmin
-        .from('user_entitlements')
-        .select('tier')
-        .eq('user_id', user.id)
-        .maybeSingle();
-      if (error) {
-        console.error('Unable to load tier for request limit:', error);
-        res.status(503).json({ error: 'Usage limits are temporarily unavailable.' });
-        return;
-      }
+      const { data, error } = await supabaseAdmin.from('user_entitlements').select('tier').eq('user_id', user.id).maybeSingle();
+      if (error) throw error;
       const activeTier = data?.tier as Tier | undefined;
       if (activeTier && activeTier in tierRank) tier = activeTier;
     }
   }
+  if (!INVITE_RATE_LIMIT_SECRET) throw new Error('INVITE_RATE_LIMIT_SECRET is required for usage tracking.');
+  const ip = req.ip || req.socket.remoteAddress || 'unknown';
+  const usageKey = userId
+    ? `user:${userId}`
+    : `guest:${createHmac('sha256', INVITE_RATE_LIMIT_SECRET).update(ip).digest('hex')}`;
+  return { usageKey, tier, userId };
+}
 
-  const tierLimit = TIER_REQUEST_LIMITS[tier];
-  const tierKey = userId ? `user:${userId}` : `guest:${req.ip || req.socket.remoteAddress || 'unknown'}`;
-  const account = takeRateLimit(tierKey, tierLimit, windowStart);
-  // A high shared IP ceiling prevents easy account rotation without applying
-  // the small guest allowance to every signed-in person behind one network.
-  const ipKey = `ip:${req.ip || req.socket.remoteAddress || 'unknown'}`;
-  const ip = userId ? takeRateLimit(ipKey, TIER_REQUEST_LIMITS.pro, windowStart) : account;
-  const remaining = Math.min(account.remaining, ip.remaining);
-  const resetAt = Math.ceil((windowStart + RATE_WINDOW_MS) / 1000);
-  res.setHeader('X-RateLimit-Limit', String(tierLimit));
+function utcUsageDate(now = new Date()): string {
+  return now.toISOString().slice(0, 10);
+}
+
+function utcResetEpoch(now = new Date()): number {
+  return Math.floor(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1) / 1000);
+}
+
+async function consumeDailyQuota(req: Request, res: ExpressResponse, feature: DailyFeature, quotaKey: string = feature): Promise<boolean> {
+  if (!supabaseAdmin) {
+    res.status(503).json({ error: 'Usage limits are not configured on the server.' });
+    return false;
+  }
+  const context = await getUsageContext(req);
+  const limit = TIER_DAILY_LIMITS[context.tier][feature];
+  const resetAt = utcResetEpoch();
+  const { data, error } = await supabaseAdmin.rpc('consume_tier_daily_quota', {
+    p_usage_key: context.usageKey,
+    p_feature_key: quotaKey,
+    p_usage_date: utcUsageDate(),
+    p_daily_limit: limit,
+  });
+  if (error) throw error;
+  const result = data as { allowed?: boolean; used?: number; limit?: number };
+  const remaining = Math.max(0, limit - (result.used || 0));
+  res.setHeader('X-RateLimit-Limit', String(limit));
   res.setHeader('X-RateLimit-Remaining', String(remaining));
   res.setHeader('X-RateLimit-Reset', String(resetAt));
-
-  // Periodically clear expired keys so an active server stays memory-bounded.
-  rateLimitCalls += 1;
-  if (rateLimitCalls % 500 === 0) {
-    for (const [key, bucket] of rateLimitBuckets) {
-      if (bucket.windowStart < windowStart) rateLimitBuckets.delete(key);
-    }
+  if (!result.allowed) {
+    res.setHeader('Retry-After', String(Math.max(1, resetAt - Math.floor(Date.now() / 1000))));
+    res.status(429).json({ error: 'Daily limit reached. Your allowance resets at midnight UTC.' });
+    return false;
   }
+  return true;
+}
 
-  if (account.exceeded || ip.exceeded) {
-    res.setHeader('Retry-After', String(Math.max(1, resetAt - Math.floor(now / 1000))));
-    res.status(429).json({ error: 'Rate limit reached. Upgrade with an invite code or wait until your limit resets.' });
+function dailyQuota(feature: DailyFeature): RequestHandler {
+  return async (req, res, next) => {
+    try {
+      if (await consumeDailyQuota(req, res, feature)) next();
+    } catch (error) {
+      console.error(`Failed to enforce ${feature} quota:`, error);
+      res.status(503).json({ error: 'Usage limits are temporarily unavailable.' });
+    }
+  };
+}
+
+const modelQuota: RequestHandler = async (req, res, next) => {
+  const model = typeof req.body?.model === 'string' ? req.body.model : 'prv-v3.2-fire';
+  if (!VALID_MODELS.has(model)) {
+    res.status(400).json({ error: 'Choose a supported PRV model.' });
     return;
   }
-  next();
+  if (UNLIMITED_MODELS.has(model)) {
+    res.setHeader('X-RateLimit-Limit', 'unlimited');
+    res.setHeader('X-RateLimit-Remaining', 'unlimited');
+    res.setHeader('X-RateLimit-Reset', String(utcResetEpoch()));
+    next();
+    return;
+  }
+  try {
+    const context = await getUsageContext(req);
+    const feature: DailyFeature = model === 'prv-v3.5-earth' ? 'model_earth' : model === 'prv-v4-light' ? 'model_light' : 'model_v1_max';
+    if (TIER_DAILY_LIMITS[context.tier][feature] === 0) {
+      res.setHeader('X-RateLimit-Limit', '0');
+      res.setHeader('X-RateLimit-Remaining', '0');
+      res.setHeader('X-RateLimit-Reset', String(utcResetEpoch()));
+      res.status(403).json({ error: 'This model is not available on your current tier. Upgrade with an invite code to unlock it.' });
+      return;
+    }
+    if (await consumeDailyQuota(req, res, feature, `model:${model}`)) next();
   } catch (error) {
-    console.error('Tier rate-limit middleware failed:', error);
+    console.error('Failed to enforce model quota:', error);
     res.status(503).json({ error: 'Usage limits are temporarily unavailable.' });
   }
 };
+
+app.get('/api/usage', async (req: Request, res: ExpressResponse) => {
+  if (!supabaseAdmin) {
+    res.status(503).json({ error: 'Usage tracking is not configured on the server.' });
+    return;
+  }
+  try {
+    const context = await getUsageContext(req);
+    const usageDate = utcUsageDate();
+    const [{ data: dailyRows, error: dailyError }, { data: lifetimeRow, error: lifetimeError }] = await Promise.all([
+      supabaseAdmin.from('tier_daily_usage').select('feature_key, used').eq('usage_key', context.usageKey).eq('usage_date', usageDate),
+      supabaseAdmin.from('tier_lifetime_usage').select('used').eq('usage_key', context.usageKey).eq('feature_key', 'custom_prv_create').maybeSingle(),
+    ]);
+    if (dailyError || lifetimeError) throw dailyError || lifetimeError;
+    const dailyCounts = Object.fromEntries((dailyRows || []).map((row) => [row.feature_key, row.used])) as Record<string, number>;
+    const limits = TIER_DAILY_LIMITS[context.tier];
+    res.json({
+      tier: context.tier,
+      resetsAt: utcResetEpoch(),
+      daily: {
+        modelEarth: { used: dailyCounts['model:prv-v3.5-earth'] || 0, limit: limits.model_earth },
+        modelLight: { used: dailyCounts['model:prv-v4-light'] || 0, limit: limits.model_light },
+        modelV1ProMax: { used: dailyCounts['model:prv-v1-pro'] || 0, limit: limits.model_v1_max },
+        images: { used: dailyCounts.images || 0, limit: limits.images },
+        enhancement: { used: dailyCounts.enhance || 0, limit: limits.enhance },
+        webSearch: { used: dailyCounts.search || 0, limit: limits.search },
+      },
+      lifetime: { customPrvs: { used: lifetimeRow?.used || 0, limit: limits.customPrvs } },
+    });
+  } catch (error) {
+    console.error('Failed to load usage summary:', error);
+    res.status(503).json({ error: 'Usage summary is temporarily unavailable.' });
+  }
+});
 
 function serializeChatMessages(value: unknown): StoredChatMessage[] {
   if (!Array.isArray(value)) return [];
@@ -570,7 +637,7 @@ app.post('/api/turnstile/verify', async (req: Request, res: ExpressResponse) => 
   }
 });
 
-app.post('/api/images/generate', tierRateLimit, async (req: Request, res: ExpressResponse) => {
+app.post('/api/images/generate', dailyQuota('images'), async (req: Request, res: ExpressResponse) => {
   const { prompt, turnstileToken } = req.body as { prompt?: string; turnstileToken?: string };
   const trimmedPrompt = prompt?.trim().slice(0, 2048) || '';
 
@@ -775,8 +842,8 @@ app.get('/api/custom-prvs', async (_req: Request, res: ExpressResponse) => {
   res.json({ customPrvs: (data || []).map((row) => formatCustomPrv(row)) });
 });
 
-// Publishing a Custom PRV is a Go+ feature; public catalog browsing stays free.
-app.post('/api/custom-prvs', tierRateLimit, requireTier('go'), async (req: Request, res: ExpressResponse) => {
+// Custom PRV lifetime usage counts only creations after this quota system ships.
+app.post('/api/custom-prvs', async (req: Request, res: ExpressResponse) => {
   const user = await getAuthenticatedUser(req, res);
   if (!user || !supabaseAdmin) return;
   const name = typeof req.body?.name === 'string' ? req.body.name.trim().slice(0, 80) : '';
@@ -787,17 +854,36 @@ app.post('/api/custom-prvs', tierRateLimit, requireTier('go'), async (req: Reque
     return;
   }
   const model = req.body?.model === 'prv-v1-flash' ? 'prv-v1-flash' : 'prv-v3.2-fire';
-  const payload = { id: `cprv${randomUUID().replace(/-/g, '')}`, creator_id: user.id, name, description, instructions, model, is_public: true };
-  const { data, error } = await supabaseAdmin.from('custom_prvs').insert(payload).select('id, name, description, instructions, model').single();
-  if (error) {
+  try {
+    const context = await getUsageContext(req);
+    const limit = TIER_DAILY_LIMITS[context.tier].customPrvs;
+    const { data, error } = await supabaseAdmin.rpc('create_custom_prv_with_quota', {
+      p_usage_key: context.usageKey,
+      p_lifetime_limit: limit,
+      p_id: `cprv${randomUUID().replace(/-/g, '')}`,
+      p_creator_id: user.id,
+      p_name: name,
+      p_description: description,
+      p_instructions: instructions,
+      p_model: model,
+    });
+    if (error) throw error;
+    const result = data as { allowed?: boolean; used?: number; limit?: number; custom_prv?: Record<string, any> };
+    res.setHeader('X-RateLimit-Limit', result.limit === null ? 'unlimited' : String(result.limit ?? limit ?? 'unlimited'));
+    res.setHeader('X-RateLimit-Remaining', result.limit === null || limit === null ? 'unlimited' : String(Math.max(0, limit - (result.used || 0))));
+    res.setHeader('X-RateLimit-Reset', '0');
+    if (!result.allowed || !result.custom_prv) {
+      res.status(429).json({ error: 'Your lifetime Custom PRV creation limit has been reached. Upgrade with an invite code for a larger allowance.' });
+      return;
+    }
+    res.status(201).json(formatCustomPrv(result.custom_prv));
+  } catch (error) {
     console.error('Failed to create Custom PRV:', error);
-    res.status(500).json({ error: 'Unable to publish this Custom PRV.' });
-    return;
+    res.status(503).json({ error: 'Unable to publish this Custom PRV right now.' });
   }
-  res.status(201).json(formatCustomPrv(data));
 });
 
-app.post('/api/custom-prv/enhance', tierRateLimit, async (req: Request, res: ExpressResponse) => {
+app.post('/api/custom-prv/enhance', dailyQuota('enhance'), async (req: Request, res: ExpressResponse) => {
   const { prompt, kind, turnstileToken } = req.body as { prompt?: string; kind?: 'chat' | 'custom'; turnstileToken?: string };
   if (!prompt?.trim()) {
     res.status(400).json({ error: 'A custom PRV description is required.' });
@@ -844,7 +930,7 @@ app.post('/api/custom-prv/enhance', tierRateLimit, async (req: Request, res: Exp
   }
 });
 
-app.post('/api/chat/stream', tierRateLimit, async (req: Request, res: ExpressResponse) => {
+app.post('/api/chat/stream', modelQuota, async (req: Request, res: ExpressResponse) => {
   const payload = normalizeChatRequestPayload(req.body, req.headers as Record<string, string | undefined>);
   const { content, model, mode, history, attachments, customInstructions, turnstileToken } = payload;
 
@@ -956,7 +1042,7 @@ app.post('/api/chat/stream', tierRateLimit, async (req: Request, res: ExpressRes
   }
 });
 
-app.post('/api/search/tavily', tierRateLimit, async (req: Request, res: ExpressResponse) => {
+app.post('/api/search/tavily', dailyQuota('search'), async (req: Request, res: ExpressResponse) => {
   const { query } = req.body as { query?: string };
 
   if (!query) {

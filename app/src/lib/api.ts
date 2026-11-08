@@ -9,6 +9,20 @@ export interface StoredAuthSession {
   expiresAt?: number;
 }
 
+export interface UsageSummary {
+  tier: 'free' | 'go' | 'plus' | 'pro';
+  resetsAt: number;
+  daily: {
+    modelEarth: { used: number; limit: number };
+    modelLight: { used: number; limit: number };
+    modelV1ProMax: { used: number; limit: number };
+    images: { used: number; limit: number };
+    enhancement: { used: number; limit: number };
+    webSearch: { used: number; limit: number };
+  };
+  lifetime: { customPrvs: { used: number; limit: number | null } };
+}
+
 export function getApiBaseUrl(): string {
   const configured = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim();
   return (configured || DEFAULT_API_BASE_URL).replace(/\/$/, '');
@@ -63,7 +77,6 @@ export async function responseError(response: Response, fallback: string): Promi
     if (detail) message = detail;
   }
   if (response.status === 429) {
-    message = 'Rate limit reached. Upgrade with an invite code or wait until your limit resets.';
     toast.error(message, { duration: 6000 });
   }
   return new Error(message);
@@ -242,6 +255,10 @@ export async function redeemInviteCode(code: string): Promise<{ tier: 'go' | 'pl
     method: 'POST',
     body: JSON.stringify({ code }),
   });
+}
+
+export async function getUsageSummary(): Promise<UsageSummary> {
+  return apiRequest<UsageSummary>('/api/usage');
 }
 
 import type { Chat, CustomPRV } from '@/types/chat';

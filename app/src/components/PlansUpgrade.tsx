@@ -1,33 +1,33 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { ArrowRight, Check, Crown, Gift, KeyRound, Sparkles, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { AuthModal } from '@/components/AuthModal';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { redeemInviteCode } from '@/lib/api';
+import { getUsageSummary, redeemInviteCode, type UsageSummary } from '@/lib/api';
 import type { User } from '@/types/chat';
 
 type PaidTier = 'go' | 'plus' | 'pro';
 
 const plans = [
   {
-    id: 'free', name: 'Free', icon: Gift, quota: '30 AI requests / 15 min',
-    description: 'Explore the core PRV experience with standard models and everyday tools.',
-    features: ['Core chat and standard models', 'Web search and image generation', 'No payment details required'],
+    id: 'free', name: 'Free', icon: Gift, quota: 'Daily allowances · no Fire cap',
+    description: 'Full access to core features with generous daily allowances.',
+    features: ['V3.2 Fire unlimited · V3.5 Earth 30/day · V4.0 Lightning locked', 'V1 Pro + V1 Base unlimited · V1 Pro Max 40/day', '10 images/day · 100 enhancements/day · 30 searches/day', '1 new Custom PRV for life (account required)'],
   },
   {
-    id: 'go', name: 'Go', icon: Zap, quota: '100 AI requests / 15 min',
-    description: 'More room for regular work, available by invite code.',
-    features: ['Everything in Free', 'Publish Custom PRVs', 'Invite-code access'],
+    id: 'go', name: 'Go', icon: Zap, quota: 'Higher daily allowances',
+    description: 'More daily capacity and access to the latest model.',
+    features: ['V3.2 Fire unlimited · V3.5 Earth 300/day · V4.0 Lightning 20/day', 'V1 Pro + V1 Base unlimited · V1 Pro Max 200/day', '50 images/day · 500 enhancements/day · 100 searches/day', '5 new Custom PRVs for life (account required)'],
   },
   {
-    id: 'plus', name: 'Plus', icon: Sparkles, quota: '300 AI requests / 15 min',
-    description: 'A larger allowance for frequent creative and research work.',
-    features: ['Everything in Go', 'Expanded generation allowance', 'Invite-code access'],
+    id: 'plus', name: 'Plus', icon: Sparkles, quota: 'Expanded daily allowances',
+    description: 'High daily limits for demanding creative and research work.',
+    features: ['V3.2 Fire unlimited · V3.5 Earth 1,000/day · V4.0 Lightning 100/day', 'V1 Pro + V1 Base unlimited · V1 Pro Max 800/day', '150 images/day · 1,500 enhancements/day · 300 searches/day', '25 new Custom PRVs for life (account required)'],
   },
   {
-    id: 'pro', name: 'Pro', icon: Crown, quota: '900 AI requests / 15 min',
-    description: 'The highest current usage allowance for intensive workflows.',
-    features: ['Everything in Plus', 'Highest generation allowance', 'Invite-code access'],
+    id: 'pro', name: 'Pro', icon: Crown, quota: 'Highest daily allowances',
+    description: 'The highest daily allowances for intensive workflows.',
+    features: ['V3.2 Fire unlimited · V3.5 Earth 5,000/day · V4.0 Lightning 500/day', 'V1 Pro + V1 Base unlimited · V1 Pro Max 3,000/day', '500 images/day · 5,000 enhancements/day · 1,000 searches/day', 'Unlimited new Custom PRVs (account required)'],
   },
 ] as const;
 
@@ -42,6 +42,13 @@ export function PlansUpgrade({ user, refreshUser }: PlansUpgradeProps) {
   const [isRedeeming, setIsRedeeming] = useState(false);
   const [inlineError, setInlineError] = useState('');
   const [showAuth, setShowAuth] = useState(false);
+  const [usage, setUsage] = useState<UsageSummary | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getUsageSummary().then((summary) => { if (!cancelled) setUsage(summary); }).catch(() => undefined);
+    return () => { cancelled = true; };
+  }, [user?.id]);
 
   const onCodeChange = (value: string) => {
     // Format 16 characters as 4 groups while the user types or pastes.
@@ -67,6 +74,7 @@ export function PlansUpgrade({ user, refreshUser }: PlansUpgradeProps) {
       const result = await redeemInviteCode(code);
       // Refresh from the API so the UI reflects the server's entitlement.
       await refreshUser();
+      setUsage(await getUsageSummary());
       setSelectedPlan(null);
       setCode('');
       toast.success(`Your ${result.tier[0].toUpperCase()}${result.tier.slice(1)} access is now active.`);
@@ -92,6 +100,7 @@ export function PlansUpgrade({ user, refreshUser }: PlansUpgradeProps) {
               Current plan: <span className="capitalize">{user?.tier || 'free'}</span>
             </div>
           </div>
+          {usage && <p className="mt-4 text-xs font-medium text-slate-600 dark:text-slate-300">Lifetime Custom PRVs used: <strong className="text-slate-900 dark:text-white">{usage.lifetime.customPrvs.used} / {usage.lifetime.customPrvs.limit ?? 'Unlimited'}</strong></p>}
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -123,7 +132,7 @@ export function PlansUpgrade({ user, refreshUser }: PlansUpgradeProps) {
             );
           })}
         </div>
-        <p className="mt-5 text-center text-xs leading-relaxed text-slate-500 dark:text-slate-400">AI request limits are shared across chat, web search, image generation, and prompt enhancement. Limits reset every 15 minutes.</p>
+        <p className="mt-5 text-center text-xs leading-relaxed text-slate-500 dark:text-slate-400">Daily model, image, search, and enhancement allowances reset at midnight UTC. Lifetime Custom PRV creation counts do not reset.</p>
       </section>
 
       <Dialog open={Boolean(selectedPlan)} onOpenChange={(open) => { if (!open) setSelectedPlan(null); }}>

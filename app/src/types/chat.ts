@@ -99,7 +99,7 @@ export const AVAILABLE_MODELS: ModelOption[] = [
   },
   {
     id: 'prv-v4-light',
-    name: 'PRV 4.0 Light',
+    name: 'PRV 4.0 Lightning',
     description: 'PRV 4.0 Light is a glimpse of the next horizon—bright, agile, and designed to make everyday intelligence feel effortless.',
     group: 'PRV models',
     accent: 'sky',

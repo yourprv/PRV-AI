@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Bot, BookOpen, Code2, Calculator, FileText, Lightbulb, Network, Plus, Sparkles, X } from 'lucide-react';
 import { toast } from 'sonner';
-import { createCustomPRV, enhancePrompt, listPublicCustomPRVs } from '@/lib/api';
+import { createCustomPRV, enhancePrompt, getUsageSummary, listPublicCustomPRVs, type UsageSummary } from '@/lib/api';
 import type { CustomPRV } from '@/types/chat';
 
 interface CustomPRVModalProps {
@@ -28,10 +28,12 @@ export function CustomPRVModal({ isOpen, onClose, onSelect, turnstileToken }: Cu
   const [enhancing, setEnhancing] = useState(false);
   const [selectedModel, setSelectedModel] = useState<CustomPRV['model']>('prv-v3.2-fire');
   const [publicPrvs, setPublicPrvs] = useState<CustomPRV[]>([]);
+  const [usage, setUsage] = useState<UsageSummary | null>(null);
 
   useEffect(() => {
     if (!isOpen) return;
     listPublicCustomPRVs().then(setPublicPrvs).catch(() => undefined);
+    getUsageSummary().then(setUsage).catch(() => undefined);
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -73,6 +75,7 @@ export function CustomPRVModal({ isOpen, onClose, onSelect, turnstileToken }: Cu
         model: selectedModel,
       });
       setPublicPrvs((previous) => [published, ...previous]);
+      getUsageSummary().then(setUsage).catch(() => undefined);
       choose(published.name, published.description, published.instructions);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Sign in to publish a Custom PRV.');
@@ -94,7 +97,7 @@ export function CustomPRVModal({ isOpen, onClose, onSelect, turnstileToken }: Cu
         <div className="min-h-0 overflow-y-auto p-5 sm:p-7">
           {view === 'presets' ? (
             <>
-              <div className="mb-4 flex items-center justify-between gap-3"><p className="text-sm font-medium text-slate-700 dark:text-slate-200">Start with a specialist</p><button type="button" onClick={() => setView('create')} className="inline-flex items-center gap-1.5 rounded-full bg-violet-600 px-3 py-2 text-xs font-semibold text-white hover:bg-violet-700"><Plus size={14} /> Create Custom PRV</button></div>
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3"><div><p className="text-sm font-medium text-slate-700 dark:text-slate-200">Start with a specialist</p>{usage && <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Custom PRVs used: {usage.lifetime.customPrvs.used} / {usage.lifetime.customPrvs.limit ?? 'Unlimited'} lifetime</p>}</div><button type="button" disabled={usage?.lifetime.customPrvs.limit !== null && usage !== null && usage.lifetime.customPrvs.used >= usage.lifetime.customPrvs.limit} onClick={() => setView('create')} className="inline-flex items-center gap-1.5 rounded-full bg-violet-600 px-3 py-2 text-xs font-semibold text-white hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"><Plus size={14} /> Create Custom PRV</button></div>
               <div className="grid gap-3 sm:grid-cols-2">
                 {presets.map((preset) => { const Icon = preset.icon; return <button key={preset.id} type="button" onClick={() => choose(preset.name, preset.description, preset.instructions)} className="group rounded-2xl border border-slate-200 bg-slate-50 p-4 text-left transition hover:-translate-y-0.5 hover:border-violet-300 hover:bg-violet-50 dark:border-slate-700 dark:bg-slate-800/60 dark:hover:border-violet-500 dark:hover:bg-violet-950/30"><span className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-white text-violet-600 shadow-sm dark:bg-slate-900 dark:text-violet-300"><Icon size={18} /></span><span className="block text-sm font-semibold text-slate-900 dark:text-white">{preset.name}</span><span className="mt-1 block text-xs leading-5 text-slate-500 dark:text-slate-400">{preset.description}</span></button>; })}
               </div>
@@ -106,7 +109,8 @@ export function CustomPRVModal({ isOpen, onClose, onSelect, turnstileToken }: Cu
               <div><label className="text-sm font-semibold text-slate-800 dark:text-slate-100">What should we call it?</label><input value={name} onChange={(event) => setName(event.target.value)} placeholder="e.g. My Study Mentor" className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-violet-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white" /></div>
               <div><div className="flex items-center justify-between gap-3"><label className="text-sm font-semibold text-slate-800 dark:text-slate-100">What kind of AI do you need?</label><button type="button" onClick={enhance} disabled={enhancing || !description.trim()} className="inline-flex items-center gap-1.5 rounded-full border border-violet-200 px-3 py-1.5 text-xs font-semibold text-violet-600 disabled:opacity-50 dark:border-violet-500/30 dark:text-violet-300"><Sparkles size={13} /> {enhancing ? 'Enhancing…' : 'Enhance prompt'}</button></div><textarea value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Describe the role, tasks, style, and rules you want this AI to follow…" rows={8} className="mt-2 w-full resize-y rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 outline-none focus:border-violet-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white" /></div>
               <div><label className="text-sm font-semibold text-slate-800 dark:text-slate-100">Powered by</label><div className="mt-2 grid grid-cols-2 gap-2">{([['prv-v3.2-fire', 'PRV V3.2 Fire'], ['prv-v1-flash', 'PRV V1 Pro']] as const).map(([id, label]) => <button key={id} type="button" onClick={() => setSelectedModel(id)} className={`rounded-xl border px-3 py-3 text-left text-sm font-medium ${selectedModel === id ? 'border-violet-500 bg-violet-50 text-violet-700 dark:bg-violet-950/40 dark:text-violet-200' : 'border-slate-200 text-slate-600 dark:border-slate-700 dark:text-slate-300'}`}>{label}</button>)}</div></div>
-              <button type="button" onClick={create} className="w-full rounded-xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white hover:bg-violet-700">Create Custom PRV</button>
+              {usage && <p className="text-center text-xs text-slate-500 dark:text-slate-400">Lifetime Custom PRV creations: {usage.lifetime.customPrvs.used} / {usage.lifetime.customPrvs.limit ?? 'Unlimited'}</p>}
+              <button type="button" disabled={usage?.lifetime.customPrvs.limit !== null && usage !== null && usage.lifetime.customPrvs.used >= usage.lifetime.customPrvs.limit} onClick={create} className="w-full rounded-xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50">Create Custom PRV</button>
             </div>
           )}
         </div>

@@ -102,6 +102,8 @@ export function ChatArea({
             disabled={modelSelectorDisabled}
             onDisabledClick={onModelSelectorClick}
             guestMode={guestMode}
+            tier={user?.tier || 'free'}
+            onUpgradeClick={onUpgradeClick}
           />
         </div>
         <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
@@ -160,7 +162,7 @@ export function ChatArea({
         <div className="bg-[#FEF3C7] dark:bg-[#92400E]/20 text-[#92400E] dark:text-[#FEF3C7] px-3 py-1.5 sm:px-4 sm:py-3">
           <div className="mx-auto flex max-w-5xl flex-col gap-2 sm:gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs sm:text-sm font-medium">
-              You are in guest mode. You can use PRV V3.2 Fire now, and sign in later for more features.
+              You are using the Free tier. Core chat stays available; sign in to save chats and create a Custom PRV.
             </p>
             <button
               type="button"
@@ -188,9 +190,9 @@ export function ChatArea({
               </div>
             ) : (
               <div className="w-full rounded-2xl sm:rounded-[32px] border border-violet-200/80 dark:border-violet-400/20 bg-white/75 dark:bg-white/5 px-4 sm:px-6 py-4 sm:py-5 text-center shadow-[0_20px_70px_-35px_rgba(91,33,182,0.35)] backdrop-blur">
-                <p className="text-base sm:text-[18px] font-semibold text-[#0F172A] dark:text-[#EFF6FF]">Continue as a guest with PRV V3.2 Fire.</p>
+                <p className="text-base sm:text-[18px] font-semibold text-[#0F172A] dark:text-[#EFF6FF]">Explore PRV AI on the Free tier.</p>
                 <p className="mt-2 text-xs sm:text-[14px] text-[#475569] dark:text-[#A5B4FC]">
-                  Your chats stay in this session only. Sign in later for saved history, web search, and more models.
+                  Your chats stay in this session only. Sign in for saved history and to create a Custom PRV.
                 </p>
                 <button
                   type="button"

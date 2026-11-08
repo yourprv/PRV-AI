@@ -214,13 +214,9 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
         toast.info('You cannot change models inside an active chat. Start a new chat to use a different model.');
         return;
       }
-      if (!user && model !== 'prv-v3.2-fire') {
-        setShowBenefitsModal(true);
-        return;
-      }
       setCurrentModel(model);
     },
-    [activeChat, user]
+    [activeChat]
   );
 
   const handleBlockedModelChange = useCallback(() => {
