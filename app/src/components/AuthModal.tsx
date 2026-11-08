@@ -97,7 +97,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
         {/* Header */}
         <div className="mb-4 sm:mb-6">
-          <h2 className="text-base sm:text-[20px] font-semibold text-[#20231f] dark:text-[#F3F4F6] mb-1">
+          <h2 className="premium-heading text-base sm:text-[20px] text-[#20231f] dark:text-[#F3F4F6] mb-1">
             Continue to PRV
           </h2>
           <p className="text-xs sm:text-[14px] text-[#6B7280] dark:text-[#D1D5DB]">

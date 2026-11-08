@@ -12,6 +12,7 @@ import { fetchTavilySearch } from '@/lib/tavily';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+import { exportChatAsMarkdown, exportChatsAsJson } from '@/lib/chatExport';
 import type { Chat, CustomPRV, Message, ModelId, ModeType } from '@/types/chat';
 import { enhancePrompt, generateImage as generateImageFromPrompt, listChats, removeChat, saveChat } from '@/lib/api';
 
@@ -154,6 +155,18 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   const handleUpgradeClick = useCallback(() => {
     navigate('/settings?tab=plans');
   }, [navigate]);
+
+  const handleExportCurrentChat = useCallback(() => {
+    if (!activeChat) return;
+    exportChatAsMarkdown(activeChat);
+    toast.success('Chat exported as Markdown.');
+  }, [activeChat]);
+
+  const handleExportChats = useCallback(() => {
+    if (chats.length === 0) return;
+    exportChatsAsJson(chats);
+    toast.success(`${chats.length} ${chats.length === 1 ? 'chat' : 'chats'} exported as JSON.`);
+  }, [chats]);
 
   const handleSelectCustomPRV = useCallback((nextCustomPrv: CustomPRV) => {
     setCustomPrv(nextCustomPrv);
@@ -736,6 +749,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
           onSelectChat={handleSelectChat}
           onNewChat={handleNewChat}
           onSearchOpen={() => setSearchOpen(true)}
+          onExportChats={handleExportChats}
           onRenameChat={handleRenameChat}
           onDeleteChat={handleDeleteChat}
           onCustomPRV={() => setShowCustomPRV(true)}
@@ -754,6 +768,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
             onSelectChat={handleSelectChat}
             onNewChat={handleNewChat}
             onSearchOpen={() => setSearchOpen(true)}
+            onExportChats={handleExportChats}
             onRenameChat={handleRenameChat}
             onDeleteChat={handleDeleteChat}
             onCustomPRV={() => setShowCustomPRV(true)}
@@ -786,6 +801,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
           onEnhancePrompt={handleEnhanceChatPrompt}
           onSettingsClick={handleSettingsClick}
           onUpgradeClick={handleUpgradeClick}
+          onExportChat={handleExportCurrentChat}
           guestMode={!user}
           isIncognitoMode={isIncognitoMode}
           onToggleIncognitoMode={handleToggleIncognitoMode}

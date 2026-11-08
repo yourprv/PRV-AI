@@ -4,6 +4,7 @@ import {
   PanelLeftOpen,
   Plus,
   Search,
+  Download,
   ChevronDown,
   MessageSquare,
   Pencil,
@@ -24,6 +25,7 @@ interface SidebarProps {
   onSelectChat: (chatId: string) => void;
   onNewChat: () => void;
   onSearchOpen: () => void;
+  onExportChats?: () => void;
   onRenameChat: (chatId: string) => void;
   onDeleteChat: (chatId: string) => void;
   onCustomPRV: () => void;
@@ -38,6 +40,7 @@ export function Sidebar({
   onSelectChat,
   onNewChat,
   onSearchOpen,
+  onExportChats,
   onRenameChat,
   onDeleteChat,
   onCustomPRV,
@@ -152,6 +155,16 @@ export function Sidebar({
           >
             <Search size={18} />
           </button>
+          <button
+            type="button"
+            onClick={onExportChats}
+            disabled={!chats.length || !onExportChats}
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-[#6B7280] transition-colors duration-150 hover:bg-[#F5F5F7] hover:text-[#35483a] disabled:cursor-not-allowed disabled:opacity-35 dark:text-[#9CA3AF] dark:hover:bg-[#374151]"
+            aria-label="Export all chats as JSON"
+            title="Export all chats"
+          >
+            <Download size={17} />
+          </button>
         </div>
 
         <div className="flex-1" />
@@ -209,6 +222,17 @@ export function Sidebar({
         >
           <Search size={16} className="text-[#6B7280] dark:text-[#9CA3AF]" />
           Search Chats
+        </button>
+        <button
+          type="button"
+          onClick={onExportChats}
+          disabled={!chats.length || !onExportChats}
+          className="w-full flex items-center gap-2.5 rounded-lg px-2 py-2 text-[14px] text-[#374151] transition-colors duration-150 hover:bg-[#F5F5F7] hover:text-[#35483a] disabled:cursor-not-allowed disabled:opacity-40 dark:text-[#D1D5DB] dark:hover:bg-[#374151]"
+          aria-label="Export all chats as JSON"
+          title="Export all chats"
+        >
+          <Download size={16} className="text-[#6B7280] dark:text-[#9CA3AF]" />
+          Export Chats
         </button>
         <button
           type="button"

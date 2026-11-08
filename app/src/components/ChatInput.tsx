@@ -322,6 +322,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
 
         {/* Subtle hint */}
         <div className="mt-3 text-center text-[11px] leading-5 text-[#92938c] dark:text-[#9CA3AF]">
+          <p>Messages in each chat are included as context as you continue.</p>
           <p>PRV can make mistakes. Check important information.</p>
           {guestMode && <p className="mt-1 max-w-md mx-auto text-[10px] leading-4">By using PRV AI you agree to PRV AI Privacy Policy and Terms and Conditions.</p>}
         </div>

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Settings, Sun, Moon, EyeOff, ArrowUpRight, PenLine, Compass, ListChecks, Menu, LockKeyhole, ShieldCheck } from 'lucide-react';
+import { Settings, Sun, Moon, EyeOff, ArrowUpRight, Download, PenLine, Compass, ListChecks, Menu, LockKeyhole, ShieldCheck } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import { MessageBubble } from './MessageBubble';
 import { TypingIndicator } from './TypingIndicator';
@@ -34,6 +34,7 @@ interface ChatAreaProps {
   onToggleSidebar: () => void;
   onSettingsClick: () => void;
   onUpgradeClick: () => void;
+  onExportChat?: () => void;
 }
 
 export function ChatArea({
@@ -62,6 +63,7 @@ export function ChatArea({
   onToggleSidebar,
   onSettingsClick,
   onUpgradeClick,
+  onExportChat,
 }: ChatAreaProps) {
   // Private mode temporarily forces the UI dark without changing the saved preference.
   // This means light mode returns when private mode ends, while an existing dark
@@ -116,6 +118,17 @@ export function ChatArea({
             <span className="hidden min-[380px]:inline">{user?.tier === 'pro' ? 'Pro plan' : 'Upgrade to Pro'}</span>
             <ArrowUpRight size={14} />
           </button>
+          {messages.length > 0 && (
+            <button
+              type="button"
+              onClick={onExportChat}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-[#68766a] transition-colors hover:bg-[#eeeee8] hover:text-[#35483a] dark:text-slate-300 dark:hover:bg-slate-800"
+              aria-label="Export this chat as Markdown"
+              title="Export this chat"
+            >
+              <Download size={16} />
+            </button>
+          )}
           <button
             type="button"
             onClick={onSettingsClick}
@@ -269,6 +282,9 @@ export function ChatArea({
               onCancel={onCancel}
               onEnhancePrompt={onEnhancePrompt}
             />
+            <p className="mx-auto mt-1.5 max-w-[720px] px-2 text-center text-[10px] leading-4 text-[#92938c] dark:text-slate-500">
+              Earlier turns in this chat are included as context.
+            </p>
           </div>
         </>
       )}

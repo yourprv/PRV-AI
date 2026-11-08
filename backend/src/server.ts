@@ -364,18 +364,40 @@ function getErrorInfo(error: unknown): { status?: number; message: string; detai
   return { status, message, details };
 }
 
-function buildConversationHistoryPrompt(messages: Array<{ role: string; content: string; attachments?: Array<{ name: string }> }>): string {
-  if (!messages?.length) return '';
+type GeminiPart = { text?: string; inline_data?: { mime_type: string; data: string } };
+type GeminiContent = { role: 'user' | 'model'; parts: GeminiPart[] };
 
-  return messages
+function buildConversationContents(
+  messages: Array<{ role: string; content: string; attachments?: Array<{ name: string }> }> | undefined,
+  prompt: string,
+  attachments?: Array<{ mimeType: string; data: string; name: string }>,
+): GeminiContent[] {
+  const earlierTurns: GeminiContent[] = (messages ?? [])
+    .filter((message) => message.content.trim() || message.attachments?.length)
     .map((message) => {
-      const roleLabel = message.role === 'user' ? 'User' : 'Assistant';
-      const attachmentInfo = message.attachments?.length
-        ? ` [Attachments: ${message.attachments.map((attachment) => attachment.name).join(', ')}]`
-        : '';
-      return `${roleLabel}${attachmentInfo}: ${message.content.trim()}`;
-    })
-    .join('\n\n');
+      const fileNames = message.attachments?.map((attachment) => attachment.name).filter(Boolean) ?? [];
+      const text = [
+        message.content.trim(),
+        fileNames.length ? `Files shared earlier: ${fileNames.join(', ')}` : '',
+      ].filter(Boolean).join('\n');
+
+      return {
+        role: message.role === 'assistant' ? ('model' as const) : ('user' as const),
+        parts: [{ text }],
+      };
+    });
+
+  const currentParts: GeminiPart[] = [{ text: prompt }];
+  for (const attachment of attachments ?? []) {
+    currentParts.push({
+      inline_data: {
+        mime_type: attachment.mimeType,
+        data: attachment.data,
+      },
+    });
+  }
+
+  return [...earlierTurns, { role: 'user', parts: currentParts }];
 }
 
 function isIdentityQuestion(content: string): boolean {
@@ -384,6 +406,8 @@ function isIdentityQuestion(content: string): boolean {
 
 async function streamGeminiContent({
   prompt,
+  history,
+  systemInstruction,
   model,
   onChunk,
   phase,
@@ -391,26 +415,15 @@ async function streamGeminiContent({
   signal,
 }: {
   prompt: string;
+  history?: Array<{ role: string; content: string; attachments?: Array<{ name: string }> }>;
+  systemInstruction: string;
   model: string;
   onChunk: (chunk: { text?: string; thinking?: string; phase: 'thinking' | 'answer'; done: boolean }) => void;
   phase: 'thinking' | 'answer';
-  attachments?: Array<{ mimeType: string; data: string }>;
+  attachments?: Array<{ mimeType: string; data: string; name: string }>;
   signal?: AbortSignal;
 }): Promise<string> {
   const apiKey = getGeminiApiKey();
-  const parts: Array<{ text?: string; inline_data?: { mime_type: string; data: string } }> = [{ text: prompt }];
-
-  if (attachments?.length) {
-    for (const attachment of attachments) {
-      parts.push({
-        inline_data: {
-          mime_type: attachment.mimeType,
-          data: attachment.data,
-        },
-      });
-    }
-  }
-
   let response: Response;
   try {
     response = await fetch(
@@ -419,7 +432,8 @@ async function streamGeminiContent({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ role: 'user', parts }],
+          systemInstruction: { parts: [{ text: systemInstruction }] },
+          contents: buildConversationContents(history, prompt, attachments),
           generationConfig: {
             temperature: 0.7,
             topP: 0.95,
@@ -549,10 +563,12 @@ async function streamGeminiContent({
 
 type GeminiStreamParams = {
   prompt: string;
+  history?: Array<{ role: string; content: string; attachments?: Array<{ name: string }> }>;
+  systemInstruction: string;
   model: string;
   onChunk: (chunk: { text?: string; thinking?: string; phase: 'thinking' | 'answer'; done: boolean }) => void;
   phase: 'thinking' | 'answer';
-  attachments?: Array<{ mimeType: string; data: string }>;
+  attachments?: Array<{ mimeType: string; data: string; name: string }>;
   signal?: AbortSignal;
 };
 
@@ -982,11 +998,9 @@ app.post('/api/chat/stream', modelQuota, async (req: Request, res: ExpressRespon
     ? '\nThe user explicitly asked about your identity. Identify yourself briefly as: "I am PRV AI, developed by PRV AI Team."'
     : '\nThis is not an identity question. Do not mention your identity or development team in the answer.';
 
-  const historyPrompt = history && history.length > 0
-    ? `Conversation history:\n\n${buildConversationHistoryPrompt(history)}\n\n`
-    : '';
-  const thinkingPrompt = `${systemInstructions}${identityInstruction}\n\n${historyPrompt}You are producing a concise hidden reasoning outline for the user's request. Keep it short, structured, and useful. Do not provide the final answer.\n\nUser request: ${content}`;
-  const answerPrompt = `${systemInstructions}${identityInstruction}\n\n${historyPrompt}Use the conversation history as context and maintain continuity with it. Answer the user's current request directly and clearly. Provide a detailed, complete response and avoid overly brief answers. When files are attached, mention each file and explain its relevance.\n\nUser request: ${content}`;
+  const continuityInstructions = '\nUse every earlier user and assistant turn in this conversation as context. Keep facts, preferences, names, and decisions consistent across turns. If the user refers to something earlier, resolve it from this chat before asking them to repeat it.';
+  const thinkingSystemInstruction = `${systemInstructions}${identityInstruction}${continuityInstructions}\nFor thinking mode, produce a concise hidden reasoning outline for the latest user request. Keep it short, structured, and useful. Do not provide the final answer.`;
+  const answerSystemInstruction = `${systemInstructions}${identityInstruction}${continuityInstructions}\nAnswer the latest user request directly and clearly. Provide a detailed, complete response and avoid overly brief answers. When files are attached to the latest request, mention each file and explain its relevance.`;
 
   const transmit = (eventName: string, payload: unknown) => {
     res.write(`event: ${eventName}\n`);
@@ -999,7 +1013,9 @@ app.post('/api/chat/stream', modelQuota, async (req: Request, res: ExpressRespon
   try {
     if (resolvedMode === 'thinking') {
       const thinking = await streamGeminiContentWithFallback({
-        prompt: thinkingPrompt,
+        prompt: content,
+        history,
+        systemInstruction: thinkingSystemInstruction,
         model: apiModel,
         onChunk: (chunk) => {
           transmit('chunk', { ...chunk, phase: 'thinking' });
@@ -1010,7 +1026,9 @@ app.post('/api/chat/stream', modelQuota, async (req: Request, res: ExpressRespon
       });
 
       const finalAnswer = await streamGeminiContentWithFallback({
-        prompt: answerPrompt,
+        prompt: content,
+        history,
+        systemInstruction: answerSystemInstruction,
         model: apiModel,
         onChunk: (chunk) => {
           transmit('chunk', { ...chunk, phase: 'answer' });
@@ -1023,7 +1041,9 @@ app.post('/api/chat/stream', modelQuota, async (req: Request, res: ExpressRespon
       transmit('done', { content: finalAnswer || 'I’m ready to help with that.', thinking: thinking || 'Working through the request...' });
     } else {
       const finalAnswer = await streamGeminiContentWithFallback({
-        prompt: answerPrompt,
+        prompt: content,
+        history,
+        systemInstruction: answerSystemInstruction,
         model: apiModel,
         onChunk: (chunk) => {
           transmit('chunk', { ...chunk, phase: 'answer' });

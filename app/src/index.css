@@ -45,7 +45,7 @@
   body {
     background: #f7f6f2;
     color: #20231f;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     overflow-x: hidden;
@@ -96,7 +96,7 @@
 
 .workspace-welcome-accent {
   color: #687c68;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: 'Instrument Serif', Georgia, 'Times New Roman', serif;
   font-weight: 400;
   font-style: italic;
   letter-spacing: -0.055em;
@@ -153,11 +153,17 @@
   border-radius: 9px;
   background: #35483a;
   color: #f8f7f3;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: 'Instrument Serif', Georgia, 'Times New Roman', serif;
   font-size: 17px;
   font-weight: 700;
   letter-spacing: -0.08em;
   line-height: 1;
+}
+
+.premium-heading {
+  font-family: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  letter-spacing: -0.035em;
 }
 
 .workspace-primary-button {

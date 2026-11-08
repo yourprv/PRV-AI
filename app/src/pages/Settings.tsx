@@ -92,7 +92,7 @@ export function Settings({ onBack }: SettingsProps) {
           ) : activeTab === 'about' ? (
             // About Me View
             <div className="max-w-2xl mx-auto px-4 sm:px-6 md:px-8 py-6 md:py-8">
-              <h1 className="text-lg sm:text-xl md:text-[28px] font-semibold text-[#111827] dark:text-[#F3F4F6] mb-6 md:mb-8">
+              <h1 className="premium-heading text-lg sm:text-xl md:text-[28px] text-[#111827] dark:text-[#F3F4F6] mb-6 md:mb-8">
                 About Me
               </h1>
 
@@ -146,7 +146,7 @@ export function Settings({ onBack }: SettingsProps) {
             <div className="mx-auto max-w-4xl px-4 py-8 sm:px-8">
               <div className="mb-8 rounded-2xl border border-[#e7e4dc] bg-white p-6 dark:border-violet-400/20 dark:bg-slate-900">
                 <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#687c68] dark:text-violet-300">PRV model catalog</p>
-                <h1 className="text-2xl font-medium tracking-tight text-[#20231f] dark:text-white sm:text-3xl">Choose the right pace.</h1>
+                <h1 className="premium-heading text-2xl font-medium tracking-tight text-[#20231f] dark:text-white sm:text-3xl">Choose the right pace.</h1>
                 <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#74766f] dark:text-slate-300">Compare the available models and pick the one that fits the work in front of you.</p>
               </div>
 
@@ -177,7 +177,7 @@ export function Settings({ onBack }: SettingsProps) {
             </div>
           ) : activeTab === 'data' ? (
             <div className="max-w-2xl mx-auto px-8 py-8">
-              <h1 className="text-[28px] font-semibold text-[#111827] dark:text-[#F3F4F6] mb-8">
+              <h1 className="premium-heading text-[28px] text-[#111827] dark:text-[#F3F4F6] mb-8">
                 Data and Privacy
               </h1>
 

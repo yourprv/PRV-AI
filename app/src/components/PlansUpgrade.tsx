@@ -93,7 +93,7 @@ export function PlansUpgrade({ user, refreshUser }: PlansUpgradeProps) {
           <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#687c68] dark:text-violet-300">Plans for every pace</p>
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-medium tracking-tight text-[#20231f] dark:text-white sm:text-3xl">Choose your PRV tier</h1>
+              <h1 className="premium-heading text-2xl font-medium tracking-tight text-[#20231f] dark:text-white sm:text-3xl">Choose your PRV tier</h1>
               <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#74766f] dark:text-slate-300">Core features are available on Free. Paid tiers use invite codes while regional availability is limited.</p>
             </div>
             <div className="rounded-full border border-[#e5e2d9] bg-[#f8f7f3] px-3 py-1.5 text-xs font-semibold text-[#59685a] dark:border-violet-400/20 dark:bg-slate-900/70 dark:text-violet-200">

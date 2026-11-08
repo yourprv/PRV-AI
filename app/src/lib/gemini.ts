@@ -35,6 +35,11 @@ export async function streamGeminiReply({
   signal?: AbortSignal;
 }): Promise<GeminiReply> {
   const authToken = getStoredAuthToken();
+  const conversationHistory = history?.map(({ role, content, attachments }) => ({
+    role,
+    content,
+    attachments: attachments?.map(({ name }) => ({ name })),
+  }));
   const response = await fetch(`${getApiBaseUrl()}/api/chat/stream`, {
     method: 'POST',
     headers: {
@@ -47,7 +52,7 @@ export async function streamGeminiReply({
       message: content,
       model,
       mode,
-      history,
+      history: conversationHistory,
       attachments,
       customInstructions,
       turnstileToken,
