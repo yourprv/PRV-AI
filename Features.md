@@ -29,7 +29,7 @@ PRV AI brings chat, research, image creation, and reusable assistants into one m
 - Search, rename, and delete saved conversations.
 - Export the current conversation as Markdown or download all available chats as JSON.
 - Use guest or incognito sessions when you want temporary conversations that are not saved to account chat history.
-- Switch between light and dark appearance.
+- Follow the browser’s light or dark appearance preference, with live updates when it changes. A manual switch lasts for the current browser session.
 - Use the workspace on phones, tablets, and desktop screens.
 - Review your current tier and usage in **Settings → Plans**.
 

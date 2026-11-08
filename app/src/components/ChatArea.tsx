@@ -85,7 +85,7 @@ export function ChatArea({
     messages[messages.length - 1].content.trim() === '';
 
   return (
-    <div className={`relative flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden ${isIncognitoMode ? 'bg-[#191812] text-[#f3eddf]' : ''}`}>
+    <div data-theme-force-dark={isIncognitoMode ? 'true' : undefined} className={`relative flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden ${isIncognitoMode ? 'bg-[#191812] text-[#f3eddf]' : ''}`}>
       {/* Top bar */}
       <header className={`workspace-header relative z-20 min-h-14 shrink-0 flex items-center justify-between gap-1.5 border-b px-2.5 py-1.5 sm:h-[62px] sm:px-6 sm:py-0 ${isIncognitoMode ? 'private-workspace border-white/10' : 'dark:border-[#39372c] dark:bg-[#1f1e18]/95'}`}>
         <div className="flex items-center flex-1 min-w-0">

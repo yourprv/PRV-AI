@@ -6,6 +6,19 @@
     <meta name="theme-color" content="#faf7ef" />
     <meta name="description" content="PRV — a clear space for fast ideas and focused work." />
     <title>PRV AI</title>
+    <script>
+      try {
+        const sessionTheme = window.sessionStorage.getItem('prv_theme_session_override');
+        const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+        if (sessionTheme === 'dark' || (sessionTheme !== 'light' && prefersDark)) {
+          document.documentElement.classList.add('dark');
+        }
+      } catch {
+        if (window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
+          document.documentElement.classList.add('dark');
+        }
+      }
+    </script>
     <link rel="icon" type="image/svg+xml" href="/prv-mark.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

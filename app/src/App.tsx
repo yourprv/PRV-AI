@@ -6,6 +6,7 @@ import AuthCallback from './pages/AuthCallback'
 import { Settings } from './pages/Settings'
 import { Toaster } from '@/components/ui/sonner'
 import TurnstileGate from './components/TurnstileGate'
+import { useTheme } from './hooks/useTheme'
 
 const POLICY_NOTICE_KEY = 'prv_policy_update_notice_dismissed_2026_11';
 
@@ -39,6 +40,8 @@ function PolicyUpdateNotice() {
 }
 
 export default function App() {
+  // Keep system theme changes active on routes that do not render the chat.
+  useTheme()
   const [isVerified, setIsVerified] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
 

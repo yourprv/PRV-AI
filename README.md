@@ -30,7 +30,7 @@ Each new response includes the earlier user and assistant turns from the active 
 
 From the chat workspace, export the current conversation as Markdown or download all available chats as JSON. Chat records saved to an account contain text conversation fields; attachments and generated image data are not included in PRV AI’s saved text-chat records.
 
-The interface adapts to phone, tablet, and desktop widths, with light and dark themes designed around warm paper and deep, low-glare tones.
+The interface adapts to phone, tablet, and desktop widths, with light and dark themes designed around warm paper and deep, low-glare tones. It follows the browser’s color-scheme preference and responds when that preference changes; a manual switch lasts for the current browser session.
 
 ## Requirements
 
