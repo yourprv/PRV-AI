@@ -10,7 +10,11 @@ import { createClient } from '@supabase/supabase-js';
 import { normalizeChatRequestPayload } from './chatRequest.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const envPath = [path.resolve(__dirname, '../../.env.local'), path.resolve(__dirname, '../../app/.env.local')].find((candidate) => existsSync(candidate));
+const envPath = [
+  path.resolve(__dirname, '../.env'),
+  path.resolve(__dirname, '../../.env.local'),
+  path.resolve(__dirname, '../../app/.env.local'),
+].find((candidate) => existsSync(candidate));
 dotenv.config({ path: envPath });
 
 const PORT = process.env.PORT || 5000;
