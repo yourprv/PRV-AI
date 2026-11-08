@@ -1,0 +1,74 @@
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
+import { getAuthSession, setStoredAuthSession } from '@/lib/api';
+
+export default function AuthCallback() {
+  const navigate = useNavigate();
+  const [message, setMessage] = useState('Processing authentication...');
+  const [isError, setIsError] = useState(false);
+
+  useEffect(() => {
+    const handleRedirect = async () => {
+      try {
+        const searchParams = new URLSearchParams(window.location.search);
+        const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+        const params = new URLSearchParams();
+
+        for (const [key, value] of searchParams.entries()) {
+          params.set(key, value);
+        }
+        for (const [key, value] of hashParams.entries()) {
+          params.set(key, value);
+        }
+
+        const accessToken = params.get('access_token')?.trim();
+        const refreshToken = params.get('refresh_token')?.trim();
+        const expiresIn = params.get('expires_in')?.trim();
+
+        if (accessToken) {
+          const session = {
+            accessToken,
+            refreshToken: refreshToken || undefined,
+            expiresAt: expiresIn ? Date.now() + Number(expiresIn) * 1000 - 10000 : undefined,
+          };
+          setStoredAuthSession(session);
+        }
+
+        if (window.location.href.includes('access_token') || window.location.href.includes('refresh_token')) {
+          const cleanUrl = window.location.origin + window.location.pathname;
+          window.history.replaceState({}, '', cleanUrl);
+        }
+
+        const session = await getAuthSession();
+
+        if (session.user) {
+          navigate('/');
+          return;
+        }
+
+        setMessage('Unable to complete authentication. Please try signing in again.');
+        setIsError(true);
+      } catch (error) {
+        setMessage(
+          error instanceof Error
+            ? error.message
+            : 'Authentication redirect failed.',
+        );
+        setIsError(true);
+      }
+    };
+
+    handleRedirect();
+  }, [navigate]);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-[#111827] px-4">
+      <div className="w-full max-w-md rounded-3xl border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#1F2937] p-10 shadow-[0_25px_80px_rgba(15,23,42,0.12)] text-center">
+        <h1 className="text-[22px] font-semibold text-[#111827] dark:text-[#F3F4F6] mb-4">Signing you in</h1>
+        <p className={`text-[15px] ${isError ? 'text-[#991B1B]' : 'text-[#4B5563] dark:text-[#D1D5DB]'}`}>
+          {message}
+        </p>
+      </div>
+    </div>
+  );
+}
