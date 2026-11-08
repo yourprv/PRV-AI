@@ -725,7 +725,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   }, [sidebarExpanded]);
 
   return (
-    <div className="flex h-[100dvh] w-full max-w-full overflow-hidden bg-white dark:bg-[#0F172A]">
+    <div className="workspace-shell flex h-[100dvh] w-full max-w-full overflow-hidden dark:bg-[#0F172A]">
       {/* Sidebar - Hidden on mobile, visible on desktop */}
       <div className="hidden lg:block">
         <Sidebar
@@ -846,7 +846,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
             <button
               type="button"
               onClick={handleRenameSubmit}
-              className="inline-flex h-10 items-center justify-center rounded-xl bg-[#4F46E5] px-4 text-sm font-medium text-white transition-colors duration-200 hover:bg-[#4338CA] disabled:cursor-not-allowed disabled:opacity-50"
+              className="workspace-primary-button inline-flex h-10 items-center justify-center rounded-lg px-4 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50"
               disabled={!renameTitle.trim()}
             >
               Save

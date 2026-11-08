@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Check, Flame, Globe2, LockKeyhole, Sparkles, Zap } from 'lucide-react';
+import { ChevronDown, Check, Flame, Globe2, LockKeyhole, Zap, CircleDot, Layers } from 'lucide-react';
 import type { ModelId } from '@/types/chat';
 import { AVAILABLE_MODELS } from '@/types/chat';
 
@@ -15,11 +15,11 @@ interface ModelSelectorProps {
 }
 
 const accentClasses = {
-  violet: 'bg-violet-100 text-violet-600 dark:bg-violet-400/15 dark:text-violet-300',
-  orange: 'bg-orange-100 text-orange-600 dark:bg-orange-400/15 dark:text-orange-300',
-  green: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-400/15 dark:text-emerald-300',
-  sky: 'bg-sky-100 text-sky-600 dark:bg-sky-400/15 dark:text-sky-300',
-  slate: 'bg-slate-100 text-slate-500 dark:bg-slate-400/15 dark:text-slate-300',
+  violet: 'bg-[#edf0e9] text-[#536653] dark:bg-violet-400/15 dark:text-violet-300',
+  orange: 'bg-[#f3eee5] text-[#927348] dark:bg-orange-400/15 dark:text-orange-300',
+  green: 'bg-[#edf0e9] text-[#536653] dark:bg-emerald-400/15 dark:text-emerald-300',
+  sky: 'bg-[#edf0ef] text-[#657574] dark:bg-sky-400/15 dark:text-sky-300',
+  slate: 'bg-[#efefeb] text-[#73766e] dark:bg-slate-400/15 dark:text-slate-300',
 } as const;
 
 type ModelAccent = keyof typeof accentClasses;
@@ -27,8 +27,9 @@ type ModelAccent = keyof typeof accentClasses;
 function ModelGlyph({ accent }: { accent: ModelAccent }) {
   if (accent === 'orange') return <Flame size={15} />;
   if (accent === 'green') return <Globe2 size={15} />;
-  if (accent === 'sky') return <Sparkles size={15} />;
-  return accent === 'violet' ? <Zap size={15} /> : <Sparkles size={15} />;
+  if (accent === 'sky') return <CircleDot size={15} />;
+  if (accent === 'slate') return <Layers size={15} />;
+  return accent === 'violet' ? <Zap size={15} /> : <CircleDot size={15} />;
 }
 
 export function ModelSelector({ selected, onSelect, compact, disabled, onDisabledClick, guestMode = false, tier = 'free', onUpgradeClick }: ModelSelectorProps) {
@@ -63,7 +64,7 @@ export function ModelSelector({ selected, onSelect, compact, disabled, onDisable
           setIsOpen((prev) => !prev);
         }}
         aria-disabled={disabled}
-        className={`group flex items-center gap-2 text-xs sm:text-[15px] font-semibold transition-all duration-200 rounded-xl px-2 sm:px-3 py-2 -ml-2 sm:ml-0 w-auto sm:w-full ${disabled ? 'text-[#9CA3AF] dark:text-[#6B7280] bg-[#F3F4F6] dark:bg-[#1F2937] cursor-not-allowed' : 'text-[#111827] dark:text-[#F3F4F6] hover:text-[#4F46E5] dark:hover:text-[#A78BFA] hover:bg-violet-50/70 dark:hover:bg-violet-400/10'}`}
+        className={`group flex items-center gap-2 text-xs sm:text-[15px] font-semibold transition-all duration-150 rounded-xl px-2 sm:px-3 py-2 -ml-2 sm:ml-0 w-auto sm:w-full ${disabled ? 'text-[#92948b] dark:text-[#6B7280] bg-[#efeee8] dark:bg-[#1F2937] cursor-not-allowed' : 'text-[#282c26] dark:text-[#F3F4F6] hover:text-[#536653] dark:hover:text-[#A78BFA] hover:bg-[#f0f1eb] dark:hover:bg-violet-400/10'}`}
         aria-label="Select model"
         aria-expanded={isOpen}
       >
@@ -80,7 +81,7 @@ export function ModelSelector({ selected, onSelect, compact, disabled, onDisable
         <div className="absolute left-0 top-full mt-2 z-50 w-screen sm:w-[390px] sm:max-w-md overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 shadow-[0_20px_70px_-20px_rgba(15,23,42,0.3)] backdrop-blur-xl dark:border-slate-700 dark:bg-slate-900/95 animate-fade-in max-h-[75vh] overflow-y-auto">
           {compact && (
             <div className="px-4 pt-4 pb-2 flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-[0.18em] sticky top-0 bg-white/95 dark:bg-slate-900/95">
-              <span>Choose your engine</span><span className="normal-case tracking-normal text-[11px]">{AVAILABLE_MODELS.length} available</span>
+              <span>Choose a model</span><span className="normal-case tracking-normal text-[11px]">{AVAILABLE_MODELS.length} available</span>
             </div>
           )}
           <div className="p-2 sm:p-2.5">
@@ -99,8 +100,8 @@ export function ModelSelector({ selected, onSelect, compact, disabled, onDisable
                   }}
                   className={`w-full text-left rounded-lg px-2 sm:px-3 py-2 sm:py-2.5 transition-colors duration-150 active:bg-[#E5E7EB] dark:active:bg-[#2D3748] ${
                     selected === model.id
-                      ? 'bg-[#F5F5F7] dark:bg-[#374151]'
-                      : 'hover:bg-[#F9F9FB] dark:hover:bg-[#374151]'
+                      ? 'bg-[#f0f1eb] dark:bg-[#374151]'
+                      : 'hover:bg-[#f7f6f2] dark:hover:bg-[#374151]'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-1 sm:gap-2">
@@ -123,7 +124,7 @@ export function ModelSelector({ selected, onSelect, compact, disabled, onDisable
                     {model.id === 'prv-v4-light' && tier === 'free' ? (
                       <span className="mt-0.5 flex shrink-0 items-center gap-1 rounded-full bg-amber-50 px-2 py-1 text-[9px] font-semibold uppercase tracking-wide text-amber-700 dark:bg-amber-400/10 dark:text-amber-300"><LockKeyhole size={11} /> Go+</span>
                     ) : selected === model.id && (
-                      <Check size={14} className="text-[#4F46E5] dark:text-[#818CF8] mt-0.5 shrink-0 sm:w-4 sm:h-4" />
+                      <Check size={14} className="text-[#536653] dark:text-[#818CF8] mt-0.5 shrink-0 sm:w-4 sm:h-4" />
                     )}
                   </div>
                 </button>

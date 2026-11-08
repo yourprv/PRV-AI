@@ -1,4 +1,4 @@
-import { X, Sparkles, ShieldCheck, Search, MessagesSquare } from 'lucide-react';
+import { X, ShieldCheck, Search, MessagesSquare } from 'lucide-react';
 
 interface GuestBenefitsModalProps {
   isOpen: boolean;
@@ -21,35 +21,34 @@ export function GuestBenefitsModal({ isOpen, onClose, onSignIn }: GuestBenefitsM
           <X size={18} />
         </button>
 
-        <div className="flex items-center gap-2 text-[#4F46E5] dark:text-[#818CF8]">
-          <Sparkles size={18} />
-          <span className="text-sm font-semibold uppercase tracking-[0.24em]">Guest mode</span>
+        <div className="flex items-center gap-2 text-[#687c68] dark:text-[#818CF8]">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.18em]">Guest mode</span>
         </div>
 
-        <h2 className="mt-4 text-xl font-semibold text-[#111827] dark:text-[#F3F4F6]">
-          Unlock the full PRV AI lineup
+        <h2 className="mt-4 text-xl font-semibold text-[#20231f] dark:text-[#F3F4F6]">
+          Make PRV yours.
         </h2>
         <p className="mt-2 text-sm leading-6 text-[#4B5563] dark:text-[#D1D5DB]">
-          Guest mode gives you a taste of PRV V3.2 Fire. Sign in to unlock the full model lineup, cloud-saved chats, and the complete PRV AI experience.
+          Sign in to use every model, search the web, and keep your conversations in PRV Cloud.
         </p>
 
         <div className="mt-5 space-y-3 text-sm text-[#374151] dark:text-[#E5E7EB]">
           <div className="flex items-start gap-3 rounded-2xl border border-[#E5E7EB] bg-[#F9FAFB] p-3 dark:border-[#374151] dark:bg-[#1F2937]">
-            <ShieldCheck className="mt-0.5 shrink-0 text-[#4F46E5] dark:text-[#818CF8]" size={18} />
+            <ShieldCheck className="mt-0.5 shrink-0 text-[#687c68] dark:text-[#818CF8]" size={18} />
             <div>
               <div className="font-medium">Unlock every PRV engine</div>
               <p className="mt-1 text-xs text-[#6B7280] dark:text-[#9CA3AF]">Access PRV V3.5 Earth, PRV 4.0 Light, PRV V1 Pro Max, and the full lineup after signing in.</p>
             </div>
           </div>
           <div className="flex items-start gap-3 rounded-2xl border border-[#E5E7EB] bg-[#F9FAFB] p-3 dark:border-[#374151] dark:bg-[#1F2937]">
-            <Search className="mt-0.5 shrink-0 text-[#4F46E5] dark:text-[#818CF8]" size={18} />
+            <Search className="mt-0.5 shrink-0 text-[#687c68] dark:text-[#818CF8]" size={18} />
             <div>
               <div className="font-medium">Web search</div>
               <p className="mt-1 text-xs text-[#6B7280] dark:text-[#9CA3AF]">Bring live web results into your next prompt.</p>
             </div>
           </div>
           <div className="flex items-start gap-3 rounded-2xl border border-[#E5E7EB] bg-[#F9FAFB] p-3 dark:border-[#374151] dark:bg-[#1F2937]">
-            <MessagesSquare className="mt-0.5 shrink-0 text-[#4F46E5] dark:text-[#818CF8]" size={18} />
+            <MessagesSquare className="mt-0.5 shrink-0 text-[#687c68] dark:text-[#818CF8]" size={18} />
             <div>
               <div className="font-medium">PRV Cloud chat history</div>
               <p className="mt-1 text-xs text-[#6B7280] dark:text-[#9CA3AF]">Keep text-only conversations in PRV Cloud and reopen their unique chat links anywhere.</p>
@@ -68,7 +67,7 @@ export function GuestBenefitsModal({ isOpen, onClose, onSignIn }: GuestBenefitsM
           <button
             type="button"
             onClick={onSignIn}
-            className="inline-flex items-center justify-center rounded-full bg-[#4F46E5] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#4338CA]"
+            className="inline-flex items-center justify-center rounded-full bg-[#35483a] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#293b2e]"
           >
             Sign in / Sign up
           </button>

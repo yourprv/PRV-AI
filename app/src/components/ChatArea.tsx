@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Settings, Sun, Moon, EyeOff, ArrowUpRight, Sparkles, Waves, Menu, LockKeyhole, ShieldCheck } from 'lucide-react';
+import { Settings, Sun, Moon, EyeOff, ArrowUpRight, PenLine, Compass, ListChecks, Menu, LockKeyhole, ShieldCheck } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import { MessageBubble } from './MessageBubble';
 import { TypingIndicator } from './TypingIndicator';
@@ -85,12 +85,12 @@ export function ChatArea({
   return (
     <div className={`relative flex h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden ${isIncognitoMode ? 'bg-[#090b14] text-white' : ''}`}>
       {/* Top bar */}
-      <header className={`relative z-20 min-h-14 shrink-0 flex items-center justify-between gap-1.5 border-b px-2.5 py-1.5 backdrop-blur-xl sm:h-16 sm:px-5 sm:py-0 ${isIncognitoMode ? 'border-white/10 bg-[#0d1020]/95' : 'border-violet-100/80 bg-white/90 dark:border-slate-800 dark:bg-[#111426]/90'}`}>
+      <header className={`workspace-header relative z-20 min-h-14 shrink-0 flex items-center justify-between gap-1.5 border-b px-2.5 py-1.5 sm:h-[62px] sm:px-6 sm:py-0 ${isIncognitoMode ? 'private-workspace border-white/10' : 'dark:border-slate-800 dark:bg-[#111426]/90'}`}>
         <div className="flex items-center flex-1 min-w-0">
           <button
             type="button"
             onClick={onToggleSidebar}
-            className="mr-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-[#4F46E5] shadow-sm transition-colors hover:bg-violet-50 hover:text-[#4338CA] dark:border-slate-700 dark:bg-slate-800 dark:text-violet-300 dark:hover:bg-slate-700 lg:hidden"
+            className="mr-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#e5e2d9] bg-white text-[#35483a] transition-colors hover:bg-[#f1f0ea] dark:border-slate-700 dark:bg-slate-800 dark:text-violet-300 dark:hover:bg-slate-700 lg:hidden"
             aria-label="Open chat history"
             title="Open chat history"
           >
@@ -110,11 +110,11 @@ export function ChatArea({
           <button
             type="button"
             onClick={onUpgradeClick}
-            className="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-violet-200 bg-violet-50 px-2 text-[11px] font-semibold text-violet-700 transition-colors hover:border-violet-300 hover:bg-violet-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 sm:h-9 sm:gap-1.5 sm:px-3 sm:text-xs dark:border-violet-400/20 dark:bg-violet-400/10 dark:text-violet-200 dark:hover:bg-violet-400/20"
+            className="inline-flex h-8 items-center justify-center gap-1 rounded-lg px-2 text-[11px] font-semibold text-[#59685a] transition-colors hover:bg-[#eeeee8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#879584] sm:h-9 sm:gap-1.5 sm:px-3 sm:text-xs dark:text-violet-200 dark:hover:bg-violet-400/20"
             aria-label={user?.tier === 'pro' ? 'View Pro plan' : 'Upgrade to Pro'}
           >
-            <Sparkles size={14} />
             <span className="hidden min-[380px]:inline">{user?.tier === 'pro' ? 'Pro plan' : 'Upgrade to Pro'}</span>
+            <ArrowUpRight size={14} />
           </button>
           <button
             type="button"
@@ -127,7 +127,7 @@ export function ChatArea({
           <button
             type="button"
             onClick={onToggleIncognitoMode}
-            className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-2 text-xs sm:text-sm font-medium transition-colors duration-200 ${isIncognitoMode ? 'bg-[#4F46E5] text-white shadow-sm' : 'text-[#6B7280] hover:text-[#111827] hover:bg-[#F5F5F7] dark:text-[#9CA3AF] dark:hover:text-[#F3F4F6] dark:hover:bg-[#374151]'}`}
+            className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-2 text-xs sm:text-sm font-medium transition-colors duration-150 ${isIncognitoMode ? 'bg-[#35483a] text-white shadow-sm' : 'text-[#6B7280] hover:text-[#111827] hover:bg-[#F5F5F7] dark:text-[#9CA3AF] dark:hover:text-[#F3F4F6] dark:hover:bg-[#374151]'}`}
             aria-label="Toggle incognito mode"
           >
             <EyeOff size={16} />
@@ -144,22 +144,22 @@ export function ChatArea({
         </div>
       </header>
 
-      {customPrv ? <div className="border-b border-violet-200/70 bg-gradient-to-r from-violet-50 to-sky-50 px-3 py-2 dark:border-violet-400/20 dark:from-violet-950/40 dark:to-slate-900">
-        <div className="mx-auto flex max-w-5xl items-center gap-2 text-xs text-violet-800 dark:text-violet-200"><span className="flex h-6 w-6 items-center justify-center rounded-lg bg-violet-600 text-white">✦</span><span><strong>{customPrv.name}</strong><span className="ml-1.5 rounded-full border border-violet-300/70 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-violet-600 dark:border-violet-400/30 dark:text-violet-300">Experimental</span></span></div>
+      {customPrv ? <div className="border-b border-[#e7e4dc] bg-[#f3f1ea] px-3 py-2 dark:border-violet-400/20 dark:bg-slate-900">
+        <div className="mx-auto flex max-w-5xl items-center gap-2 text-xs text-[#536453] dark:text-violet-200"><span className="flex h-6 w-6 items-center justify-center rounded-lg border border-[#d8d7cc] bg-white text-[10px] font-semibold tracking-tight text-[#35483a]">PR</span><span><strong>{customPrv.name}</strong><span className="ml-1.5 rounded-full border border-[#cbd2c8] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#647463] dark:border-violet-400/30 dark:text-violet-300">Experimental</span></span></div>
       </div> : null}
 
       {/* Main content */}
       {isIncognitoMode ? (
         <div className="border-b border-white/10 bg-[#101426] px-4 py-3 text-slate-200">
           <div className="mx-auto flex max-w-5xl items-center gap-3 text-left">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-500/15 text-violet-300"><LockKeyhole size={17} /></span>
-            <div><p className="text-[11px] font-bold uppercase tracking-[0.2em] text-violet-300">Private · anonymous chats</p><p className="mt-0.5 text-xs text-slate-400">This conversation is temporary and won’t be saved to your history.</p></div>
-            <ShieldCheck size={18} className="ml-auto hidden shrink-0 text-emerald-300 sm:block" />
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/10 text-[#b8c7b3]"><LockKeyhole size={17} /></span>
+            <div><p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#b8c7b3]">Private · anonymous chats</p><p className="mt-0.5 text-xs text-slate-400">This conversation is temporary and won’t be saved to your history.</p></div>
+            <ShieldCheck size={18} className="ml-auto hidden shrink-0 text-[#b8c7b3] sm:block" />
           </div>
         </div>
       ) : null}
       {guestMode ? (
-        <div className="bg-[#FEF3C7] dark:bg-[#92400E]/20 text-[#92400E] dark:text-[#FEF3C7] px-3 py-1.5 sm:px-4 sm:py-3">
+        <div className="border-b border-[#e6e4d9] bg-[#efefe8] px-3 py-1.5 text-[#525b50] sm:px-4 sm:py-2.5 dark:bg-[#92400E]/20 dark:text-[#FEF3C7]">
           <div className="mx-auto flex max-w-5xl flex-col gap-2 sm:gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs sm:text-sm font-medium">
               You are using the Free tier. Core chat stays available; sign in to save chats and create a Custom PRV.
@@ -167,7 +167,7 @@ export function ChatArea({
             <button
               type="button"
               onClick={onGuestFeatureRequest || onOpenAuthModal}
-              className="inline-flex items-center justify-center rounded-full bg-[#92400E] px-4 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-[#7C2D12] transition-colors duration-200 shrink-0"
+              className="workspace-primary-button inline-flex items-center justify-center rounded-lg px-4 py-2 text-xs font-semibold sm:text-sm shrink-0"
             >
               View benefits
             </button>
@@ -176,40 +176,39 @@ export function ChatArea({
       ) : null}
       {isEmpty ? (
         // Empty state
-        <div className={`relative flex-1 min-h-0 overflow-y-auto flex flex-col items-center justify-center px-3 py-4 sm:px-4 sm:py-0 ${isIncognitoMode ? 'bg-[#090b14]' : 'bg-[#fbfbfe] dark:bg-[#0d1020]'}`}>
-          <div className="pointer-events-none absolute -top-32 left-1/2 h-80 w-[38rem] -translate-x-1/2 rounded-full bg-violet-300/25 blur-3xl dark:bg-violet-600/15" />
-          <div className="pointer-events-none absolute bottom-[-12rem] right-[-8rem] h-96 w-96 rounded-full bg-sky-200/30 blur-3xl dark:bg-sky-600/10" />
-          <div className="relative w-full max-w-5xl mx-auto flex flex-col items-center gap-5 sm:gap-7">
-            <div className="hidden sm:flex items-center gap-2 rounded-full border border-violet-200/80 bg-white/70 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-violet-600 shadow-sm backdrop-blur dark:border-violet-400/20 dark:bg-white/5 dark:text-violet-300">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" /> PRV studio · online
+        <div className={`workspace-empty relative flex-1 min-h-0 overflow-y-auto flex flex-col items-center justify-center px-3 py-5 sm:px-6 sm:py-8 ${isIncognitoMode ? 'private-workspace' : 'dark:bg-[#0d1020]'}`}>
+          <div className="relative w-full max-w-[900px] mx-auto flex flex-col items-center gap-5 sm:gap-7">
+            <div className="workspace-kicker flex items-center gap-3 text-[10px] font-semibold uppercase sm:text-[11px]">
+              <span className="h-px w-7 bg-[#c6c9bd]" /> PRV · YOUR WORKSPACE <span className="h-px w-7 bg-[#c6c9bd]" />
             </div>
             {user ? (
               <div className="text-center">
-                <h1 className={`text-3xl sm:text-5xl font-semibold tracking-[-0.04em] ${isIncognitoMode ? 'text-white' : 'text-slate-950 dark:text-white'}`}>Make something <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-sky-400 bg-clip-text text-transparent">remarkable.</span></h1>
-                <p className={`mt-3 text-sm sm:text-base ${isIncognitoMode ? 'text-slate-400' : 'text-slate-500 dark:text-slate-400'}`}>{isIncognitoMode ? 'A quiet space for private thinking.' : 'A calmer space for fast ideas, deep work, and everything in between.'}</p>
+                <h1 className={`workspace-welcome-title ${isIncognitoMode ? 'text-white' : 'dark:text-white'}`}>Good work starts<br className="hidden sm:block" /> with <span className="workspace-welcome-accent">a first thought.</span></h1>
+                <p className={`mx-auto mt-4 max-w-md text-sm leading-6 sm:text-[15px] ${isIncognitoMode ? 'text-slate-400' : 'text-[#74766f] dark:text-slate-400'}`}>{isIncognitoMode ? 'A quiet space for private thinking.' : 'Bring a question, a rough idea, or a blank page. We’ll take it from there.'}</p>
               </div>
             ) : (
-              <div className="w-full rounded-2xl sm:rounded-[32px] border border-violet-200/80 dark:border-violet-400/20 bg-white/75 dark:bg-white/5 px-4 sm:px-6 py-4 sm:py-5 text-center shadow-[0_20px_70px_-35px_rgba(91,33,182,0.35)] backdrop-blur">
-                <p className="text-base sm:text-[18px] font-semibold text-[#0F172A] dark:text-[#EFF6FF]">Explore PRV AI on the Free tier.</p>
-                <p className="mt-2 text-xs sm:text-[14px] text-[#475569] dark:text-[#A5B4FC]">
+              <div className="w-full rounded-2xl border border-[#e7e4dc] bg-white/75 px-4 py-4 text-center sm:max-w-xl sm:px-6 sm:py-5 dark:border-violet-400/20 dark:bg-white/5">
+                <p className="text-base font-semibold text-[#20231f] sm:text-[18px] dark:text-[#EFF6FF]">A thoughtful assistant for everyday work.</p>
+                <p className="mt-2 text-xs leading-5 text-[#74766f] sm:text-[14px] dark:text-[#A5B4FC]">
                   Your chats stay in this session only. Sign in for saved history and to create a Custom PRV.
                 </p>
                 <button
                   type="button"
                   onClick={onGuestFeatureRequest || onOpenAuthModal}
-                  className="mt-4 inline-flex items-center justify-center rounded-full bg-[#4F46E5] px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-white shadow-sm hover:bg-[#4338CA] transition-colors duration-200"
+                  className="workspace-primary-button mt-4 inline-flex items-center justify-center rounded-lg px-4 py-2.5 text-xs font-semibold sm:px-5 sm:text-sm"
                 >
                   View benefits
                 </button>
               </div>
             )}
-            {user && <div className="hidden w-full max-w-3xl grid-cols-2 gap-3 sm:grid">
+            {user && <div className="hidden w-full max-w-[690px] grid-cols-3 gap-3 sm:grid">
               {[
-                { icon: <Sparkles size={17} />, label: 'Shape an idea', text: 'Turn a rough thought into a clear direction.', prompt: 'Help me turn this rough idea into a clear direction. Ask one useful question, then give me a concise starting point.', tone: 'violet' },
-                { icon: <Waves size={17} />, label: 'Think it through', text: 'Explore a complex question with steady focus.', prompt: 'Help me think this through carefully. Break down the question, surface the key tradeoffs, and recommend a practical next step.', tone: 'sky' },
-              ].map((card) => <button type="button" key={card.label} onClick={() => onSend(card.prompt)} className="rounded-2xl border border-slate-200/80 bg-white/65 p-4 text-left shadow-sm backdrop-blur transition-transform hover:-translate-y-0.5 dark:border-slate-800 dark:bg-white/[0.04]">
-                <div className={`mb-3 flex h-8 w-8 items-center justify-center rounded-xl ${card.tone === 'violet' ? 'bg-violet-100 text-violet-600 dark:bg-violet-400/15 dark:text-violet-300' : card.tone === 'sky' ? 'bg-sky-100 text-sky-600 dark:bg-sky-400/15 dark:text-sky-300' : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-400/15 dark:text-emerald-300'}`}>{card.icon}</div>
-                <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{card.label}</p><p className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">{card.text}</p><ArrowUpRight size={14} className="mt-3 text-slate-400" />
+                { icon: <PenLine size={16} />, label: 'Write a draft', text: 'Start with a clear first version.', prompt: 'Help me write a clear first draft. Ask me only for details that are essential, then shape the result so I can edit it.' },
+                { icon: <Compass size={16} />, label: 'Explore an idea', text: 'Find a useful way into the question.', prompt: 'Help me explore this idea. Lay out the most useful angles, surface any assumptions, and suggest where to begin.' },
+                { icon: <ListChecks size={16} />, label: 'Make a plan', text: 'Turn a goal into practical next steps.', prompt: 'Help me turn my goal into a practical plan with clear steps, sensible priorities, and a realistic first action.' },
+              ].map((card) => <button type="button" key={card.label} onClick={() => onSend(card.prompt)} className="workspace-prompt-card rounded-xl border p-3.5 text-left dark:border-slate-800 dark:bg-white/[0.04]">
+                <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-[#edf0e9] text-[#536653] dark:bg-violet-400/15 dark:text-violet-300">{card.icon}</div>
+                <p className="text-[13px] font-semibold text-[#30342e] dark:text-slate-100">{card.label}</p><p className="mt-1 text-xs leading-relaxed text-[#7a7b73] dark:text-slate-400">{card.text}</p><ArrowUpRight size={14} className="mt-3 text-[#85877e]" />
               </button>)}
             </div>}
             <ChatInput
@@ -234,9 +233,9 @@ export function ChatArea({
           {/* Messages area */}
           <div
             ref={scrollContainerRef}
-            className={`min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain px-2 py-3 sm:px-4 sm:py-6 space-y-4 sm:space-y-6 ${isIncognitoMode ? 'bg-[#090b14]' : 'bg-white dark:bg-[#111827]'}`}
+            className={`workspace-chat-canvas min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain px-2 py-3 sm:px-4 sm:py-7 space-y-4 sm:space-y-6 ${isIncognitoMode ? 'bg-[#090b14]' : 'dark:bg-[#111827]'}`}
           >
-            <div className="w-full max-w-5xl mx-auto space-y-4 sm:space-y-6">
+            <div className="w-full max-w-[820px] mx-auto space-y-4 sm:space-y-7">
               {messages.map((message, index) => (
                 <MessageBubble
                   key={message.id}

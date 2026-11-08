@@ -23,9 +23,9 @@ export function Settings({ onBack }: SettingsProps) {
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-screen w-screen overflow-hidden bg-white dark:bg-[#111827]">
+    <div className="flex flex-col md:flex-row h-screen w-screen overflow-hidden bg-[#f8f7f3] dark:bg-[#111827]">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 h-12 sm:h-14 flex items-center px-3 sm:px-4 border-b border-[#E5E7EB] dark:border-[#374151] bg-white/80 dark:bg-[#1F2937]/80 backdrop-blur-sm z-30">
+      <header className="fixed top-0 left-0 right-0 h-12 sm:h-14 flex items-center px-3 sm:px-4 border-b border-[#e7e4dc] dark:border-[#374151] bg-[#f8f7f3]/95 dark:bg-[#1F2937]/80 backdrop-blur-sm z-30">
         <button
           onClick={onBack}
           className="flex items-center gap-2 text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] transition-colors duration-200"
@@ -38,13 +38,13 @@ export function Settings({ onBack }: SettingsProps) {
       {/* Main content */}
       <div className="flex-1 flex flex-col md:flex-row pt-12 overflow-hidden">
         {/* Left sidebar - Tab buttons for mobile, vertical nav for desktop */}
-        <div className="md:w-56 border-b md:border-b-0 md:border-r border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#1F2937] flex md:flex-col shrink-0 overflow-x-auto md:overflow-x-visible">
+        <div className="md:w-56 border-b md:border-b-0 md:border-r border-[#e5e2d9] dark:border-[#374151] bg-[#f2f1eb] dark:bg-[#1F2937] flex md:flex-col shrink-0 overflow-x-auto md:overflow-x-visible">
           <nav className="flex md:flex-col flex-1 md:flex-none px-2 md:px-3 py-2 md:py-4 space-y-0 md:space-y-1 md:gap-0">
             <button
               onClick={() => setActiveTab('about')}
               className={`flex-1 md:flex-none whitespace-nowrap md:whitespace-normal flex items-center justify-center md:justify-start gap-0 md:gap-3 px-2 md:px-3 py-2 md:py-2.5 rounded-lg text-xs md:text-[14px] font-medium transition-colors duration-200 ${
                 activeTab === 'about'
-                  ? 'bg-[#F5F5F7] dark:bg-[#374151] text-[#111827] dark:text-[#F3F4F6]'
+                  ? 'bg-[#e8ebe4] dark:bg-[#374151] text-[#20231f] dark:text-[#F3F4F6]'
                   : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] hover:bg-[#F9F9FB] dark:hover:bg-[#2D3748]'
               }`}
             >
@@ -55,7 +55,7 @@ export function Settings({ onBack }: SettingsProps) {
               onClick={() => setActiveTab('plans')}
               className={`flex-1 md:flex-none whitespace-nowrap md:whitespace-normal flex items-center justify-center md:justify-start gap-0 md:gap-3 px-2 md:px-3 py-2 md:py-2.5 rounded-lg text-xs md:text-[14px] font-medium transition-colors duration-200 ${
                 activeTab === 'plans'
-                  ? 'bg-[#F5F5F7] dark:bg-[#374151] text-[#111827] dark:text-[#F3F4F6]'
+                  ? 'bg-[#e8ebe4] dark:bg-[#374151] text-[#20231f] dark:text-[#F3F4F6]'
                   : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] hover:bg-[#F9F9FB] dark:hover:bg-[#2D3748]'
               }`}
             >
@@ -65,7 +65,7 @@ export function Settings({ onBack }: SettingsProps) {
               onClick={() => setActiveTab('models')}
               className={`flex-1 md:flex-none whitespace-nowrap md:whitespace-normal flex items-center justify-center md:justify-start gap-0 md:gap-3 px-2 md:px-3 py-2 md:py-2.5 rounded-lg text-xs md:text-[14px] font-medium transition-colors duration-200 ${
                 activeTab === 'models'
-                  ? 'bg-[#F5F5F7] dark:bg-[#374151] text-[#111827] dark:text-[#F3F4F6]'
+                  ? 'bg-[#e8ebe4] dark:bg-[#374151] text-[#20231f] dark:text-[#F3F4F6]'
                   : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] hover:bg-[#F9F9FB] dark:hover:bg-[#2D3748]'
               }`}
             >
@@ -75,7 +75,7 @@ export function Settings({ onBack }: SettingsProps) {
               onClick={() => setActiveTab('data')}
               className={`flex-1 md:flex-none whitespace-nowrap md:whitespace-normal flex items-center justify-center md:justify-start gap-0 md:gap-3 px-2 md:px-3 py-2 md:py-2.5 rounded-lg text-xs md:text-[14px] font-medium transition-colors duration-200 ${
                 activeTab === 'data'
-                  ? 'bg-[#F5F5F7] dark:bg-[#374151] text-[#111827] dark:text-[#F3F4F6]'
+                  ? 'bg-[#e8ebe4] dark:bg-[#374151] text-[#20231f] dark:text-[#F3F4F6]'
                   : 'text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] hover:bg-[#F9F9FB] dark:hover:bg-[#2D3748]'
               }`}
             >
@@ -100,7 +100,7 @@ export function Settings({ onBack }: SettingsProps) {
                 <div className="space-y-6 md:space-y-8">
                   {/* Profile Picture */}
                   <div className="flex flex-col items-center gap-4">
-                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-[#4F46E5] to-[#7C3AED] flex items-center justify-center text-white text-2xl sm:text-[32px] font-semibold shadow-lg">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[#35483a] flex items-center justify-center text-white text-2xl sm:text-[32px] font-semibold">
                       {user.name ? user.name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
                     </div>
                   </div>
@@ -144,20 +144,20 @@ export function Settings({ onBack }: SettingsProps) {
             </div>
           ) : activeTab === 'models' ? (
             <div className="mx-auto max-w-4xl px-4 py-8 sm:px-8">
-              <div className="mb-8 rounded-3xl border border-violet-200/80 bg-gradient-to-br from-violet-50 via-white to-sky-50 p-6 dark:border-violet-400/20 dark:from-violet-950/40 dark:via-slate-900 dark:to-sky-950/30">
-                <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-violet-600 dark:text-violet-300">PRV model catalog</p>
-                <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white sm:text-3xl">The next-generation frontier.</h1>
-                <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-300">PRV V3 is our boldest leap yet: faster instincts, deeper reasoning, and a sharper sense of momentum. Choose the engine that matches the way you think.</p>
+              <div className="mb-8 rounded-2xl border border-[#e7e4dc] bg-white p-6 dark:border-violet-400/20 dark:bg-slate-900">
+                <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#687c68] dark:text-violet-300">PRV model catalog</p>
+                <h1 className="text-2xl font-medium tracking-tight text-[#20231f] dark:text-white sm:text-3xl">Choose the right pace.</h1>
+                <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#74766f] dark:text-slate-300">Compare the available models and pick the one that fits the work in front of you.</p>
               </div>
 
               <div className="space-y-4">
                 {AVAILABLE_MODELS.map((model) => (
-                  <div key={model.id} className="rounded-2xl border border-slate-200/80 bg-white p-5 transition-shadow hover:shadow-lg dark:border-slate-700 dark:bg-slate-900 sm:p-6">
+                  <div key={model.id} className="rounded-2xl border border-[#e7e4dc] bg-white p-5 transition-shadow hover:shadow-md dark:border-slate-700 dark:bg-slate-900 sm:p-6">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
                         <div className="mb-2 flex items-center gap-2">
                           <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500 dark:bg-slate-800 dark:text-slate-300">{model.group}</span>
-                          {model.badge && <span className="rounded-full bg-sky-100 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-sky-600 dark:bg-sky-400/15 dark:text-sky-300">{model.badge}</span>}
+                          {model.badge && <span className="rounded-full bg-[#edf0e9] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#536653] dark:bg-sky-400/15 dark:text-sky-300">{model.badge}</span>}
                         </div>
                         <h3 className="text-lg font-semibold text-slate-950 dark:text-white">{model.name}</h3>
                       </div>
@@ -201,7 +201,7 @@ export function Settings({ onBack }: SettingsProps) {
                       onClick={() => setAllowDataSharing(!allowDataSharing)}
                       className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-200 shrink-0 ml-4 ${
                         allowDataSharing
-                          ? 'bg-[#4F46E5] dark:bg-[#818CF8]'
+                          ? 'bg-[#536653] dark:bg-[#818CF8]'
                           : 'bg-[#D1D5DB] dark:bg-[#6B7280]'
                       }`}
                       role="switch"

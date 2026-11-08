@@ -39,7 +39,7 @@ export function LoginSection({ isExpanded = true }: LoginSectionProps) {
         <button
           onClick={handleLogoutClick}
           title={user.name || user.email}
-          className="w-8 h-8 rounded-full bg-[#4F46E5] flex items-center justify-center text-white text-[12px] font-semibold hover:shadow-[0_2px_8px_rgba(79,70,229,0.4)] transition-all duration-200"
+          className="w-8 h-8 rounded-full bg-[#35483a] flex items-center justify-center text-white text-[12px] font-semibold transition-all duration-150"
         >
           {getInitials(user.name || user.email)}
         </button>
@@ -90,14 +90,14 @@ export function LoginSection({ isExpanded = true }: LoginSectionProps) {
             className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-[#F5F5F7] dark:hover:bg-[#374151] transition-colors duration-200 group justify-between"
           >
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-full bg-[#4F46E5] flex items-center justify-center text-white text-[13px] font-semibold shrink-0">
+              <div className="w-8 h-8 rounded-full bg-[#35483a] flex items-center justify-center text-white text-[13px] font-semibold shrink-0">
                 {getInitials(user.name || user.email)}
               </div>
               <div className="flex-1 min-w-0 text-left">
                 <span className="text-[13px] text-[#374151] dark:text-[#D1D5DB] group-hover:text-[#111827] dark:group-hover:text-[#F3F4F6] truncate block">
                   {user.name || user.email}
                 </span>
-                <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.12em] text-violet-600 dark:text-violet-300">
+                <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.12em] text-[#687c68] dark:text-violet-300">
                   {(user.tier || 'free')} plan
                 </span>
               </div>

@@ -10,8 +10,10 @@ import {
   Trash2,
   Code2,
   Settings,
+  SlidersHorizontal,
 } from 'lucide-react';
 import { LoginSection } from './LoginSection';
+import { BrandMark } from './BrandMark';
 import type { Chat } from '@/types/chat';
 
 interface SidebarProps {
@@ -67,7 +69,7 @@ export function Sidebar({
           <div
             key={chat.id}
             className={`group w-full rounded-lg overflow-hidden transition-colors duration-150 ${
-              activeChatId === chat.id ? 'bg-[#F5F5F7] dark:bg-[#374151]' : ''
+              activeChatId === chat.id ? 'bg-[#e8ebe4] dark:bg-[#374151]' : 'hover:bg-white/65'
             }`}
           >
             <div className="w-full flex items-center justify-between gap-2 px-3 py-2 text-[13px]">
@@ -116,7 +118,7 @@ export function Sidebar({
   // Collapsed sidebar
   if (!isExpanded) {
     return (
-      <aside className="hidden sm:flex h-screen w-16 bg-white dark:bg-[#1F2937] border-r border-[#E5E7EB] dark:border-[#374151] flex-col items-center py-3 shrink-0 transition-all duration-300 z-30">
+      <aside className="workspace-sidebar hidden sm:flex h-screen w-16 border-r dark:bg-[#1F2937] dark:border-[#374151] flex-col items-center py-3 shrink-0 transition-all duration-200 z-30">
         {/* Toggle button */}
         <button
           onClick={onToggle}
@@ -129,10 +131,8 @@ export function Sidebar({
         {/* Divider */}
         <div className="w-6 border-t border-[#E5E7EB] dark:border-[#374151] mb-3" />
 
-        {/* AI Logo - Visible when collapsed */}
-        <div className="w-16 h-16 rounded-lg overflow-hidden mb-3 shrink-0">
-          <img src="/AI.png" alt="AI" className="w-full h-full object-cover" />
-        </div>
+        {/* PRV mark - visible when collapsed */}
+        <div className="mb-3 shrink-0"><BrandMark /></div>
 
         {/* Nav icons */}
         <div className="flex flex-col items-center gap-1">
@@ -166,7 +166,7 @@ export function Sidebar({
 
   // Expanded sidebar
   return (
-    <aside className="h-[100dvh] w-[260px] sm:w-[280px] bg-white dark:bg-[#1F2937] border-r border-[#E5E7EB] dark:border-[#374151] flex flex-col shrink-0 transition-all duration-300 z-30">
+    <aside className="workspace-sidebar h-[100dvh] w-[248px] sm:w-[256px] border-r dark:bg-[#1F2937] dark:border-[#374151] flex flex-col shrink-0 transition-all duration-200 z-30">
       {/* Top section */}
       <div className="px-3 pt-3 pb-2">
         <div className="flex items-center gap-2 mb-3">
@@ -181,10 +181,11 @@ export function Sidebar({
 
         {/* Logo */}
         <div className="flex items-center gap-2.5 px-1 mb-3">
-          <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0">
-            <img src="/AI.png" alt="PRV AI" className="w-full h-full object-cover" />
+          <BrandMark />
+          <div className="hidden sm:block">
+            <span className="block text-[14px] font-semibold tracking-[-0.03em] text-[#20231f] dark:text-[#F3F4F6]">PRV</span>
+            <span className="mt-0.5 block text-[9px] font-medium uppercase tracking-[0.13em] text-[#898b82] dark:text-[#9CA3AF]">Personal workspace</span>
           </div>
-          <span className="text-[14px] font-semibold text-[#111827] dark:text-[#F3F4F6] hidden sm:inline">PRV AI</span>
         </div>
 
         {/* Model selector - MOVED OUT OF SIDEBAR */}
@@ -223,9 +224,9 @@ export function Sidebar({
             className="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-[14px] text-[#374151] dark:text-[#D1D5DB] hover:bg-[#F5F5F7] dark:hover:bg-[#374151] transition-colors duration-200"
             title="Open Custom PRV"
           >
-            <span className="text-[16px]">⚙️</span>
+          <SlidersHorizontal size={16} className="text-[#70756b] dark:text-[#9CA3AF]" />
             <span>Custom PRV</span>
-            <span className="ml-auto rounded-full border border-violet-300/70 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-violet-600 dark:border-violet-400/30 dark:text-violet-300">Experimental</span>
+            <span className="ml-auto rounded-full border border-[#cbd2c8] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#647463] dark:border-violet-400/30 dark:text-violet-300">Experimental</span>
           </button>
         </div>
         <div className="group relative">
@@ -235,8 +236,8 @@ export function Sidebar({
             aria-disabled="true"
             className="flex w-full cursor-not-allowed items-center gap-2.5 rounded-lg px-2 py-2 text-left text-[14px] text-slate-500 opacity-80 transition-colors dark:text-slate-400"
           >
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-fuchsia-500 via-violet-600 to-sky-500 text-white shadow-sm shadow-violet-500/25">
-              <Code2 size={14} strokeWidth={2.5} />
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg border border-[#dedbd2] bg-white text-[#73776e] dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300">
+              <Code2 size={13} />
             </span>
             <span className="font-medium">Poder</span>
             <span className="ml-auto rounded-full border border-slate-300 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:border-slate-600 dark:text-slate-400">Coming soon</span>

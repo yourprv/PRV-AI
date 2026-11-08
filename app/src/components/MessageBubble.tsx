@@ -6,6 +6,7 @@ import remarkMath from 'remark-math';
 import 'katex/dist/katex.min.css';
 import { Copy, Check, RotateCcw, User, ChevronDown } from 'lucide-react';
 import type { Message } from '@/types/chat';
+import { BrandMark } from './BrandMark';
 
 function CodeBlock({ code, language }: { code: string; language?: string }) {
   const [copied, setCopied] = useState(false);
@@ -21,19 +22,19 @@ function CodeBlock({ code, language }: { code: string; language?: string }) {
   }, [code]);
 
   return (
-    <div className="not-prose my-3 overflow-hidden rounded-xl border border-slate-700/80 bg-[#0B1020] text-slate-100 shadow-lg">
-      <div className="flex items-center justify-between border-b border-white/10 bg-[#111827] px-3 py-2">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+    <div className="not-prose my-3 overflow-hidden rounded-xl border border-[#e3e1d9] bg-[#f4f3ee] text-[#343831]">
+      <div className="flex items-center justify-between border-b border-[#e3e1d9] bg-white/70 px-3 py-2">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#81847b]">
           {language || 'code'}
         </span>
         <button
           type="button"
           onClick={handleCopyCode}
-          className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white"
+          className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-medium text-[#6d7268] transition-colors hover:bg-[#efeee8] hover:text-[#252a24]"
           aria-label="Copy code"
           title="Copy code"
         >
-          {copied ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+          {copied ? <Check size={13} className="text-[#526b55]" /> : <Copy size={13} />}
           {copied ? 'Copied' : 'Copy'}
         </button>
       </div>
@@ -50,10 +51,10 @@ function CanvasBlock({ content }: { content: string }) {
     window.setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <div className="not-prose my-1 overflow-hidden rounded-xl border border-slate-700/80 bg-[#0B1020] text-slate-100 shadow-lg">
-      <div className="flex items-center justify-between border-b border-white/10 bg-[#111827] px-3 py-2">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400">Canvas</span>
-        <button type="button" onClick={copy} className="rounded-md px-2 py-1 text-[11px] text-slate-300 hover:bg-white/10 hover:text-white">{copied ? 'Copied' : 'Copy'}</button>
+    <div className="not-prose my-1 overflow-hidden rounded-xl border border-[#e3e1d9] bg-[#f4f3ee] text-[#343831]">
+      <div className="flex items-center justify-between border-b border-[#e3e1d9] bg-white/70 px-3 py-2">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#81847b]">Canvas</span>
+        <button type="button" onClick={copy} className="rounded-md px-2 py-1 text-[11px] text-[#6d7268] hover:bg-[#efeee8] hover:text-[#252a24]">{copied ? 'Copied' : 'Copy'}</button>
       </div>
       <div className="whitespace-pre-wrap break-words p-4 text-[14px] leading-6">{content || ' '}</div>
     </div>
@@ -104,11 +105,11 @@ export function MessageBubble({ message, onRegenerate, isLatest, isLoading }: Me
     >
       <div className={`flex min-w-0 max-w-full gap-1.5 overflow-hidden sm:gap-3 sm:max-w-[92%] md:max-w-[80ch] ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
         {/* Avatar */}
-<div className="w-5 h-5 sm:w-7 sm:h-7 rounded-full shrink-0 overflow-hidden">
+        <div className="flex h-6 w-6 shrink-0 items-center justify-center sm:h-7 sm:w-7">
             {isUser ? (
-              <User size={14} className="text-white" />
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#edf0e9] text-[#536653] sm:h-7 sm:w-7"><User size={14} /></span>
             ) : (
-              <img src="/AI.png" alt="AI" className="w-full h-full object-cover" />
+              <BrandMark size="sm" />
           )}
         </div>
 
@@ -117,8 +118,8 @@ export function MessageBubble({ message, onRegenerate, isLatest, isLoading }: Me
           <div
             className={`px-3 sm:px-4 py-2 sm:py-3 rounded-2xl break-words text-sm sm:text-[15px] leading-relaxed ${
               isUser
-                ? 'bg-[#4F46E5] dark:bg-[#6366F1] text-white rounded-tr-sm'
-                : 'bg-[#F9F9FB] dark:bg-[#2D3748] text-[#374151] dark:text-[#D1D5DB] border border-[#E5E7EB] dark:border-[#374151] rounded-tl-sm'
+                ? 'bg-[#35483a] dark:bg-[#6366F1] text-white rounded-tr-md shadow-sm'
+                : 'bg-transparent text-[#343831] dark:bg-[#2D3748] dark:text-[#D1D5DB] rounded-tl-md'
             }`}
           >
             {isUser ? (
@@ -208,14 +209,14 @@ export function MessageBubble({ message, onRegenerate, isLatest, isLoading }: Me
               <button
                 type="button"
                 onClick={() => setThinkingOpen((prev) => !prev)}
-                className="flex items-center gap-1.5 self-start rounded-full border border-[#FDE68A] bg-[#FEF3C7] px-2.5 py-1 text-[11px] font-medium text-[#92400E] transition-colors duration-150 hover:bg-[#FDE68A] dark:border-[#78350F] dark:bg-[#451A03] dark:text-[#FCD34D]"
+                className="flex items-center gap-1.5 self-start rounded-full border border-[#e5e4dc] bg-[#f4f3ee] px-2.5 py-1 text-[11px] font-medium text-[#73786e] transition-colors duration-150 hover:bg-[#ecebe4] dark:border-[#78350F] dark:bg-[#451A03] dark:text-[#FCD34D]"
               >
                 <span>Thinking</span>
                 <ChevronDown size={12} className={`transition-transform ${thinkingOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {thinkingOpen && (
-                <div className="rounded-xl border border-[#FDE68A]/80 bg-[#FFFBEB] p-3 text-[13px] leading-relaxed text-[#92400E] dark:border-[#78350F] dark:bg-[#2C1304] dark:text-[#FCD34D]">
+                <div className="rounded-xl border border-[#e8e6de] bg-[#f8f7f3] p-3 text-[13px] leading-relaxed text-[#73766e] dark:border-[#78350F] dark:bg-[#2C1304] dark:text-[#FCD34D]">
                   {message.thinking}
                 </div>
               )}

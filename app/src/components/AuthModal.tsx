@@ -97,11 +97,11 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
         {/* Header */}
         <div className="mb-4 sm:mb-6">
-          <h2 className="text-base sm:text-[20px] font-semibold text-[#111827] dark:text-[#F3F4F6] mb-1">
-            Unlock the full PRV AI experience
+          <h2 className="text-base sm:text-[20px] font-semibold text-[#20231f] dark:text-[#F3F4F6] mb-1">
+            Continue to PRV
           </h2>
           <p className="text-xs sm:text-[14px] text-[#6B7280] dark:text-[#D1D5DB]">
-            Sign in to unlock PRV V3.5 Earth, PRV 4.0 Light, PRV V1 Pro Max, PRV Cloud chat history, and more.
+            Sign in to save your conversations and access the full model lineup.
           </p>
         </div>
 
@@ -165,13 +165,13 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
-              className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-[#F9F9FB] dark:bg-[#2D3748] border border-[#E5E7EB] dark:border-[#374151] rounded-xl text-xs sm:text-[14px] text-[#374151] dark:text-[#D1D5DB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:outline-none focus:border-[#4F46E5] dark:focus:border-[#6366F1] focus:shadow-[0_0_0_3px_rgba(79,70,229,0.15)] dark:focus:shadow-[0_0_0_3px_rgba(99,102,241,0.15)] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-[#f8f7f3] dark:bg-[#2D3748] border border-[#E5E7EB] dark:border-[#374151] rounded-xl text-xs sm:text-[14px] text-[#374151] dark:text-[#D1D5DB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:outline-none focus:border-[#879584] dark:focus:border-[#6366F1] focus:shadow-[0_0_0_3px_rgba(104,124,104,0.14)] dark:focus:shadow-[0_0_0_3px_rgba(99,102,241,0.15)] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150"
               required
             />
             <button
               type="submit"
               disabled={isLoading || !email.trim() || !termsAccepted || !ageConfirmed}
-              className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-[#4F46E5] hover:bg-[#4338CA] disabled:bg-[#9CA3AF] text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-xs sm:text-[14px] font-medium"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-[#35483a] hover:bg-[#293b2e] disabled:bg-[#9CA3AF] text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150 text-xs sm:text-[14px] font-medium"
             >
               {isLoading ? 'Signing in...' : 'Continue with Email'}
             </button>
@@ -184,13 +184,13 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               type="checkbox"
               checked={termsAccepted}
               onChange={(event) => setTermsAccepted(event.target.checked)}
-              className="mt-0.5 h-4 w-4 shrink-0 accent-[#4F46E5]"
+              className="mt-0.5 h-4 w-4 shrink-0 accent-[#536653]"
             />
             <span>
               By continuing, you agree to PRV AI{' '}
-              <button type="button" onClick={() => setPolicyView('terms')} className="font-semibold text-[#4F46E5] dark:text-[#8B9BFF] hover:underline">Terms and Conditions</button>{' '}
+              <button type="button" onClick={() => setPolicyView('terms')} className="font-semibold text-[#536653] dark:text-[#8B9BFF] hover:underline">Terms and Conditions</button>{' '}
               and{' '}
-              <button type="button" onClick={() => setPolicyView('privacy')} className="font-semibold text-[#4F46E5] dark:text-[#8B9BFF] hover:underline">Privacy Policy</button>.
+              <button type="button" onClick={() => setPolicyView('privacy')} className="font-semibold text-[#536653] dark:text-[#8B9BFF] hover:underline">Privacy Policy</button>.
             </span>
           </label>
           <label className="flex items-start gap-2 text-[11px] leading-4 text-[#6B7280] dark:text-[#D1D5DB]">
@@ -198,7 +198,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               type="checkbox"
               checked={ageConfirmed}
               onChange={(event) => setAgeConfirmed(event.target.checked)}
-              className="mt-0.5 h-4 w-4 shrink-0 accent-[#4F46E5]"
+              className="mt-0.5 h-4 w-4 shrink-0 accent-[#536653]"
             />
             <span>I’m 13 years or older.</span>
           </label>

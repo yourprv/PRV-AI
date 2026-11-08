@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { ArrowUp, Plus, Sparkles, X, UploadCloud, Globe, ImagePlus, PanelTop } from 'lucide-react';
+import { ArrowUp, Plus, PenLine, X, UploadCloud, Globe, ImagePlus, PanelTop } from 'lucide-react';
 import { toast } from 'sonner';
 import { ModeSelector } from './ModeSelector';
 import type { ModeType } from '@/types/chat';
@@ -162,8 +162,8 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
   if (isEmptyState) {
     // Centered empty state input
     return (
-      <div className="w-full max-w-[720px] mx-auto px-3 sm:px-0">
-        <div className="relative rounded-2xl border border-[#E5E7EB] dark:border-[#374151] bg-white/95 dark:bg-[#111827]/95 shadow-[0_16px_45px_-28px_rgba(15,23,42,0.8)] transition-all duration-300">
+      <div className="w-full max-w-[720px] mx-auto px-1 sm:px-0">
+        <div className="workspace-composer relative rounded-[18px] border dark:border-[#374151] dark:bg-[#111827]/95">
           {/* Attachments display */}
           {(attachments.length > 0 || webSearchEnabled || isSearchingWeb || imageGenerationEnabled || canvasEnabled) && (
             <div className="px-3 sm:px-4 pt-3 pb-2 space-y-2">
@@ -182,18 +182,18 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
                 ))}
               </div>
               {isSearchingWeb ? (
-                <div className="inline-flex items-center gap-2 rounded-full border border-[#C7D2FE] bg-[#EFF6FF] dark:border-[#60A5FA] dark:bg-[#1E40AF] px-3 py-1.5 text-[11px] sm:text-[12px] text-[#1D4ED8] dark:text-[#DBEAFE]">
+                <div className="inline-flex items-center gap-2 rounded-full border border-[#dbe2d8] bg-[#f1f4ef] dark:border-[#60A5FA] dark:bg-[#1E40AF] px-3 py-1.5 text-[11px] sm:text-[12px] text-[#536653] dark:text-[#DBEAFE]">
                   <Globe size={14} />
                   <span className="flex items-center gap-1">
                     Searching the web
-                    <span className="inline-flex h-2 w-2 rounded-full bg-[#1D4ED8] dark:bg-[#BFDBFE] animate-pulse" />
+                    <span className="inline-flex h-2 w-2 rounded-full bg-[#758c73] dark:bg-[#BFDBFE] animate-pulse" />
                   </span>
                 </div>
               ) : webSearchEnabled ? (
                 <button
                   type="button"
                   onClick={onToggleWebSearch}
-                  className="inline-flex items-center gap-2 rounded-full border border-[#C7D2FE] bg-[#EEF2FF] dark:border-[#4F46E5] dark:bg-[#4338CA] px-3 py-1.5 text-[11px] sm:text-[12px] text-[#1E3A8A] dark:text-[#E0E7FF] hover:bg-[#E0E7FF] dark:hover:bg-[#4F46E5] transition-colors duration-200"
+                  className="inline-flex items-center gap-2 rounded-full border border-[#dbe2d8] bg-[#f1f4ef] dark:border-[#4F46E5] dark:bg-[#4338CA] px-3 py-1.5 text-[11px] sm:text-[12px] text-[#536653] dark:text-[#E0E7FF] hover:bg-[#e6eee4] dark:hover:bg-[#4F46E5] transition-colors duration-150"
                   aria-label="Disable web search"
                 >
                   <Globe size={14} />
@@ -205,7 +205,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
                 <button
                   type="button"
                   onClick={toggleImageGeneration}
-                  className="inline-flex items-center gap-2 rounded-full border border-fuchsia-200 bg-fuchsia-50 px-3 py-1.5 text-[11px] text-fuchsia-700 dark:border-fuchsia-500/40 dark:bg-fuchsia-950/40 dark:text-fuchsia-200"
+                  className="inline-flex items-center gap-2 rounded-full border border-[#e5e2d9] bg-[#f4f3ee] px-3 py-1.5 text-[11px] text-[#62675e] dark:border-fuchsia-500/40 dark:bg-fuchsia-950/40 dark:text-fuchsia-200"
                   aria-label="Disable image creation"
                 >
                   <ImagePlus size={14} />
@@ -229,7 +229,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
             onCompositionEnd={() => { isComposingRef.current = false; }}
             placeholder={imageGenerationEnabled ? 'Describe the image you want to create...' : 'How can I help you today?'}
             rows={1}
-            className="block w-full min-h-[76px] rounded-t-2xl border border-transparent bg-transparent px-4 pt-4 pb-2 text-sm text-[#111827] dark:text-[#E5E7EB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:ring-0 focus:outline-none resize-none leading-6"
+            className="block w-full min-h-[82px] rounded-t-[18px] border border-transparent bg-transparent px-4 pt-4 pb-2 text-[15px] text-[#111827] dark:text-[#E5E7EB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:ring-0 focus:outline-none resize-none leading-6"
             aria-label="Chat input"
           />
 
@@ -244,12 +244,12 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
           />
 
           {/* Bottom controls */}
-          <div ref={menuRootRef} className="flex items-center justify-between gap-2 border-t border-slate-100 px-3 py-2 dark:border-slate-800">
+          <div ref={menuRootRef} className="flex items-center justify-between gap-2 border-t border-[#efeee9] px-3 py-2 dark:border-slate-800">
             <div className="relative flex items-center gap-1">
               <button
                 type="button"
                 onClick={toggleMenu}
-                className="h-8 w-8 flex items-center justify-center rounded-full border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#0F172A] text-[#6B7280] hover:text-[#111827] dark:hover:text-[#F9FAFB] shadow-sm transition-all duration-200 active:scale-95"
+                className="h-8 w-8 flex items-center justify-center rounded-lg border border-[#e5e2d9] dark:border-[#374151] bg-white dark:bg-[#0F172A] text-[#6c7168] hover:text-[#20231f] dark:hover:text-[#F9FAFB] transition-all duration-150 active:scale-95"
                 aria-label="Open attachment menu"
                 title="Add attachment"
               >
@@ -257,13 +257,13 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
               </button>
               {menuOpen && (
                 <div ref={menuRef} className="absolute bottom-full left-0 mb-2 w-64 overflow-hidden rounded-2xl border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#111827] shadow-xl z-50">
-                  <button type="button" onClick={handleAddAttachment} className="w-full min-h-12 px-3 py-2 flex items-center gap-2.5 text-left hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937] transition-colors"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#EEF2FF] text-[#1E40AF] dark:bg-[#4338CA] dark:text-[#E0E7FF]"><UploadCloud size={15} /></span><span><span className="block text-xs font-medium text-[#111827] dark:text-[#F8FAFC]">Add photos &amp; files</span><span className="block text-[10px] text-[#6B7280] dark:text-[#9CA3AF]">Upload from your computer</span></span></button>
+                  <button type="button" onClick={handleAddAttachment} className="w-full min-h-12 px-3 py-2 flex items-center gap-2.5 text-left hover:bg-[#f8f7f3] dark:hover:bg-[#1F2937] transition-colors"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#edf0e9] text-[#536653] dark:bg-[#4338CA] dark:text-[#E0E7FF]"><UploadCloud size={15} /></span><span><span className="block text-xs font-medium text-[#111827] dark:text-[#F8FAFC]">Add photos &amp; files</span><span className="block text-[10px] text-[#6B7280] dark:text-[#9CA3AF]">Upload from your computer</span></span></button>
                   <button
                     type="button"
                     onClick={toggleImageGeneration}
-                    className={`w-full min-h-12 px-3 py-2 flex items-center gap-2.5 text-left transition-colors ${imageGenerationEnabled ? 'bg-fuchsia-50 dark:bg-fuchsia-950/30' : 'hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937]'}`}
+                    className={`w-full min-h-12 px-3 py-2 flex items-center gap-2.5 text-left transition-colors ${imageGenerationEnabled ? 'bg-[#f4f3ee] dark:bg-fuchsia-950/30' : 'hover:bg-[#f8f7f3] dark:hover:bg-[#1F2937]'}`}
                   >
-                    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-fuchsia-500 to-violet-600 text-white shrink-0">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#edf0e9] text-[#536653] shrink-0">
                       <ImagePlus size={15} />
                     </span>
                     <div className="min-w-0">
@@ -271,13 +271,13 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
                       <p className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF]">Generate with PRE Image 2.1</p>
                     </div>
                   </button>
-                  <button type="button" onClick={toggleCanvas} className={`w-full min-h-12 px-3 py-2 flex items-center gap-2.5 text-left transition-colors ${canvasEnabled ? 'bg-slate-100 dark:bg-slate-800' : 'hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937] active:bg-[#F0F0F0] dark:active:bg-[#2D3748]'}`}><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800 text-white shrink-0"><PanelTop size={15} /></span><div className="min-w-0"><div className="font-medium text-xs text-[#111827] dark:text-[#F8FAFC]">{canvasEnabled ? 'Disable canvas' : 'Canvas'}</div><p className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF]">Write emails, essays, and longer drafts</p></div></button>
+                  <button type="button" onClick={toggleCanvas} className={`w-full min-h-12 px-3 py-2 flex items-center gap-2.5 text-left transition-colors ${canvasEnabled ? 'bg-[#f1f0ea] dark:bg-slate-800' : 'hover:bg-[#f8f7f3] dark:hover:bg-[#1F2937] active:bg-[#efeee8] dark:active:bg-[#2D3748]'}`}><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#edf0e9] text-[#536653] shrink-0"><PanelTop size={15} /></span><div className="min-w-0"><div className="font-medium text-xs text-[#111827] dark:text-[#F8FAFC]">{canvasEnabled ? 'Disable canvas' : 'Canvas'}</div><p className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF]">Write emails, essays, and longer drafts</p></div></button>
                   <button
                     type="button"
                     onClick={handleToggleSearch}
                     className="w-full min-h-12 px-3 py-2 flex items-center gap-2.5 text-left hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937] active:bg-[#F0F0F0] dark:active:bg-[#2D3748] transition-colors"
                   >
-                    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#E0E7FF] dark:bg-[#3730A3] text-[#1E40AF] dark:text-[#E0E7FF] shrink-0">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#edf0e9] text-[#536653] dark:bg-[#3730A3] dark:text-[#E0E7FF] shrink-0">
                       <Globe size={15} />
                     </span>
                     <div className="min-w-0">
@@ -296,12 +296,12 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
                 type="button"
                 onClick={handleEnhance}
                 disabled={!text.trim() || isLoading || isEnhancing}
-                className="flex h-8 items-center gap-1 rounded-full px-2 text-[#9CA3AF] transition-all duration-200 hover:bg-[#F0F0F2] hover:text-violet-600 disabled:opacity-40 dark:text-[#6B7280] dark:hover:bg-[#374151] dark:hover:text-violet-300"
-                aria-label="Enhance prompt"
-                title="Enhance prompt"
+                className="flex h-8 items-center gap-1 rounded-lg px-2 text-[#898b82] transition-all duration-150 hover:bg-[#f1f0ea] hover:text-[#536653] disabled:opacity-40 dark:text-[#6B7280] dark:hover:bg-[#374151] dark:hover:text-violet-300"
+                aria-label="Refine prompt"
+                title="Refine prompt"
               >
-                <Sparkles size={15} />
-                <span className="hidden sm:inline text-[11px] font-medium">Enhance</span>
+                <PenLine size={14} />
+                <span className="hidden sm:inline text-[11px] font-medium">Refine</span>
               </button>
               <button
                 type="button"
@@ -309,8 +309,8 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
                 disabled={!canSend || isLoading}
                 className={`w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full transition-all duration-200 active:scale-95 ${
                   canSend
-                    ? 'bg-[#4F46E5] text-white hover:bg-[#4338CA] dark:bg-[#6366F1] dark:hover:bg-[#4F46E5] cursor-pointer'
-                    : 'bg-[#E5E7EB] dark:bg-[#4B5563] text-[#9CA3AF] dark:text-[#6B7280] cursor-default'
+                    ? 'workspace-primary-button cursor-pointer'
+                    : 'bg-[#e9e8e2] dark:bg-[#4B5563] text-[#a0a197] dark:text-[#6B7280] cursor-default'
                 }`}
                 aria-label="Send message"
               >
@@ -321,9 +321,8 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
         </div>
 
         {/* Subtle hint */}
-        <div className="mt-3 text-center text-xs sm:text-[12px] text-[#6B7280] dark:text-[#9CA3AF]">
-          <p>PRV AI can make mistakes. Consider checking important information.</p>
-          <p className="mt-1">Powered by Google</p>
+        <div className="mt-3 text-center text-[11px] leading-5 text-[#92938c] dark:text-[#9CA3AF]">
+          <p>PRV can make mistakes. Check important information.</p>
           {guestMode && <p className="mt-1 max-w-md mx-auto text-[10px] leading-4">By using PRV AI you agree to PRV AI Privacy Policy and Terms and Conditions.</p>}
         </div>
       </div>
@@ -333,7 +332,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
   // Bottom-fixed input for active chat
   return (
     <div className="w-full max-w-[720px] mx-auto px-1 sm:px-0">
-      <div className="relative rounded-2xl border border-[#E5E7EB] dark:border-[#374151] bg-white/95 dark:bg-[#111827]/95 shadow-[0_12px_35px_-24px_rgba(15,23,42,0.8)] transition-all duration-300">
+      <div className="workspace-composer relative rounded-[18px] border dark:border-[#374151] dark:bg-[#111827]/95">
         {/* Attachments display */}
           {(attachments.length > 0 || webSearchEnabled || isSearchingWeb || imageGenerationEnabled || canvasEnabled) && (
           <div className="px-3 sm:px-4 pt-3 pb-2 space-y-2">
@@ -352,18 +351,18 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
               ))}
             </div>
             {isSearchingWeb ? (
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#C7D2FE] bg-[#EFF6FF] dark:border-[#60A5FA] dark:bg-[#1E40AF] px-3 py-1.5 text-[11px] sm:text-[12px] text-[#1D4ED8] dark:text-[#DBEAFE]">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#dbe2d8] bg-[#f1f4ef] dark:border-[#60A5FA] dark:bg-[#1E40AF] px-3 py-1.5 text-[11px] sm:text-[12px] text-[#536653] dark:text-[#DBEAFE]">
                 <Globe size={14} />
                 <span className="flex items-center gap-1">
                   Searching the web
-                  <span className="inline-flex h-2 w-2 rounded-full bg-[#1D4ED8] dark:bg-[#BFDBFE] animate-pulse" />
+                  <span className="inline-flex h-2 w-2 rounded-full bg-[#758c73] dark:bg-[#BFDBFE] animate-pulse" />
                 </span>
               </div>
               ) : webSearchEnabled ? (
               <button
                 type="button"
                 onClick={onToggleWebSearch}
-                className="inline-flex items-center gap-2 rounded-full border border-[#C7D2FE] bg-[#EEF2FF] dark:border-[#4F46E5] dark:bg-[#4338CA] px-3 py-1.5 text-[11px] sm:text-[12px] text-[#1E3A8A] dark:text-[#E0E7FF] hover:bg-[#E0E7FF] dark:hover:bg-[#4F46E5] transition-colors duration-200"
+                className="inline-flex items-center gap-2 rounded-full border border-[#dbe2d8] bg-[#f1f4ef] dark:border-[#4F46E5] dark:bg-[#4338CA] px-3 py-1.5 text-[11px] sm:text-[12px] text-[#536653] dark:text-[#E0E7FF] hover:bg-[#e6eee4] dark:hover:bg-[#4F46E5] transition-colors duration-150"
                 aria-label="Disable web search"
               >
                 <Globe size={14} />
@@ -375,7 +374,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
               <button
                 type="button"
                 onClick={toggleImageGeneration}
-                className="inline-flex items-center gap-2 rounded-full border border-fuchsia-200 bg-fuchsia-50 px-3 py-1.5 text-[11px] text-fuchsia-700 dark:border-fuchsia-500/40 dark:bg-fuchsia-950/40 dark:text-fuchsia-200"
+                className="inline-flex items-center gap-2 rounded-full border border-[#e5e2d9] bg-[#f4f3ee] px-3 py-1.5 text-[11px] text-[#62675e] dark:border-fuchsia-500/40 dark:bg-fuchsia-950/40 dark:text-fuchsia-200"
                 aria-label="Disable image creation"
               >
                 <ImagePlus size={14} />
@@ -398,7 +397,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
           onCompositionEnd={() => { isComposingRef.current = false; }}
           placeholder={imageGenerationEnabled ? 'Describe the image you want to create...' : 'How can I help you today?'}
           rows={1}
-          className="block w-full min-h-[76px] rounded-t-2xl border border-transparent bg-transparent px-4 pt-4 pb-2 text-sm text-[#111827] dark:text-[#E5E7EB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:ring-0 focus:outline-none resize-none leading-6"
+          className="block w-full min-h-[76px] rounded-t-[18px] border border-transparent bg-transparent px-4 pt-4 pb-2 text-[15px] text-[#111827] dark:text-[#E5E7EB] placeholder:text-[#9CA3AF] dark:placeholder:text-[#6B7280] focus:ring-0 focus:outline-none resize-none leading-6"
           aria-label="Chat input"
         />
 
@@ -412,12 +411,12 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
           accept=".pdf,.txt,.csv,.json,.html,.md,.png,.jpeg,.webp,.heic,.gif,.mp3,.wav,.aac,.flac,.m4a,.opus,.mp4,.mov,.webm,.avi,.mpeg,.wmv,.3gpp"
         />
 
-        <div ref={menuRootRef} className="flex items-center justify-between gap-2 border-t border-slate-100 px-3 py-2 dark:border-slate-800">
+        <div ref={menuRootRef} className="flex items-center justify-between gap-2 border-t border-[#efeee9] px-3 py-2 dark:border-slate-800">
           <div className="relative flex items-center gap-1">
             <button
               type="button"
               onClick={toggleMenu}
-              className="h-8 w-8 flex items-center justify-center rounded-full border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#0F172A] text-[#6B7280] hover:text-[#111827] dark:hover:text-[#F9FAFB] shadow-sm transition-all duration-200"
+              className="h-8 w-8 flex items-center justify-center rounded-lg border border-[#e5e2d9] dark:border-[#374151] bg-white dark:bg-[#0F172A] text-[#6c7168] hover:text-[#20231f] dark:hover:text-[#F9FAFB] transition-all duration-150"
               aria-label="Open attachment menu"
               title="Add attachment"
             >
@@ -425,13 +424,13 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
             </button>
             {menuOpen && (
                 <div ref={menuRef} className="absolute bottom-full left-0 mb-2 w-64 overflow-hidden rounded-2xl border border-[#E5E7EB] dark:border-[#374151] bg-white dark:bg-[#111827] shadow-xl z-50">
-                <button type="button" onClick={handleAddAttachment} className="w-full min-h-12 px-3 py-2 flex items-center gap-2.5 text-left hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937]"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#EEF2FF] text-[#1E40AF] dark:bg-[#4338CA] dark:text-[#E0E7FF]"><UploadCloud size={15} /></span><span><span className="block text-xs font-medium text-[#111827] dark:text-[#F8FAFC]">Add photos &amp; files</span><span className="block text-[10px] text-[#6B7280] dark:text-[#9CA3AF]">Upload from your computer</span></span></button>
+                <button type="button" onClick={handleAddAttachment} className="w-full min-h-12 px-3 py-2 flex items-center gap-2.5 text-left hover:bg-[#f8f7f3] dark:hover:bg-[#1F2937]"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#edf0e9] text-[#536653] dark:bg-[#4338CA] dark:text-[#E0E7FF]"><UploadCloud size={15} /></span><span><span className="block text-xs font-medium text-[#111827] dark:text-[#F8FAFC]">Add photos &amp; files</span><span className="block text-[10px] text-[#6B7280] dark:text-[#9CA3AF]">Upload from your computer</span></span></button>
                 <button
                   type="button"
                   onClick={toggleImageGeneration}
-                  className={`w-full min-h-12 px-3 py-2 flex items-center gap-2.5 text-left transition-colors ${imageGenerationEnabled ? 'bg-fuchsia-50 dark:bg-fuchsia-950/30' : 'hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937]'}`}
+                  className={`w-full min-h-12 px-3 py-2 flex items-center gap-2.5 text-left transition-colors ${imageGenerationEnabled ? 'bg-[#f4f3ee] dark:bg-fuchsia-950/30' : 'hover:bg-[#f8f7f3] dark:hover:bg-[#1F2937]'}`}
                 >
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-fuchsia-500 to-violet-600 text-white shrink-0">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#edf0e9] text-[#536653] shrink-0">
                     <ImagePlus size={15} />
                   </span>
                   <div>
@@ -439,13 +438,13 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
                     <p className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF]">Generate with PRE Image 2.1</p>
                   </div>
                   </button>
-                  <button type="button" onClick={toggleCanvas} className={`w-full min-h-12 px-3 py-2 flex items-center gap-2.5 text-left transition-colors ${canvasEnabled ? 'bg-slate-100 dark:bg-slate-800' : 'hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937]'}`}><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800 text-white shrink-0"><PanelTop size={15} /></span><div className="min-w-0"><div className="font-medium text-xs text-[#111827] dark:text-[#F8FAFC]">{canvasEnabled ? 'Disable canvas' : 'Canvas'}</div><p className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF]">Write emails, essays, and longer drafts</p></div></button>
+                  <button type="button" onClick={toggleCanvas} className={`w-full min-h-12 px-3 py-2 flex items-center gap-2.5 text-left transition-colors ${canvasEnabled ? 'bg-[#f1f0ea] dark:bg-slate-800' : 'hover:bg-[#f8f7f3] dark:hover:bg-[#1F2937]'}`}><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#edf0e9] text-[#536653] shrink-0"><PanelTop size={15} /></span><div className="min-w-0"><div className="font-medium text-xs text-[#111827] dark:text-[#F8FAFC]">{canvasEnabled ? 'Disable canvas' : 'Canvas'}</div><p className="text-[10px] text-[#6B7280] dark:text-[#9CA3AF]">Write emails, essays, and longer drafts</p></div></button>
                 <button
                   type="button"
                   onClick={handleToggleSearch}
                   className="w-full min-h-12 px-3 py-2 flex items-center gap-2.5 text-left hover:bg-[#F8FAFC] dark:hover:bg-[#1F2937]"
                 >
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#E0E7FF] dark:bg-[#3730A3] text-[#1E40AF] dark:text-[#E0E7FF]">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#edf0e9] text-[#536653] dark:bg-[#3730A3] dark:text-[#E0E7FF]">
                     <Globe size={15} />
                   </span>
                   <div>
@@ -463,12 +462,12 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
               type="button"
               onClick={handleEnhance}
               disabled={!text.trim() || isLoading || isEnhancing}
-              className="flex h-8 items-center gap-1 rounded-full px-2 text-[#9CA3AF] transition-all duration-200 hover:bg-[#F0F0F2] hover:text-violet-600 disabled:opacity-40 dark:text-[#6B7280] dark:hover:bg-[#374151] dark:hover:text-violet-300"
-              aria-label="Enhance prompt"
-              title="Enhance prompt"
+              className="flex h-8 items-center gap-1 rounded-lg px-2 text-[#898b82] transition-all duration-150 hover:bg-[#f1f0ea] hover:text-[#536653] disabled:opacity-40 dark:text-[#6B7280] dark:hover:bg-[#374151] dark:hover:text-violet-300"
+              aria-label="Refine prompt"
+              title="Refine prompt"
             >
-              <Sparkles size={15} />
-              <span className="hidden sm:inline text-[11px] font-medium">Enhance</span>
+              <PenLine size={14} />
+              <span className="hidden sm:inline text-[11px] font-medium">Refine</span>
             </button>
             {isLoading ? (
               <button
@@ -486,8 +485,8 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
                 disabled={!canSend || isLoading}
                 className={`w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 ${
                   canSend
-                    ? 'bg-[#4F46E5] text-white hover:bg-[#4338CA] dark:bg-[#6366F1] dark:hover:bg-[#4F46E5] active:scale-95 cursor-pointer'
-                    : 'bg-[#E5E7EB] dark:bg-[#4B5563] text-[#9CA3AF] dark:text-[#6B7280] cursor-default'
+                    ? 'workspace-primary-button active:scale-95 cursor-pointer'
+                    : 'bg-[#e9e8e2] dark:bg-[#4B5563] text-[#a0a197] dark:text-[#6B7280] cursor-default'
                 }`}
                 aria-label="Send message"
               >

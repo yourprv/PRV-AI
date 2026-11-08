@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Check, Zap, Brain, Sparkles } from 'lucide-react';
+import { ChevronDown, Check } from 'lucide-react';
 import type { ModeType } from '@/types/chat';
 
-const modes: { id: ModeType; name: string; icon: React.ReactNode }[] = [
-  { id: 'auto', name: 'Auto', icon: <Sparkles size={14} /> },
-  { id: 'thinking', name: 'Thinking', icon: <Brain size={14} /> },
-  { id: 'fast', name: 'Fast', icon: <Zap size={14} /> },
+const modes: { id: ModeType; name: string }[] = [
+  { id: 'auto', name: 'Auto' },
+  { id: 'thinking', name: 'Thinking' },
+  { id: 'fast', name: 'Fast' },
 ];
 
 interface ModeSelectorProps {
@@ -32,7 +32,7 @@ export function ModeSelector({ selected, onSelect }: ModeSelectorProps) {
     <div ref={ref} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1 text-xs sm:text-[13px] text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-[#F3F4F6] transition-colors duration-200 rounded-lg px-2 py-1 hover:bg-[#F0F0F2] dark:hover:bg-[#374151] active:scale-95"
+        className="flex items-center gap-1 text-xs sm:text-[13px] text-[#74776e] dark:text-[#9CA3AF] hover:text-[#20231f] dark:hover:text-[#F3F4F6] transition-colors duration-150 rounded-lg px-2 py-1 hover:bg-[#f1f0ea] dark:hover:bg-[#374151] active:scale-95"
         aria-label="Select mode"
         aria-expanded={isOpen}
       >
@@ -58,10 +58,9 @@ export function ModeSelector({ selected, onSelect }: ModeSelectorProps) {
                   : 'text-[#6B7280] dark:text-[#9CA3AF] hover:bg-[#F9F9FB] dark:hover:bg-[#374151] hover:text-[#111827] dark:hover:text-[#F3F4F6]'
               }`}
             >
-              <span className="text-[#9CA3AF] dark:text-[#6B7280]">{mode.icon}</span>
               <span>{mode.name}</span>
               {selected === mode.id && (
-                <Check size={14} className="text-[#4F46E5] dark:text-[#818CF8] ml-auto" />
+                <Check size={14} className="text-[#526b55] dark:text-[#818CF8] ml-auto" />
               )}
             </button>
           ))}
