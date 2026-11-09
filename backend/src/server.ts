@@ -29,6 +29,7 @@ const CLOUDFLARE_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN || '';
 const INVITE_RATE_LIMIT_SECRET = process.env.INVITE_RATE_LIMIT_SECRET || '';
 
 const GEMINI_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
+const GEMINI_HIGH_DEMAND_MESSAGE = "PRV AI is experiencing high demand right now, We're trying to fix it as soon as possible. Please visit after few hours";
 const ALLOWED_ORIGINS = [
   FRONTEND_URL,
   'https://prvai.vercel.app',
@@ -364,6 +365,12 @@ function getErrorInfo(error: unknown): { status?: number; message: string; detai
   return { status, message, details };
 }
 
+function isGeminiHighDemandError(status: number, body: string): boolean {
+  const isTemporaryProviderStatus = [429, 502, 503, 504, 529].includes(status);
+  const indicatesCapacityIssue = /resource[_\s-]*exhausted|too many requests|rate[_\s-]*limit|quota|high[_\s-]*(?:traffic|demand)|overload(?:ed)?|unavailable|try again later/i.test(body);
+  return isTemporaryProviderStatus || indicatesCapacityIssue;
+}
+
 type GeminiPart = { text?: string; inline_data?: { mime_type: string; data: string } };
 type GeminiContent = { role: 'user' | 'model'; parts: GeminiPart[] };
 
@@ -463,6 +470,9 @@ async function streamGeminiContent({
       message: errorMessage,
       details: errorBody,
     });
+    if (isGeminiHighDemandError(response.status, errorBody)) {
+      throw new Error(GEMINI_HIGH_DEMAND_MESSAGE);
+    }
     throw new Error(errorMessage);
   }
 

@@ -714,7 +714,34 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
           )
         );
       } catch (error) {
-        console.error('Gemini regeneration failed:', error);
+        const message = regenController.signal.aborted
+          ? regeneratedResponse || 'Response cancelled.'
+          : error instanceof Error
+            ? error.message
+            : 'I could not regenerate that response right now. Please try again in a moment.';
+        if (!regenController.signal.aborted) {
+          console.error('Gemini regeneration failed:', error);
+        }
+        const failedMessage: Message = {
+          id: assistantMessageId,
+          role: 'assistant',
+          content: message,
+          timestamp: Date.now(),
+          thinking: thinkingStream || undefined,
+          mode,
+          canvas: wasCanvas,
+        };
+        setChats((prev) =>
+          prev.map((c) =>
+            c.id === activeChatId
+              ? {
+                  ...c,
+                  messages: c.messages.map((item) => item.id === assistantMessageId ? failedMessage : item),
+                  updatedAt: Date.now(),
+                }
+              : c
+          )
+        );
       }
 
       setRequestController(null);
