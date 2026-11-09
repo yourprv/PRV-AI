@@ -56,6 +56,6 @@ Daily limits are separate by feature: image creation, prompt enhancement, search
 - Turnstile verification and request limits help protect public endpoints from automated abuse.
 - PRV AI does not sell personal information or use chats for targeted advertising. Requests can be processed by third-party AI, search, security, hosting, authentication, and database providers to deliver the features you request. See the in-app Privacy Policy for details.
 
-## Coming soon
+## Kite Studio
 
-The sidebar currently labels **Poder** as coming soon; it is not included as an available feature yet.
+The sidebar countdown shows the time remaining until **Kite Studio** launches on November 10, 2026 at 1:40 PM Kathmandu time. Kite Studio remains unavailable until then; when the countdown ends, the app redirects to [kite.prvai.vercel.app](https://kite.prvai.vercel.app).
