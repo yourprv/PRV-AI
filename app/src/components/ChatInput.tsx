@@ -163,7 +163,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
     // Centered empty state input
     return (
       <div className="w-full max-w-[720px] mx-auto px-1 sm:px-0">
-        <div className="workspace-composer relative rounded-[18px] border dark:border-[#454235] dark:bg-[#24231d]/95">
+        <div className="workspace-composer relative rounded-[26px] border dark:border-[#454235] dark:bg-[#24231d]/95">
           {/* Attachments display */}
           {(attachments.length > 0 || webSearchEnabled || isSearchingWeb || imageGenerationEnabled || canvasEnabled) && (
             <div className="px-3 sm:px-4 pt-3 pb-2 space-y-2">
@@ -219,20 +219,6 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
             </div>
           )}
 
-          {/* Text area */}
-          <textarea
-            ref={textareaRef}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={handleKeyDown}
-            onCompositionStart={() => { isComposingRef.current = true; }}
-            onCompositionEnd={() => { isComposingRef.current = false; }}
-            placeholder={imageGenerationEnabled ? 'Describe the image you want to create...' : 'How can I help you today?'}
-            rows={1}
-            className="block w-full min-h-[82px] rounded-t-[18px] border border-transparent bg-transparent px-4 pt-4 pb-2 text-[15px] text-[#111827] dark:text-[#eee8d9] placeholder:text-[#9CA3AF] dark:placeholder:text-[#a49b83] focus:ring-0 focus:outline-none resize-none leading-6"
-            aria-label="Chat input"
-          />
-
           {/* Hidden file input */}
           <input
             ref={fileInputRef}
@@ -244,12 +230,12 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
           />
 
           {/* Bottom controls */}
-          <div ref={menuRootRef} className="flex items-center justify-between gap-2 border-t border-[#efeee9] px-3 py-2 dark:border-[#3b392e]">
-            <div className="relative flex items-center gap-1">
+          <div ref={menuRootRef} className="flex items-center gap-1.5 px-2 py-1.5">
+            <div className="relative flex shrink-0 items-center gap-1">
               <button
                 type="button"
                 onClick={toggleMenu}
-                className="h-8 w-8 flex items-center justify-center rounded-lg border border-[#e5e2d9] dark:border-[#454235] bg-white dark:bg-[#201f19] text-[#6c7168] hover:text-[#20231f] dark:hover:text-[#f3eddf] transition-all duration-150 active:scale-95"
+                className="h-8 w-8 flex items-center justify-center rounded-full text-[#6c7168] hover:bg-[#f1f0ea] dark:hover:bg-[#38362a] dark:text-[#bcb39d] dark:hover:text-[#f3eddf] transition-all duration-150 active:scale-95"
                 aria-label="Open attachment menu"
                 title="Add attachment"
               >
@@ -289,8 +275,21 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
               )}
             </div>
 
+            <textarea
+              ref={textareaRef}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              onKeyDown={handleKeyDown}
+              onCompositionStart={() => { isComposingRef.current = true; }}
+              onCompositionEnd={() => { isComposingRef.current = false; }}
+              placeholder={imageGenerationEnabled ? 'Describe the image you want to create...' : 'How can I help you today?'}
+              rows={1}
+              className="block min-h-[44px] max-h-[120px] min-w-0 flex-1 resize-none border-0 bg-transparent px-2 py-2 text-[15px] leading-6 text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-0 dark:text-[#eee8d9] dark:placeholder:text-[#a49b83]"
+              aria-label="Chat input"
+            />
+
             {/* Right: Mode + Mic + Send */}
-            <div className="flex items-center gap-0.5 sm:gap-1">
+            <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
               <ModeSelector selected={mode} onSelect={onModeChange} />
               <button
                 type="button"
@@ -322,7 +321,6 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
 
         {/* Subtle hint */}
         <div className="mt-3 text-center text-[11px] leading-5 text-[#92938c] dark:text-[#bcb39d]">
-          <p>Messages in each chat are included as context as you continue.</p>
           <p>PRV can make mistakes. Check important information.</p>
           {guestMode && <p className="mt-1 max-w-md mx-auto text-[10px] leading-4">By using PRV AI you agree to PRV AI Privacy Policy and Terms and Conditions.</p>}
         </div>
@@ -333,7 +331,7 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
   // Bottom-fixed input for active chat
   return (
     <div className="w-full max-w-[720px] mx-auto px-1 sm:px-0">
-      <div className="workspace-composer relative rounded-[18px] border dark:border-[#454235] dark:bg-[#24231d]/95">
+      <div className="workspace-composer relative rounded-[26px] border dark:border-[#454235] dark:bg-[#24231d]/95">
         {/* Attachments display */}
           {(attachments.length > 0 || webSearchEnabled || isSearchingWeb || imageGenerationEnabled || canvasEnabled) && (
           <div className="px-3 sm:px-4 pt-3 pb-2 space-y-2">
@@ -389,19 +387,6 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
           </div>
         )}
 
-        <textarea
-          ref={textareaRef}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onCompositionStart={() => { isComposingRef.current = true; }}
-          onCompositionEnd={() => { isComposingRef.current = false; }}
-          placeholder={imageGenerationEnabled ? 'Describe the image you want to create...' : 'How can I help you today?'}
-          rows={1}
-          className="block w-full min-h-[76px] rounded-t-[18px] border border-transparent bg-transparent px-4 pt-4 pb-2 text-[15px] text-[#111827] dark:text-[#eee8d9] placeholder:text-[#9CA3AF] dark:placeholder:text-[#a49b83] focus:ring-0 focus:outline-none resize-none leading-6"
-          aria-label="Chat input"
-        />
-
         {/* Hidden file input */}
         <input
           ref={fileInputRef}
@@ -412,12 +397,12 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
           accept=".pdf,.txt,.csv,.json,.html,.md,.png,.jpeg,.webp,.heic,.gif,.mp3,.wav,.aac,.flac,.m4a,.opus,.mp4,.mov,.webm,.avi,.mpeg,.wmv,.3gpp"
         />
 
-        <div ref={menuRootRef} className="flex items-center justify-between gap-2 border-t border-[#efeee9] px-3 py-2 dark:border-[#3b392e]">
-          <div className="relative flex items-center gap-1">
+        <div ref={menuRootRef} className="flex items-center gap-1.5 px-2 py-1.5">
+          <div className="relative flex shrink-0 items-center gap-1">
             <button
               type="button"
               onClick={toggleMenu}
-              className="h-8 w-8 flex items-center justify-center rounded-lg border border-[#e5e2d9] dark:border-[#454235] bg-white dark:bg-[#201f19] text-[#6c7168] hover:text-[#20231f] dark:hover:text-[#f3eddf] transition-all duration-150"
+              className="h-8 w-8 flex items-center justify-center rounded-full text-[#6c7168] hover:bg-[#f1f0ea] dark:hover:bg-[#38362a] dark:text-[#bcb39d] dark:hover:text-[#f3eddf] transition-all duration-150"
               aria-label="Open attachment menu"
               title="Add attachment"
             >
@@ -457,7 +442,20 @@ export function ChatInput({ onSend, guestMode = false, onGuestFeatureRequest, is
             )}
           </div>
 
-          <div className="flex items-center gap-1">
+          <textarea
+            ref={textareaRef}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onCompositionStart={() => { isComposingRef.current = true; }}
+            onCompositionEnd={() => { isComposingRef.current = false; }}
+            placeholder={imageGenerationEnabled ? 'Describe the image you want to create...' : 'How can I help you today?'}
+            rows={1}
+            className="block min-h-[44px] max-h-[120px] min-w-0 flex-1 resize-none border-0 bg-transparent px-2 py-2 text-[15px] leading-6 text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-0 dark:text-[#eee8d9] dark:placeholder:text-[#a49b83]"
+            aria-label="Chat input"
+          />
+
+          <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
             <ModeSelector selected={mode} onSelect={onModeChange} />
             <button
               type="button"

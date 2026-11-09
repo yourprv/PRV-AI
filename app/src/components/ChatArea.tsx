@@ -268,7 +268,7 @@ export function ChatArea({
           </div>
 
           {/* Input at bottom */}
-          <div className={`shrink-0 px-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 sm:px-4 sm:py-3 backdrop-blur-sm border-t ${isIncognitoMode ? 'bg-[#1c1b15]/95 border-white/10' : 'bg-[#fffdf8]/95 dark:bg-[#25241d]/95 border-[#e7decc] dark:border-[#403e32]'}`}>
+          <div className={`shrink-0 px-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 sm:px-4 sm:py-3 backdrop-blur-sm ${isIncognitoMode ? 'bg-[#1c1b15]/95' : 'bg-[#fffdf8]/95 dark:bg-[#25241d]/95'}`}>
             <ChatInput
               onSend={onSend}
               guestMode={guestMode}
@@ -282,9 +282,6 @@ export function ChatArea({
               onCancel={onCancel}
               onEnhancePrompt={onEnhancePrompt}
             />
-            <p className="mx-auto mt-1.5 max-w-[720px] px-2 text-center text-[10px] leading-4 text-[#858174] dark:text-[#aaa28e]">
-              Earlier turns in this chat are included as context.
-            </p>
           </div>
         </>
       )}
