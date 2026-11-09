@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { LoginSection } from './LoginSection';
 import { BrandMark } from './BrandMark';
+import { groupChatsByCreatedAt } from '@/lib/chatHistory';
 import type { Chat } from '@/types/chat';
 
 interface SidebarProps {
@@ -48,18 +49,7 @@ export function Sidebar({
 }: SidebarProps) {
   const [chatsExpanded, setChatsExpanded] = useState(true);
 
-  const yesterdayChats = chats.filter(
-    (c) => Date.now() - c.updatedAt < 86400000 && Date.now() - c.updatedAt > 0
-  );
-  const weekChats = chats.filter(
-    (c) => Date.now() - c.updatedAt >= 86400000 && Date.now() - c.updatedAt < 604800000
-  );
-  const monthChats = chats.filter(
-    (c) => Date.now() - c.updatedAt >= 604800000 && Date.now() - c.updatedAt < 2592000000
-  );
-  const olderChats = chats.filter(
-    (c) => Date.now() - c.updatedAt >= 2592000000
-  );
+  const chatGroups = groupChatsByCreatedAt(chats);
 
   const renderChatGroup = (title: string, groupChats: Chat[]) => {
     if (groupChats.length === 0) return null;
@@ -290,11 +280,12 @@ export function Sidebar({
 
         {chatsExpanded && (
           <div className="animate-fade-in">
-            {renderChatGroup('Today', yesterdayChats)}
-            {renderChatGroup('Previous 7 days', weekChats)}
-            {renderChatGroup('Previous 30 days', monthChats)}
-            {renderChatGroup('Older', olderChats)}
-            {yesterdayChats.length === 0 && weekChats.length === 0 && monthChats.length === 0 && olderChats.length === 0 && (
+            {renderChatGroup('Today', chatGroups.today)}
+            {renderChatGroup('Yesterday', chatGroups.yesterday)}
+            {renderChatGroup('Previous 7 Days', chatGroups.previous7Days)}
+            {renderChatGroup('Previous 30 Days', chatGroups.previous30Days)}
+            {renderChatGroup('Older', chatGroups.older)}
+            {chats.length === 0 && (
               <div className="px-3 py-6 text-center">
                 <MessageSquare size={24} className="text-[#ded3bd] dark:text-[#776e58] mx-auto mb-2" />
                 <p className="text-[12px] text-[#9CA3AF] dark:text-[#a49b83]">No chats yet</p>

@@ -1,4 +1,5 @@
 import { toast } from 'sonner';
+import { sortChatsNewestFirst } from '@/lib/chatHistory';
 
 const DEFAULT_API_BASE_URL = 'http://localhost:5000';
 const AUTH_SESSION_STORAGE_KEY = 'prv_auth_session';
@@ -272,7 +273,7 @@ export async function listChats(): Promise<Chat[]> {
   const data = await apiRequest<{ chats: Chat[] }>('/api/chats', {
     headers: authenticatedHeaders(),
   });
-  return data.chats;
+  return sortChatsNewestFirst(data.chats);
 }
 
 export async function saveChat(chat: Chat): Promise<Chat> {

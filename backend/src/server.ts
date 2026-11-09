@@ -767,7 +767,7 @@ app.get('/api/chats', async (req: Request, res: ExpressResponse) => {
     .from('chats')
     .select('id, title, model, messages, custom_prv, created_at, updated_at')
     .eq('user_id', user.id)
-    .order('updated_at', { ascending: false });
+    .order('created_at', { ascending: false });
 
   if (error) {
     console.error('Failed to load chats:', error);
