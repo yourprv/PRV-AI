@@ -31,7 +31,7 @@ const INVITE_RATE_LIMIT_SECRET = process.env.INVITE_RATE_LIMIT_SECRET || '';
 const GEMINI_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 const ALLOWED_ORIGINS = [
   FRONTEND_URL,
-  'https://prv-ai.vercel.app',
+  'https://prvai.vercel.app',
   'http://localhost:3000',
   'http://127.0.0.1:3000',
   'http://localhost:5173',

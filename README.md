@@ -1,6 +1,6 @@
 # PRV AI
 
-PRV AI is a responsive AI workspace for chat, research, image creation, and reusable assistants. It pairs a warm, low-glare interface with conversation continuity, account-based history, chat export, and invite-only access tiers. The production web app is available at [prv-ai.vercel.app](https://prv-ai.vercel.app).
+PRV AI is a responsive AI workspace for chat, research, image creation, and reusable assistants. It pairs a warm, low-glare interface with conversation continuity, account-based history, chat export, and invite-only access tiers. The production web app is available at [prvai.vercel.app](https://prvai.vercel.app).
 
 This repository contains the web client, API server, Supabase SQL setup, and invite-code administration utility. The browser calls the API server; private provider credentials remain on the server.
 
@@ -127,8 +127,8 @@ Supported tiers are `go`, `plus`, and `pro`. `--max-uses` defaults to one; `--ex
 
 ## Deployment notes
 
-- Deploy `app/` as a Vite static site (the production URL is `prv-ai.vercel.app`) and `backend/` as a Node service.
-- Configure `VITE_API_BASE_URL` and `VITE_TURNSTILE_SITE_KEY` in the web deployment. Configure all private credentials and `FRONTEND_URL` in the API deployment.
+- Deploy `app/` as a Vite static site (the production URL is `prvai.vercel.app`) and `backend/` as a Node service.
+- Configure `VITE_API_BASE_URL` and `VITE_TURNSTILE_SITE_KEY` in the web deployment. In the Render API service, configure all private credentials and set `FRONTEND_URL=https://prvai.vercel.app`.
 - Add production and local callback URLs to the Supabase Auth allowlist.
 - `INVITE_RATE_LIMIT_SECRET` must be a long, random server-only value. Keep it stable so guest usage keys remain stable.
 - Daily and lifetime quotas are database-backed and shared across API instances. Invite redemption attempts are also database-backed.

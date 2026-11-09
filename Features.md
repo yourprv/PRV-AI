@@ -1,6 +1,6 @@
 # PRV AI features
 
-To use these features, please visit [prv-ai.vercel.app](https://prv-ai.vercel.app).
+To use these features, please visit [prvai.vercel.app](https://prvai.vercel.app).
 
 PRV AI brings chat, research, image creation, and reusable assistants into one mobile-ready workspace. Its warm paper surfaces, considered typography, and low-glare dark theme are designed to keep long work sessions comfortable. Product capabilities and allowances are enforced by the server and may depend on the active plan, service availability, and daily usage.
 
