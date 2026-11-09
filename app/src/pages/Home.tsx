@@ -769,6 +769,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
       {/* Sidebar - Hidden on mobile, visible on desktop */}
       <div className="hidden lg:block">
         <Sidebar
+          userTier={user?.tier}
           isExpanded={sidebarExpanded}
           onToggle={toggleSidebar}
           chats={chats}
@@ -788,6 +789,7 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
       {sidebarExpanded && <div className="fixed inset-0 lg:hidden z-40 bg-black/50" onClick={toggleSidebar} aria-hidden="true" />}
       <div className={`fixed left-0 top-0 h-[100dvh] lg:hidden z-50 transition-transform duration-300 ${sidebarExpanded ? 'translate-x-0' : '-translate-x-full'}`} aria-hidden={!sidebarExpanded}>
           <Sidebar
+            userTier={user?.tier}
             isExpanded={true}
             onToggle={toggleSidebar}
             chats={chats}

@@ -16,12 +16,13 @@ import {
 import { LoginSection } from './LoginSection';
 import { BrandMark } from './BrandMark';
 import { groupChatsByCreatedAt } from '@/lib/chatHistory';
-import type { Chat } from '@/types/chat';
+import type { Chat, User } from '@/types/chat';
 
-const KITE_STUDIO_URL = 'https://kite.prvai.vercel.app';
+const KITE_STUDIO_URL = 'https://kitestudio-prvai.vercel.app';
 const KITE_STUDIO_LAUNCH_AT = new Date('2026-11-10T13:40:17+05:45').getTime();
 
 interface SidebarProps {
+  userTier?: User['tier'];
   isExpanded: boolean;
   onToggle: () => void;
   chats: Chat[];
@@ -37,6 +38,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({
+  userTier,
   isExpanded,
   onToggle,
   chats,
@@ -51,6 +53,7 @@ export function Sidebar({
   onSettingsClick,
 }: SidebarProps) {
   const [chatsExpanded, setChatsExpanded] = useState(true);
+  const hasKiteStudioEarlyAccess = userTier === 'plus' || userTier === 'pro';
   const [kiteStudioTimeLeft, setKiteStudioTimeLeft] = useState(() =>
     Math.max(0, KITE_STUDIO_LAUNCH_AT - Date.now()),
   );
@@ -272,13 +275,13 @@ export function Sidebar({
         <div className="group relative">
           <a
             href={KITE_STUDIO_URL}
-            aria-disabled={kiteStudioTimeLeft > 0}
-            tabIndex={kiteStudioTimeLeft > 0 ? -1 : undefined}
+            aria-disabled={kiteStudioTimeLeft > 0 && !hasKiteStudioEarlyAccess}
+            tabIndex={kiteStudioTimeLeft > 0 && !hasKiteStudioEarlyAccess ? -1 : undefined}
             onClick={(event) => {
-              if (kiteStudioTimeLeft > 0) event.preventDefault();
+              if (kiteStudioTimeLeft > 0 && !hasKiteStudioEarlyAccess) event.preventDefault();
             }}
             className={`flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left text-[14px] transition-colors ${
-              kiteStudioTimeLeft > 0
+              kiteStudioTimeLeft > 0 && !hasKiteStudioEarlyAccess
                 ? 'cursor-not-allowed text-slate-500 opacity-80 dark:text-[#bcb39d]'
                 : 'text-[#374151] hover:bg-[#F5F5F7] dark:text-[#e0d9c8] dark:hover:bg-[#38362a]'
             }`}
@@ -293,9 +296,16 @@ export function Sidebar({
             >
               {countdownLabel}
             </span>
+            {hasKiteStudioEarlyAccess && kiteStudioTimeLeft > 0 && (
+              <span className="rounded-full bg-[#e8ebe4] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#52634e] dark:bg-[#38362a] dark:text-[#d5c49d]">
+                Early
+              </span>
+            )}
           </a>
           <div className="pointer-events-none absolute left-2 top-full z-50 mt-2 hidden w-72 rounded-xl border border-slate-200 bg-slate-950 px-3 py-2.5 text-xs leading-5 text-slate-100 shadow-xl group-hover:block group-focus-within:block dark:border-[#454235]">
-            Kite Studio opens when the countdown ends. The No Code AI Builder and AI code editor inside your browser.
+            {hasKiteStudioEarlyAccess
+              ? 'Plus and Pro members can access Kite Studio early. The No Code AI Builder and AI code editor inside your browser.'
+              : 'Kite Studio opens when the countdown ends. The No Code AI Builder and AI code editor inside your browser.'}
           </div>
         </div>
       </div>

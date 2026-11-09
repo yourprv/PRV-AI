@@ -58,4 +58,4 @@ Daily limits are separate by feature: image creation, prompt enhancement, search
 
 ## Kite Studio
 
-The sidebar countdown shows the time remaining until **Kite Studio** launches on November 10, 2026 at 1:40 PM Kathmandu time. Kite Studio remains unavailable until then; when the countdown ends, the app redirects to [kite.prvai.vercel.app](https://kite.prvai.vercel.app).
+The sidebar countdown shows the time remaining until **Kite Studio** launches on November 10, 2026 at 1:40 PM Kathmandu time. Plus and Pro members have early access. When the countdown ends, the app redirects to [kitestudio-prvai.vercel.app](https://kitestudio-prvai.vercel.app).
