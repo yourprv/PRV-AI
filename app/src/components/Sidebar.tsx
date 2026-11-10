@@ -20,7 +20,7 @@ import { groupChatsByCreatedAt } from '@/lib/chatHistory';
 import type { Chat, User } from '@/types/chat';
 import { issueKiteSsoCode } from '@/lib/api';
 
-const KITE_STUDIO_URL = ((import.meta.env.VITE_KITE_STUDIO_URL as string | undefined)?.trim() || 'https://kitestudio-yourprv.vercel.app').replace(/\/$/, '');
+const KITE_STUDIO_URL = ((import.meta.env.VITE_KITE_STUDIO_URL as string | undefined)?.trim() || 'https://kitestudio-prvai.vercel.app').replace(/\/$/, '');
 
 interface SidebarProps {
   userTier?: User['tier'];

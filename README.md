@@ -132,7 +132,7 @@ Supported tiers are `go`, `plus`, and `pro`. `--max-uses` defaults to one; `--ex
 
 - Deploy `app/` as a Vite static site (the production URL is `prvai.vercel.app`) and `backend/` as a Node service.
 - Configure `VITE_API_BASE_URL` and `VITE_TURNSTILE_SITE_KEY` in the web deployment. In the Render API service, configure all private credentials and set `FRONTEND_URL=https://prvai.vercel.app`.
-- For Kite Studio SSO, apply `backend/supabase/kite_sso.sql` to the PRV Supabase project, then set `KITE_SSO_SHARED_SECRET` in the API service. Configure the same secret in Kite's server environment. Set `VITE_KITE_STUDIO_URL=https://kitestudio-yourprv.vercel.app` in the PRV web deployment. This secret must never be exposed to the browser.
+- For Kite Studio SSO, apply `backend/supabase/kite_sso.sql` to the PRV Supabase project, then set `KITE_SSO_SHARED_SECRET` in the API service. Configure the same secret in Kite's server environment. Set `VITE_KITE_STUDIO_URL=https://kitestudio-prvai.vercel.app` in the PRV web deployment. This secret must never be exposed to the browser.
 - Add production and local callback URLs to the Supabase Auth allowlist.
 - `INVITE_RATE_LIMIT_SECRET` must be a long, random server-only value. Keep it stable so guest usage keys remain stable.
 - Daily and lifetime quotas are database-backed and shared across API instances. Invite redemption attempts are also database-backed.
