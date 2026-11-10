@@ -1,7 +1,7 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { existsSync } from 'fs';
-import { createHmac, createHash, randomUUID } from 'crypto';
+import { createHmac, createHash, randomBytes, randomUUID, timingSafeEqual } from 'crypto';
 import express, { type Request, type Response as ExpressResponse, type RequestHandler } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -27,6 +27,7 @@ const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY || '';
 const CLOUDFLARE_ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID || '';
 const CLOUDFLARE_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN || '';
 const INVITE_RATE_LIMIT_SECRET = process.env.INVITE_RATE_LIMIT_SECRET || '';
+const KITE_SSO_SHARED_SECRET = process.env.KITE_SSO_SHARED_SECRET || '';
 
 const GEMINI_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 const GEMINI_HIGH_DEMAND_MESSAGE = "PRV AI is experiencing high demand right now, We're trying to fix it as soon as possible. Please visit after few hours";
@@ -1203,6 +1204,94 @@ app.get('/api/auth/session', async (req: Request, res: ExpressResponse) => {
     return;
   }
   res.json({ user: { ...user, tier: entitlement?.tier || 'free' } });
+});
+
+function hasKiteSsoSecret(req: Request) {
+  const provided = req.header('x-kite-sso-secret') || '';
+  if (!KITE_SSO_SHARED_SECRET || provided.length !== KITE_SSO_SHARED_SECRET.length) return false;
+  return timingSafeEqual(Buffer.from(provided), Buffer.from(KITE_SSO_SHARED_SECRET));
+}
+
+app.post('/api/kite/sso/issue', async (req: Request, res: ExpressResponse) => {
+  const user = await getAuthenticatedUser(req, res);
+  if (!user || !supabaseAdmin) return;
+
+  try {
+    const now = new Date();
+    await supabaseAdmin.from('kite_sso_codes').delete().lt('expires_at', now.toISOString());
+    const code = randomBytes(32).toString('base64url');
+    const codeHash = createHash('sha256').update(code, 'ascii').digest('hex');
+    const { error } = await supabaseAdmin.from('kite_sso_codes').insert({
+      code_hash: codeHash,
+      user_id: user.id,
+      expires_at: new Date(now.getTime() + 60_000).toISOString(),
+    });
+    if (error) throw error;
+    res.json({ code, expiresIn: 60 });
+  } catch (error) {
+    console.error('Kite SSO authorization-code issue failed:', error);
+    res.status(503).json({ error: 'Kite Studio sign-in is temporarily unavailable.' });
+  }
+});
+
+app.post('/api/kite/sso/redeem', async (req: Request, res: ExpressResponse) => {
+  if (!KITE_SSO_SHARED_SECRET) {
+    res.status(503).json({ error: 'Kite Studio sign-in is not configured.' });
+    return;
+  }
+  if (!hasKiteSsoSecret(req) || !supabaseAdmin) {
+    res.status(401).json({ error: 'Invalid Kite Studio service credentials.' });
+    return;
+  }
+  const code = typeof req.body?.code === 'string' ? req.body.code : '';
+  if (!/^[A-Za-z0-9_-]{32,128}$/.test(code)) {
+    res.status(401).json({ error: 'This PRV AI sign-in link is invalid or expired.' });
+    return;
+  }
+
+  const codeHash = createHash('sha256').update(code, 'ascii').digest('hex');
+  const { data: redeemed, error: redeemError } = await supabaseAdmin
+    .from('kite_sso_codes')
+    .update({ consumed_at: new Date().toISOString() })
+    .eq('code_hash', codeHash)
+    .is('consumed_at', null)
+    .gt('expires_at', new Date().toISOString())
+    .select('user_id')
+    .maybeSingle();
+  if (redeemError || !redeemed?.user_id) {
+    res.status(401).json({ error: 'This PRV AI sign-in link has expired or was already used.' });
+    return;
+  }
+
+  const { data: userResult, error: userError } = await supabaseAdmin.auth.admin.getUserById(redeemed.user_id);
+  if (userError || !userResult.user) {
+    res.status(503).json({ error: 'Could not verify the PRV AI account.' });
+    return;
+  }
+  res.json({ user: { id: userResult.user.id, ...(userResult.user.email ? { email: userResult.user.email } : {}) } });
+});
+
+app.post('/api/kite/entitlement', async (req: Request, res: ExpressResponse) => {
+  if (!KITE_SSO_SHARED_SECRET) {
+    res.status(503).json({ error: 'Kite Studio plan lookup is not configured.' });
+    return;
+  }
+  if (!hasKiteSsoSecret(req) || !supabaseAdmin) {
+    res.status(401).json({ error: 'Invalid Kite Studio service credentials.' });
+    return;
+  }
+  const userId = typeof req.body?.prvUserId === 'string' ? req.body.prvUserId : '';
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(userId)) {
+    res.status(400).json({ error: 'Invalid PRV AI account ID.' });
+    return;
+  }
+  const { data, error } = await supabaseAdmin.from('user_entitlements').select('tier').eq('user_id', userId).maybeSingle();
+  if (error) {
+    res.status(503).json({ error: 'Could not verify the PRV AI plan.' });
+    return;
+  }
+  const tier = data?.tier as Tier | undefined;
+  res.json({ tier: tier && tier in tierRank ? tier : 'free' });
 });
 
 app.post('/api/auth/sign-in/oauth', async (req: Request, res: ExpressResponse) => {

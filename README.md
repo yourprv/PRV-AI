@@ -93,6 +93,7 @@ Run these SQL files in the Supabase SQL editor, in order:
 1. `backend/supabase/chats.sql` — saved chats and published Custom PRVs.
 2. `backend/supabase/invite_codes.sql` — invite codes, tier entitlements, and redemption-attempt limits.
 3. `backend/supabase/tier_usage.sql` — persistent daily and lifetime quotas, plus the atomic Custom PRV creation function.
+4. `backend/supabase/kite_sso.sql` — short-lived, single-use authorization codes for signing into Kite Studio with a PRV AI account.
 
 The API uses the service-role credential on the server. Tables are not intended for direct browser writes. Do not expose the service-role key to the client.
 
@@ -124,11 +125,14 @@ Supported tiers are `go`, `plus`, and `pro`. `--max-uses` defaults to one; `--ex
 - `GET` and `POST /api/custom-prvs` — browse and publish custom assistants.
 - `POST /api/redeem-invite` — atomic invite redemption and tier assignment.
 - `GET /api/usage` — current daily and lifetime usage.
+- `POST /api/kite/sso/issue` — authenticated, single-use Kite sign-in code.
+- `POST /api/kite/sso/redeem` and `POST /api/kite/entitlement` — server-to-server Kite verification using the shared secret.
 
 ## Deployment notes
 
 - Deploy `app/` as a Vite static site (the production URL is `prvai.vercel.app`) and `backend/` as a Node service.
 - Configure `VITE_API_BASE_URL` and `VITE_TURNSTILE_SITE_KEY` in the web deployment. In the Render API service, configure all private credentials and set `FRONTEND_URL=https://prvai.vercel.app`.
+- For Kite Studio SSO, apply `backend/supabase/kite_sso.sql` to the PRV Supabase project, then set `KITE_SSO_SHARED_SECRET` in the API service. Configure the same secret in Kite's server environment. Set `VITE_KITE_STUDIO_URL=https://kitestudio-yourprv.vercel.app` in the PRV web deployment. This secret must never be exposed to the browser.
 - Add production and local callback URLs to the Supabase Auth allowlist.
 - `INVITE_RATE_LIMIT_SECRET` must be a long, random server-only value. Keep it stable so guest usage keys remain stable.
 - Daily and lifetime quotas are database-backed and shared across API instances. Invite redemption attempts are also database-backed.

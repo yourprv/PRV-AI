@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 import {
   PanelLeftClose,
   PanelLeftOpen,
@@ -17,9 +18,9 @@ import { LoginSection } from './LoginSection';
 import { BrandMark } from './BrandMark';
 import { groupChatsByCreatedAt } from '@/lib/chatHistory';
 import type { Chat, User } from '@/types/chat';
+import { issueKiteSsoCode } from '@/lib/api';
 
-const KITE_STUDIO_URL = 'https://kitestudio-prvai.vercel.app';
-const KITE_STUDIO_LAUNCH_AT = new Date('2026-11-10T13:40:17+05:45').getTime();
+const KITE_STUDIO_URL = ((import.meta.env.VITE_KITE_STUDIO_URL as string | undefined)?.trim() || 'https://kitestudio-yourprv.vercel.app').replace(/\/$/, '');
 
 interface SidebarProps {
   userTier?: User['tier'];
@@ -53,32 +54,23 @@ export function Sidebar({
   onSettingsClick,
 }: SidebarProps) {
   const [chatsExpanded, setChatsExpanded] = useState(true);
-  const hasKiteStudioEarlyAccess = userTier === 'plus' || userTier === 'pro';
-  const [kiteStudioTimeLeft, setKiteStudioTimeLeft] = useState(() =>
-    Math.max(0, KITE_STUDIO_LAUNCH_AT - Date.now()),
-  );
 
   const chatGroups = groupChatsByCreatedAt(chats);
 
-  useEffect(() => {
-    const updateCountdown = () => {
-      const timeLeft = KITE_STUDIO_LAUNCH_AT - Date.now();
-      setKiteStudioTimeLeft(Math.max(0, timeLeft));
-
-      if (timeLeft <= 0) {
-        window.location.assign(KITE_STUDIO_URL);
-      }
-    };
-
-    const intervalId = window.setInterval(updateCountdown, 1000);
-    updateCountdown();
-    return () => window.clearInterval(intervalId);
-  }, []);
-
-  const countdownHours = Math.floor(kiteStudioTimeLeft / 3_600_000);
-  const countdownMinutes = Math.floor((kiteStudioTimeLeft % 3_600_000) / 60_000);
-  const countdownSeconds = Math.floor((kiteStudioTimeLeft % 60_000) / 1_000);
-  const countdownLabel = `${String(countdownHours).padStart(2, '0')}:${String(countdownMinutes).padStart(2, '0')}:${String(countdownSeconds).padStart(2, '0')}`;
+  const openKiteStudio = async () => {
+    const popup = window.open('about:blank', 'kite-studio');
+    if (!popup) {
+      toast.error('Allow pop-ups from PRV AI to open Kite Studio.');
+      return;
+    }
+    try {
+      const { code } = await issueKiteSsoCode();
+      popup.location.replace(`${KITE_STUDIO_URL}/#sso=${encodeURIComponent(code)}`);
+    } catch (error) {
+      popup.close();
+      toast.error(error instanceof Error ? error.message : 'Could not open Kite Studio.');
+    }
+  };
 
   const renderChatGroup = (title: string, groupChats: Chat[]) => {
     if (groupChats.length === 0) return null;
@@ -273,39 +265,19 @@ export function Sidebar({
           </button>
         </div>
         <div className="group relative">
-          <a
-            href={KITE_STUDIO_URL}
-            aria-disabled={kiteStudioTimeLeft > 0 && !hasKiteStudioEarlyAccess}
-            tabIndex={kiteStudioTimeLeft > 0 && !hasKiteStudioEarlyAccess ? -1 : undefined}
-            onClick={(event) => {
-              if (kiteStudioTimeLeft > 0 && !hasKiteStudioEarlyAccess) event.preventDefault();
-            }}
-            className={`flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left text-[14px] transition-colors ${
-              kiteStudioTimeLeft > 0 && !hasKiteStudioEarlyAccess
-                ? 'cursor-not-allowed text-slate-500 opacity-80 dark:text-[#bcb39d]'
-                : 'text-[#374151] hover:bg-[#F5F5F7] dark:text-[#e0d9c8] dark:hover:bg-[#38362a]'
-            }`}
+          <button
+            type="button"
+            onClick={() => { void openKiteStudio(); }}
+            className="flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left text-[14px] text-[#374151] transition-colors hover:bg-[#F5F5F7] dark:text-[#e0d9c8] dark:hover:bg-[#38362a]"
           >
             <span className="flex h-6 w-6 items-center justify-center rounded-lg border border-[#dedbd2] bg-white text-[#73776e] dark:border-[#514d3e] dark:bg-[#302f25] dark:text-[#d0c7b3]">
               <Code2 size={13} />
             </span>
             <span className="font-medium">Kite Studio</span>
-            <span
-              className="ml-auto rounded-full border border-slate-300 px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-wider text-slate-500 dark:border-[#514d3e] dark:text-[#bcb39d]"
-              aria-label={`${countdownHours} hours ${countdownMinutes} minutes ${countdownSeconds} seconds remaining`}
-            >
-              {countdownLabel}
-            </span>
-            {hasKiteStudioEarlyAccess && kiteStudioTimeLeft > 0 && (
-              <span className="rounded-full bg-[#e8ebe4] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#52634e] dark:bg-[#38362a] dark:text-[#d5c49d]">
-                Early
-              </span>
-            )}
-          </a>
+            <span className="ml-auto rounded-full border border-slate-300 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:border-[#514d3e] dark:text-[#bcb39d]">{userTier || 'free'}</span>
+          </button>
           <div className="pointer-events-none absolute left-2 top-full z-50 mt-2 hidden w-72 rounded-xl border border-slate-200 bg-slate-950 px-3 py-2.5 text-xs leading-5 text-slate-100 shadow-xl group-hover:block group-focus-within:block dark:border-[#454235]">
-            {hasKiteStudioEarlyAccess
-              ? 'Plus and Pro members can access Kite Studio early. The No Code AI Builder and AI code editor inside your browser.'
-              : 'Kite Studio opens when the countdown ends. The No Code AI Builder and AI code editor inside your browser.'}
+            Build and preview code with your PRV AI account. Your current PRV plan controls Kite Studio credits and limits.
           </div>
         </div>
       </div>

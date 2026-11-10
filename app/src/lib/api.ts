@@ -258,6 +258,13 @@ export async function redeemInviteCode(code: string): Promise<{ tier: 'go' | 'pl
   });
 }
 
+export async function issueKiteSsoCode(): Promise<{ code: string; expiresIn: number }> {
+  return apiRequest<{ code: string; expiresIn: number }>('/api/kite/sso/issue', {
+    method: 'POST',
+    body: JSON.stringify({}),
+  });
+}
+
 export async function getUsageSummary(): Promise<UsageSummary> {
   return apiRequest<UsageSummary>('/api/usage');
 }
