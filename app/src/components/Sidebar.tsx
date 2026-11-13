@@ -63,6 +63,9 @@ export function Sidebar({
       toast.error('Allow pop-ups from PRV AI to open Kite Studio.');
       return;
     }
+    popup.document.open();
+    popup.document.write(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Opening Kite Studio</title><style>html,body{height:100%;margin:0;background:#11100f;color:#eee8dc;font:15px system-ui,sans-serif}main{height:100%;display:grid;place-content:center;text-align:center;gap:12px}.spinner{width:22px;height:22px;margin:auto;border:2px solid #514a3b;border-top-color:#d5bd8f;border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}p{margin:0;color:#aaa18f;font-size:13px}</style></head><body><main><div class="spinner"></div><div>Connecting to Kite Studio…</div><p>Verifying your PRV AI session</p></main></body></html>`);
+    popup.document.close();
     try {
       const { code } = await issueKiteSsoCode();
       popup.location.replace(`${KITE_STUDIO_URL}/#sso=${encodeURIComponent(code)}`);
