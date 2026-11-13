@@ -42,7 +42,7 @@ export default function AuthCallback() {
         const session = await getAuthSession();
 
         if (session.user) {
-          navigate('/');
+          navigate('/?welcome=kite');
           return;
         }
 

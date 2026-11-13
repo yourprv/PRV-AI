@@ -37,7 +37,8 @@ export function ModelSelector({ selected, onSelect, compact, disabled, onDisable
   const [legacyOpen, setLegacyOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const currentModel = AVAILABLE_MODELS.find((m) => m.id === selected) || AVAILABLE_MODELS[0];
-  const groups = ['PRV models', 'Legacy models'] as const;
+  const groups = ['PRV models', 'Legacy models', 'Kite Studio'] as const;
+  const selectableCount = AVAILABLE_MODELS.filter((model) => model.selectable !== false).length;
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -81,7 +82,7 @@ export function ModelSelector({ selected, onSelect, compact, disabled, onDisable
         <div className="mobile-model-menu absolute left-0 top-full z-50 mt-2 w-[24rem] max-w-[calc(100vw_-_3.5rem)] overflow-x-hidden overflow-y-auto rounded-2xl border border-[#e5dac3] bg-[#fffdf8]/95 shadow-[0_20px_70px_-20px_rgba(48,42,29,0.24)] backdrop-blur-xl animate-fade-in max-h-[75vh] sm:w-[390px] sm:max-w-md dark:border-[#454235] dark:bg-[#24231d]/95">
           {compact && (
             <div className="sticky top-0 flex items-center justify-between bg-[#fffdf8]/95 px-4 pb-2 pt-4 text-[10px] uppercase tracking-[0.18em] text-slate-400 dark:bg-[#24231d]/95 dark:text-[#a49b83]">
-              <span>Choose a model</span><span className="normal-case tracking-normal text-[11px]">{AVAILABLE_MODELS.length} available</span>
+              <span>Choose a model</span><span className="normal-case tracking-normal text-[11px]">{selectableCount} available · 1 preview</span>
             </div>
           )}
           <div className="p-2 sm:p-2.5">
@@ -89,7 +90,11 @@ export function ModelSelector({ selected, onSelect, compact, disabled, onDisable
               {group === 'Legacy models' ? <button type="button" onClick={() => setLegacyOpen((open) => !open)} className="flex w-full items-center gap-2 rounded-xl px-2 pb-2 pt-2 text-left text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400 transition-colors hover:bg-slate-50 dark:text-[#a49b83] dark:hover:bg-[#302f25]/60"><span className={`transition-transform ${legacyOpen ? 'rotate-90' : ''}`}>›</span><span>{group}</span><span className="h-px flex-1 bg-slate-100 dark:bg-[#302f25]" /><span className="normal-case tracking-normal">{AVAILABLE_MODELS.filter((model) => model.group === group).length}</span></button> : <div className="flex items-center gap-2 px-2 pb-1.5 pt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400 dark:text-[#a49b83]"><span>{group}</span><span className="h-px flex-1 bg-slate-100 dark:bg-[#302f25]" /></div>}
               {(group !== 'Legacy models' || legacyOpen) && AVAILABLE_MODELS.filter((model) => model.group === group).map((model) => <div key={model.id}>
                 <button
+                  type="button"
+                  disabled={model.selectable === false}
+                  aria-label={model.selectable === false ? `${model.name}: use in Kite Studio` : undefined}
                   onClick={() => {
+                    if (model.selectable === false) return;
                     if (model.id === 'prv-v4-light' && tier === 'free') {
                       setIsOpen(false);
                       onUpgradeClick?.();
@@ -99,7 +104,9 @@ export function ModelSelector({ selected, onSelect, compact, disabled, onDisable
                     setIsOpen(false);
                   }}
                   className={`w-full text-left rounded-lg px-2 sm:px-3 py-2 sm:py-2.5 transition-colors duration-150 active:bg-[#E5E7EB] dark:active:bg-[#37352b] ${
-                    selected === model.id
+                    model.selectable === false
+                      ? 'cursor-not-allowed opacity-75'
+                      : selected === model.id
                       ? 'bg-[#f0f1eb] dark:bg-[#38362a]'
                       : 'hover:bg-[#f7f6f2] dark:hover:bg-[#38362a]'
                   }`}

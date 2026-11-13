@@ -13,17 +13,17 @@ import {
   Code2,
   Settings,
   SlidersHorizontal,
+  Sparkles,
 } from 'lucide-react';
 import { LoginSection } from './LoginSection';
 import { BrandMark } from './BrandMark';
 import { groupChatsByCreatedAt } from '@/lib/chatHistory';
-import type { Chat, User } from '@/types/chat';
+import type { Chat } from '@/types/chat';
 import { issueKiteSsoCode } from '@/lib/api';
 
 const KITE_STUDIO_URL = 'https://kitestudio-prvai.vercel.app';
 
 interface SidebarProps {
-  userTier?: User['tier'];
   isExpanded: boolean;
   onToggle: () => void;
   chats: Chat[];
@@ -39,7 +39,6 @@ interface SidebarProps {
 }
 
 export function Sidebar({
-  userTier,
   isExpanded,
   onToggle,
   chats,
@@ -277,7 +276,9 @@ export function Sidebar({
               <Code2 size={13} />
             </span>
             <span className="font-medium">Kite Studio</span>
-            <span className="ml-auto rounded-full border border-slate-300 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:border-[#514d3e] dark:text-[#bcb39d]">{userTier || 'free'}</span>
+            <span className="ml-auto inline-flex items-center gap-1 rounded-full border border-amber-300 bg-gradient-to-r from-amber-200 via-yellow-100 to-amber-200 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-950 shadow-[0_0_12px_rgba(245,190,70,0.28)] dark:border-[#b89a56] dark:from-[#80662e] dark:via-[#b89a56] dark:to-[#80662e] dark:text-[#fff2c4]">
+              <Sparkles size={10} /> Preview
+            </span>
           </button>
           <div className="pointer-events-none absolute left-2 top-full z-50 mt-2 hidden w-72 rounded-xl border border-slate-200 bg-slate-950 px-3 py-2.5 text-xs leading-5 text-slate-100 shadow-xl group-hover:block group-focus-within:block dark:border-[#454235]">
             Build and preview code with your PRV AI account. Your current PRV plan controls Kite Studio credits and limits.

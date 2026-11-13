@@ -170,6 +170,7 @@ export function Settings({ onBack }: SettingsProps) {
                       {model.id === 'prv-v1-flash' && 'The original quick-response PRV engine for clear answers and everyday flow.'}
                       {model.id === 'prv-v1-pro' && 'The legacy powerhouse for dense reasoning and complex tasks.'}
                       {model.id === 'prv-v1.5-beta' && 'The dependable legacy baseline: efficient, balanced, and easy to reach for.'}
+                      {model.id === 'opal-o1-flash' && 'Opal O1 Flash is a fast, lightweight coding model for quick edits and rapid build iterations. It is available in Kite Studio and cannot be selected in PRV chat.'}
                     </p>
                   </div>
                 ))}

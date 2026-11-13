@@ -12,21 +12,25 @@ const plans = [
   {
     id: 'free', name: 'Free', icon: Gift, quota: 'Daily allowances · no Fire cap',
     description: 'Full access to core features with generous daily allowances.',
+    studioCredits: '200,000', studioRuns: '100',
     features: ['V3.2 Fire unlimited · V3.5 Earth 30/day · V4.0 Lightning locked', 'V1 Pro + V1 Base unlimited · V1 Pro Max 40/day', '10 images/day · 100 enhancements/day · 30 searches/day', '1 new Custom PRV for life (account required)'],
   },
   {
     id: 'go', name: 'Go', icon: Zap, quota: 'Higher daily allowances',
     description: 'More daily capacity and access to the latest model.',
+    studioCredits: '300,000', studioRuns: '150',
     features: ['V3.2 Fire unlimited · V3.5 Earth 300/day · V4.0 Lightning 20/day', 'V1 Pro + V1 Base unlimited · V1 Pro Max 200/day', '50 images/day · 500 enhancements/day · 100 searches/day', '5 new Custom PRVs for life (account required)'],
   },
   {
     id: 'plus', name: 'Plus', icon: ArrowUpRight, quota: 'Expanded daily allowances',
     description: 'High daily limits for demanding creative and research work.',
+    studioCredits: '650,000', studioRuns: '325',
     features: ['V3.2 Fire unlimited · V3.5 Earth 1,000/day · V4.0 Lightning 100/day', 'V1 Pro + V1 Base unlimited · V1 Pro Max 800/day', '150 images/day · 1,500 enhancements/day · 300 searches/day', '25 new Custom PRVs for life (account required)'],
   },
   {
     id: 'pro', name: 'Pro', icon: Crown, quota: 'Highest daily allowances',
     description: 'The highest daily allowances for intensive workflows.',
+    studioCredits: '1,000,000', studioRuns: '500',
     features: ['V3.2 Fire unlimited · V3.5 Earth 5,000/day · V4.0 Lightning 500/day', 'V1 Pro + V1 Base unlimited · V1 Pro Max 3,000/day', '500 images/day · 5,000 enhancements/day · 1,000 searches/day', 'Unlimited new Custom PRVs (account required)'],
   },
 ] as const;
@@ -118,6 +122,10 @@ export function PlansUpgrade({ user, refreshUser }: PlansUpgradeProps) {
                 <h2 className="text-xl font-semibold text-slate-950 dark:text-[#f3eddf]">{plan.name}</h2>
                 <p className="mt-1 text-xs font-semibold text-[#687c68] dark:text-[#d5c49d]">{plan.quota}</p>
                 <p className="mt-3 min-h-12 text-sm leading-relaxed text-slate-600 dark:text-[#d0c7b3]">{plan.description}</p>
+                <div className="mt-4 rounded-xl border border-[#e5e2d9] bg-[#f8f7f3] px-3 py-2.5 text-xs dark:border-[#62583e]/40 dark:bg-[#c6ad70]/5">
+                  <p className="font-semibold text-slate-800 dark:text-[#f3eddf]">Kite Studio</p>
+                  <p className="mt-1 text-slate-600 dark:text-[#d0c7b3]">{plan.studioCredits} credits/day · {plan.studioRuns} runs/day</p>
+                </div>
                 <ul className="my-5 flex-1 space-y-2.5 border-t border-slate-100 pt-4 text-xs text-slate-600 dark:border-[#3b392e] dark:text-[#d0c7b3]">
                   {plan.features.map((feature) => <li key={feature} className="flex items-start gap-2"><Check size={15} className="mt-0.5 shrink-0 text-emerald-500" />{feature}</li>)}
                 </ul>
@@ -132,6 +140,17 @@ export function PlansUpgrade({ user, refreshUser }: PlansUpgradeProps) {
             );
           })}
         </div>
+        <section className="mt-8 rounded-2xl border border-[#e7e4dc] bg-white p-5 dark:border-[#454235] dark:bg-[#24231d] sm:p-6">
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#687c68] dark:text-[#d5c49d]">Kite Studio limits</p>
+          <h2 className="mt-1 text-lg font-semibold text-slate-950 dark:text-[#f3eddf]">The Speed Limits (The Throttle)</h2>
+          <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-[#d0c7b3]">Credits determine how much you can build. RPM (Requests Per Minute) and TPM (Tokens Per Minute) determine how fast you can build it:</p>
+          <ul className="mt-4 space-y-2 text-sm text-slate-700 dark:text-[#e0d9c8]">
+            <li><strong className="text-slate-950 dark:text-[#f3eddf]">Free:</strong> 5 RPM / 100K TPM (100 runs/day, but only 5 clicks per minute)</li>
+            <li><strong className="text-slate-950 dark:text-[#f3eddf]">Go:</strong> 10 RPM / 175K TPM</li>
+            <li><strong className="text-slate-950 dark:text-[#f3eddf]">Plus &amp; Pro:</strong> 15 RPM / 250K TPM</li>
+          </ul>
+          <p className="mt-4 border-t border-slate-100 pt-4 text-sm font-semibold text-slate-800 dark:border-[#3b392e] dark:text-[#f3eddf]">2,000 credits = 1 run</p>
+        </section>
         <p className="mt-5 text-center text-xs leading-relaxed text-slate-500 dark:text-[#bcb39d]">Daily model, image, search, and enhancement allowances reset at midnight UTC. Lifetime Custom PRV creation counts do not reset.</p>
       </section>
 

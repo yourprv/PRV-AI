@@ -37,6 +37,7 @@ export interface User {
 }
 
 export type ModelId =
+  | 'opal-o1-flash'
   | 'prv-v1-flash'
   | 'prv-v1-pro'
   | 'prv-v1.5-beta'
@@ -56,12 +57,22 @@ export interface ModelOption {
   id: ModelId;
   name: string;
   description: string;
-  group: 'PRV models' | 'Legacy models';
+  group: 'PRV models' | 'Legacy models' | 'Kite Studio';
   accent: 'violet' | 'orange' | 'green' | 'sky' | 'slate';
   badge?: string;
+  selectable?: boolean;
 }
 
 export const AVAILABLE_MODELS: ModelOption[] = [
+  {
+    id: 'opal-o1-flash',
+    name: 'Opal O1 Flash',
+    description: 'A fast, lightweight coding model for quick edits and rapid build iterations. Available in Kite Studio; it cannot be selected in PRV chat.',
+    group: 'Kite Studio',
+    accent: 'sky',
+    badge: 'PREVIEW',
+    selectable: false,
+  },
   {
     id: 'prv-v1-flash',
     name: 'PRV V1 Pro',

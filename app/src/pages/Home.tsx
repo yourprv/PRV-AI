@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import { useAuth } from '@/hooks/useAuth';
 import { Sidebar } from '@/components/Sidebar';
 import { ChatArea } from '@/components/ChatArea';
@@ -43,6 +43,8 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
   const [showBenefitsModal, setShowBenefitsModal] = useState(false);
   const [isIncognitoMode, setIsIncognitoMode] = useState(false);
   const { user, isAuthReady } = useAuth();
+  const location = useLocation();
+  const showKiteIntro = Boolean(user && location.search.slice(1).split('&').includes('welcome=kite'));
   const [searchOpen, setSearchOpen] = useState(false);
   const [webSearchEnabled, setWebSearchEnabled] = useState(false);
   const [renameChatId, setRenameChatId] = useState<string | null>(null);
@@ -769,7 +771,6 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
       {/* Sidebar - Hidden on mobile, visible on desktop */}
       <div className="hidden lg:block">
         <Sidebar
-          userTier={user?.tier}
           isExpanded={sidebarExpanded}
           onToggle={toggleSidebar}
           chats={chats}
@@ -789,7 +790,6 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
       {sidebarExpanded && <div className="fixed inset-0 lg:hidden z-40 bg-black/50" onClick={toggleSidebar} aria-hidden="true" />}
       <div className={`fixed left-0 top-0 h-[100dvh] lg:hidden z-50 transition-transform duration-300 ${sidebarExpanded ? 'translate-x-0' : '-translate-x-full'}`} aria-hidden={!sidebarExpanded}>
           <Sidebar
-            userTier={user?.tier}
             isExpanded={true}
             onToggle={toggleSidebar}
             chats={chats}
@@ -847,6 +847,26 @@ export default function Home({ turnstileToken }: { turnstileToken?: string }) {
       />
 
       <AuthModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
+      <Dialog open={showKiteIntro} onOpenChange={(open) => { if (!open) navigate('/', { replace: true }); }}>
+        <DialogContent className="max-w-md rounded-2xl border-[#e7e4dc] bg-[#fffdf8] p-6 dark:border-[#62583e]/50 dark:bg-[#24231d]">
+          <DialogHeader>
+            <DialogTitle className="premium-heading text-xl text-[#20231f] dark:text-[#f3eddf]">Introducing Kite Studio</DialogTitle>
+            <DialogDescription className="text-sm leading-relaxed text-[#74766f] dark:text-[#d0c7b3]">
+              Your autonomous Coding Agent inside your browser.
+            </DialogDescription>
+          </DialogHeader>
+          <p className="text-sm font-semibold text-[#536653] dark:text-[#d5c49d]">Don&apos;t just chat. Now build!</p>
+          <DialogFooter>
+            <button
+              type="button"
+              onClick={() => navigate('/', { replace: true })}
+              className="workspace-primary-button inline-flex h-10 items-center justify-center rounded-lg px-4 text-sm font-medium"
+            >
+              Got it
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <GuestBenefitsModal
         isOpen={showBenefitsModal}
         onClose={() => setShowBenefitsModal(false)}
