@@ -1250,16 +1250,48 @@ app.post('/api/kite/sso/redeem', async (req: Request, res: ExpressResponse) => {
   }
 
   const codeHash = createHash('sha256').update(code, 'ascii').digest('hex');
+  const checkedAt = new Date();
   const { data: redeemed, error: redeemError } = await supabaseAdmin
     .from('kite_sso_codes')
-    .update({ consumed_at: new Date().toISOString() })
+    .update({ consumed_at: checkedAt.toISOString() })
     .eq('code_hash', codeHash)
     .is('consumed_at', null)
-    .gt('expires_at', new Date().toISOString())
+    .gt('expires_at', checkedAt.toISOString())
     .select('user_id')
     .maybeSingle();
-  if (redeemError || !redeemed?.user_id) {
-    res.status(401).json({ error: 'This PRV AI sign-in link has expired or was already used.' });
+  if (redeemError) {
+    console.error('Kite SSO code redemption database check failed:', redeemError);
+    res.status(503).json({ error: 'PRV AI could not check the Kite sign-in code. Try again.' });
+    return;
+  }
+  if (!redeemed?.user_id) {
+    const { data: prior, error: inspectError } = await supabaseAdmin
+      .from('kite_sso_codes')
+      .select('expires_at, consumed_at')
+      .eq('code_hash', codeHash)
+      .maybeSingle();
+    if (inspectError) {
+      console.error('Kite SSO code rejection reason could not be checked:', inspectError);
+      res.status(503).json({ error: 'PRV AI could not check the Kite sign-in code. Try again.' });
+      return;
+    }
+
+    const reason = !prior
+      ? 'not_found'
+      : prior.consumed_at
+        ? 'already_used'
+        : new Date(prior.expires_at).getTime() <= checkedAt.getTime()
+          ? 'expired'
+          : 'redemption_conflict';
+    console.warn(`Kite SSO code rejected (${reason}).`);
+    const message = reason === 'not_found'
+      ? 'This sign-in code was not found. Open Kite Studio again from PRV AI.'
+      : reason === 'already_used'
+        ? 'This sign-in code was already used. Open Kite Studio again from PRV AI.'
+        : reason === 'expired'
+          ? 'This sign-in code expired. Open Kite Studio again from PRV AI.'
+          : 'This sign-in code could not be redeemed. Open Kite Studio again from PRV AI.';
+    res.status(401).json({ error: message });
     return;
   }
 
